@@ -23,8 +23,8 @@ The goal is to achieve 1:1 UI/UX and functional parity, completing the frontend 
 - [x] `HomeRootView` / `HomeView` -> `app/(tabs)/index.tsx`
 - [x] `SocialRootView` / `FriendsView` -> `app/(tabs)/friends.tsx`
 - [x] `GeneratorView.swift` / `AICardGeneratorView.swift` -> `app/(tabs)/factory.tsx`
-- [ ] `ProfileView` -> `ProfileView` / Settings Sheet
-- [ ] `OtherFunView.swift` -> Embedded in `index.tsx` library
+- [x] `ProfileView` -> `app/profile.tsx`
+- [x] `OtherFunView.swift` -> Embedded in `index.tsx` library
 
 ### **Games & Sessions** (⏳ Pending)
 - [ ] `CasualRoomViews.swift` / `WaitingRoomView`
@@ -44,21 +44,22 @@ The goal is to achieve 1:1 UI/UX and functional parity, completing the frontend 
   - [ ] `GuessTheSecondsSessionView.swift`
   - [ ] `ImposterGameDetailView.swift`, `ImposterSessionView.swift`, `ImposterStyleSelectionView.swift`, `ImposterSingleDeviceSetupView.swift`
 
-### **Authentication & Monetization** (⏳ Pending)
-- [x] `AuthView.swift` -> Ported to a modal/screen
+### **Authentication & Monetization** (✅ Completed)
+- [x] `AuthView.swift` -> Ported to a modal/screen (`app/auth`)
 - [x] `PaywallView.swift` & `PurchaseDetailView.swift` -> Ported to `app/paywall.tsx` with `src/store/usePaywallStore.ts`
+- [x] Supabase to Firebase Migration (Auth, DB, RTDB)
 
 ### **Onboarding & Common Components** (⏳ Pending)
-- [ ] `OnboardingView.swift`
+- [x] `OnboardingView.swift` -> `app/onboarding.tsx`
 - [ ] `InviteView.swift`
 - [ ] `ToastOverlay.swift` & `FirstTimeHintOverlay.swift`
-- [ ] `DesignSystem.swift` -> Tokens and `index.css` or Tailwind configuration (mostly done, verify)
-- [ ] `AnimationModifiers.swift` -> Reanimated hooks and styles
+- [x] `DesignSystem.swift` -> Tokens and styles configured
+- [x] `AnimationModifiers.swift` -> Reanimated hooks and styles
 
 ---
 
 ## 📝 Next Steps
-1. Verify and complete remaining Modals: `ProfileView` and `OtherFunView.swift`.
-2. Port Authentication (`AuthView.swift`) and Paywall (`PaywallView.swift`).
-3. Begin Phase 3: Game Setup & Game Session UI (`CasualRoomViews.swift`, `GameViews.swift`, `SharedGameComponents.swift`).
-4. Ensure all newly added modals match the "Liquid Glass" iOS aesthetic perfectly.
+1. Begin Phase 3: Game Setup & Game Session UI.
+2. Port `CasualRoomViews.swift` / `WaitingRoomView`.
+3. Port `GameViews.swift` / `GameDetailView` (the screen users see before joining a specific game).
+4. Port `SharedGameComponents.swift` and `UnifiedSetupComponents.swift` which will be used across all mini-games.
