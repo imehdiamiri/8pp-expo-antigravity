@@ -1,0 +1,258 @@
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { PartyGameTutorial, PartyGameTutorials } from '@/src/models/PartyGameTutorial';
+import Animated, { FadeInUp, FadeIn, FadeOut, Layout } from 'react-native-reanimated';
+import { BlurView } from 'expo-blur';
+import { Platform } from 'react-native';
+
+export function OtherFunListView() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Party Game Ideas</Text>
+      </View>
+
+      <View style={styles.list}>
+        {PartyGameTutorials.map((game, index) => (
+          <Animated.View key={game.id} entering={FadeInUp.delay(index * 35).springify()}>
+            <PartyGameCard 
+              game={game} 
+              isExpanded={expandedId === game.id}
+              onToggle={() => setExpandedId(expandedId === game.id ? null : game.id)}
+            />
+          </Animated.View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial, isExpanded: boolean, onToggle: () => void }) {
+  // Map our tint strings to actual colors
+  const getTintColor = (tint: string) => {
+    const colors: Record<string, string> = {
+      orange: '#FF9500',
+      pink: '#FF2D55',
+      yellow: '#FFCC00',
+      red: '#FF3B30',
+      cyan: '#32ADE6',
+      green: '#34C759',
+      purple: '#AF52DE',
+      indigo: '#5856D6',
+      teal: '#30B0C7',
+      mint: '#00C7BE',
+      blue: '#007AFF',
+      brown: '#A2845E'
+    };
+    return colors[tint] || '#007AFF';
+  };
+
+  const tintColor = getTintColor(game.tint);
+
+  return (
+    <Animated.View layout={Layout.springify()} style={[styles.card, isExpanded && { borderColor: tintColor + '66' }, { shadowColor: tintColor }]}>
+      <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
+      <TouchableOpacity activeOpacity={0.7} onPress={onToggle} style={styles.cardHeader}>
+        <View style={[styles.iconContainer, { backgroundColor: tintColor + '33' }]}>
+          <IconSymbol name={game.iconName as any} size={22} color={tintColor} weight="semibold" />
+        </View>
+
+        <View style={styles.textContainer}>
+          <Text style={styles.gameTitle}>{game.title}</Text>
+          <Text style={styles.gameDescription} numberOfLines={isExpanded ? undefined : 1}>{game.description}</Text>
+        </View>
+
+        <View style={styles.chevronContainer}>
+          <IconSymbol 
+            name={isExpanded ? "chevron.up" : "chevron.down"} 
+            size={12} 
+            color="rgba(255,255,255,0.6)" 
+            weight="semibold" 
+          />
+        </View>
+      </TouchableOpacity>
+
+      {isExpanded && (
+        <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.expandedContent}>
+          <View style={styles.section}>
+            <View style={styles.sectionTitleRow}>
+              <IconSymbol name="play.circle.fill" size={14} color={tintColor} />
+              <Text style={[styles.sectionTitle, { color: tintColor }]}>How to Play</Text>
+            </View>
+            <View style={styles.stepsContainer}>
+              {game.howToPlay.map((step, index) => (
+                <View key={index} style={styles.stepRow}>
+                  <View style={[styles.stepNumberBadge, { backgroundColor: tintColor + '1F' }]}>
+                    <Text style={[styles.stepNumber, { color: tintColor }]}>{index + 1}</Text>
+                  </View>
+                  <Text style={styles.stepText}>{step}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {game.rules.length > 0 && (
+            <>
+              <View style={styles.divider} />
+              <View style={styles.section}>
+                <View style={styles.sectionTitleRow}>
+                  <IconSymbol name="exclamationmark.triangle.fill" size={14} color="#FF9500" />
+                  <Text style={[styles.sectionTitle, { color: '#FF9500' }]}>Rules</Text>
+                </View>
+                <View style={styles.rulesContainer}>
+                  {game.rules.map((rule, index) => (
+                    <View key={index} style={styles.ruleRow}>
+                      <View style={styles.ruleIconContainer}>
+                        <IconSymbol name="arrow.right" size={10} color="rgba(255, 149, 0, 0.7)" weight="bold" />
+                      </View>
+                      <Text style={styles.ruleText}>{rule}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </>
+          )}
+        </Animated.View>
+      )}
+    </Animated.View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 14,
+  },
+  header: {
+    paddingBottom: 4,
+  },
+  title: {
+    fontFamily: 'Viral-Black',
+    fontSize: 20,
+    color: 'white',
+  },
+  list: {
+    gap: 14,
+  },
+  card: {
+    backgroundColor: 'transparent',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    gap: 12,
+  },
+  iconContainer: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 3,
+  },
+  gameTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: 'white',
+  },
+  gameDescription: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.6)',
+  },
+  chevronContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: 4,
+  },
+  expandedContent: {
+    paddingHorizontal: 12,
+    paddingBottom: 16,
+    gap: 12,
+  },
+  section: {
+    gap: 8,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  stepsContainer: {
+    gap: 6,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  stepNumberBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 1,
+  },
+  stepNumber: {
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  stepText: {
+    flex: 1,
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.85)',
+    lineHeight: 16,
+    marginTop: 2,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  rulesContainer: {
+    gap: 6,
+  },
+  ruleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  ruleIconContainer: {
+    width: 20,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  ruleText: {
+    flex: 1,
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.7)',
+    lineHeight: 16,
+    marginTop: 2,
+  }
+});

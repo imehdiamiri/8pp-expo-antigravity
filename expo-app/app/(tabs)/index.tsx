@@ -1,0 +1,280 @@
+import { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, useWindowDimensions, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+
+import { useRouter } from 'expo-router';
+
+import { AppBackgroundView } from '@/src/components/AppBackgroundView';
+import { Colors } from '@/src/theme/Colors';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { GamesDefinitions, GameMode, GameModeDetails } from '@/src/models/AppModels';
+import { GameCardView } from '@/components/ui/GameCardView';
+import { OtherFunListView } from '@/src/components/games/OtherFunListView';
+
+export default function GamesScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const [selectedLibraryTab, setSelectedLibraryTab] = useState<'Games' | 'Ideas'>('Games');
+  const [selectedModeFilter, setSelectedModeFilter] = useState<GameMode | null>(null);
+
+  const filteredGames = GamesDefinitions.filter(game => 
+    selectedModeFilter ? game.id.supportedModes.includes(selectedModeFilter) : true
+  );
+
+  const columnWidth = (width - 32 - 12) / 2; // paddingHorizontal 16 * 2, gap 12
+
+  return (
+    <View style={styles.container}>
+      <AppBackgroundView />
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 6, paddingBottom: 96 }]}>
+        <View style={styles.header}>
+          <Text style={styles.title}>8PartyPlay</Text>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity style={styles.joinButton} onPress={() => router.push('/lobby/join')} activeOpacity={0.7}>
+            <BlurView tint="dark" intensity={30} style={StyleSheet.absoluteFill} />
+            <IconSymbol name="number" size={13} color="white" weight="bold" />
+            <Text style={styles.joinText}>Join</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')} activeOpacity={0.7}>
+            <BlurView tint="dark" intensity={30} style={StyleSheet.absoluteFill} />
+            <IconSymbol name="person.crop.circle" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Library Tabs (Games | Ideas) */}
+        <View style={styles.libraryTabsContainer}>
+          <BlurView tint="dark" intensity={50} style={styles.libraryTabsWrapper}>
+            <TouchableOpacity 
+              style={[styles.libraryTab, selectedLibraryTab === 'Games' ? styles.libraryTabActive : null]}
+              onPress={() => setSelectedLibraryTab('Games')}
+            >
+              <IconSymbol name="gamecontroller.fill" size={14} color={selectedLibraryTab === 'Games' ? "white" : "rgba(255,255,255,0.6)"} weight="bold" />
+              <Text style={selectedLibraryTab === 'Games' ? styles.libraryTabTextActive : styles.libraryTabText}>Games</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.libraryTab, selectedLibraryTab === 'Ideas' ? styles.libraryTabActive : null]}
+              onPress={() => setSelectedLibraryTab('Ideas')}
+            >
+              <IconSymbol name="shippingbox.fill" size={14} color={selectedLibraryTab === 'Ideas' ? "white" : "rgba(255,255,255,0.6)"} weight="bold" />
+              <Text style={selectedLibraryTab === 'Ideas' ? styles.libraryTabTextActive : styles.libraryTabText}>Ideas</Text>
+            </TouchableOpacity>
+          </BlurView>
+        </View>
+
+        {selectedLibraryTab === 'Games' ? (
+          <>
+            {/* Mode Filters */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.modeFilterContainer}>
+              <TouchableOpacity 
+                style={[styles.modeFilterChip, selectedModeFilter === null ? styles.modeFilterChipActive : {}]}
+                onPress={() => setSelectedModeFilter(null)}
+                activeOpacity={0.7}
+              >
+                <BlurView tint="dark" intensity={selectedModeFilter === null ? 0 : 30} style={StyleSheet.absoluteFill} />
+                <Text style={[styles.modeFilterText, selectedModeFilter === null ? styles.modeFilterTextActive : {}]}>All</Text>
+              </TouchableOpacity>
+              {Object.values(GameMode).map(mode => (
+                <TouchableOpacity 
+                  key={mode}
+                  style={[styles.modeFilterChip, selectedModeFilter === mode ? styles.modeFilterChipActive : {}]}
+                  onPress={() => setSelectedModeFilter(mode)}
+                  activeOpacity={0.7}
+                >
+                  <BlurView tint="dark" intensity={selectedModeFilter === mode ? 0 : 30} style={StyleSheet.absoluteFill} />
+                  <Text style={[styles.modeFilterText, selectedModeFilter === mode ? styles.modeFilterTextActive : {}]}>
+                    {GameModeDetails[mode].title}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {/* Game Grid */}
+            <View style={styles.gamesGrid}>
+              {filteredGames.map((game) => (
+                <View key={game.id.id} style={{ width: columnWidth }}>
+                  <TouchableOpacity activeOpacity={0.8} onPress={() => router.push(`/game/${game.id.id}` as any)}>
+                    <GameCardView game={game} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+
+            {/* Empty State */}
+            {filteredGames.length === 0 && (
+              <View style={styles.emptyStateContainer}>
+                <IconSymbol name="gamecontroller" size={48} color="rgba(255,255,255,0.3)" />
+                <Text style={styles.emptyStateTitle}>No Games</Text>
+                <Text style={styles.emptyStateDesc}>
+                  {selectedModeFilter === null 
+                    ? "Games will appear here as they are added." 
+                    : "No games support this mode yet."}
+                </Text>
+              </View>
+            )}
+          </>
+        ) : (
+          <View style={styles.ideasContainer}>
+            <OtherFunListView />
+          </View>
+        )}
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    gap: 10,
+  },
+  title: {
+    fontFamily: 'Viral-Black',
+    fontSize: 20,
+    color: 'white',
+  },
+  joinButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    overflow: 'hidden',
+  },
+  joinText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  profileButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+  },
+  libraryTabsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  libraryTabsWrapper: {
+    flexDirection: 'row',
+    borderRadius: 30,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+    maxWidth: 250,
+    width: '100%',
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
+  },
+  libraryTab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 9,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+  },
+  libraryTabActive: {
+    backgroundColor: 'rgba(0, 122, 255, 0.88)',
+  },
+  libraryTabText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  libraryTabTextActive: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  modeFilterContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingBottom: 20,
+  },
+  modeFilterChip: {
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modeFilterChipActive: {
+    backgroundColor: 'rgba(0, 122, 255, 0.15)',
+    borderColor: 'rgba(0, 122, 255, 0.4)',
+  },
+  modeFilterText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  modeFilterTextActive: {
+    color: 'rgba(0, 122, 255, 1)',
+  },
+  gamesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  ideasContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+  },
+  ideasPlaceholderText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontFamily: 'Viral-Regular',
+    fontSize: 16,
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 40,
+    gap: 8,
+  },
+  emptyStateTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Viral-Black',
+    marginTop: 8,
+  },
+  emptyStateDesc: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+});
