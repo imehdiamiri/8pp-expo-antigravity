@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Platform } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import * as FileSystem from 'expo-file-system';
+import { httpsCallable } from 'firebase/functions';
+import { functionsApi } from '@/src/lib/firebase';
+import { ActivityIndicator } from 'react-native';
 
 // Platform-safe audio import
 let Audio: any = null;
@@ -23,12 +27,15 @@ export function ReverseSingingSession({ session }: Props) {
   const [p1Recording, setP1Recording] = useState<Audio.Recording | null>(null);
   const [p1Uri, setP1Uri] = useState<string | null>(null);
   const [p1Duration, setP1Duration] = useState(0);
+  const [p1ReversedUri, setP1ReversedUri] = useState<string | null>(null);
 
   // Player 2 State
   const [p2Recording, setP2Recording] = useState<Audio.Recording | null>(null);
   const [p2Uri, setP2Uri] = useState<string | null>(null);
   const [p2Duration, setP2Duration] = useState(0);
+  const [p2ReversedUri, setP2ReversedUri] = useState<string | null>(null);
 
+  const [isReversingPlayer, setIsReversingPlayer] = useState<1 | 2 | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   useEffect(() => {
@@ -94,6 +101,36 @@ export function ReverseSingingSession({ session }: Props) {
     await newSound.playAsync();
   }
 
+  async function reverseAudioBackend(uri: string, player: 1 | 2) {
+    if (!uri) return;
+    try {
+      setIsReversingPlayer(player);
+      const base64Audio = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const reverseFn = httpsCallable(functionsApi, 'reverseAudio');
+      const result = await reverseFn({ audioBase64: base64Audio });
+      const { audioBase64: reversedBase64 } = result.data as any;
+
+      const outputPath = FileSystem.documentDirectory + `reversed_${player}_${Date.now()}.m4a`;
+      await FileSystem.writeAsStringAsync(outputPath, reversedBase64, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      if (player === 1) {
+        setP1ReversedUri(outputPath);
+      } else {
+        setP2ReversedUri(outputPath);
+      }
+    } catch (e) {
+      console.error("Reversing failed", e);
+      alert("Failed to reverse audio.");
+    } finally {
+      setIsReversingPlayer(null);
+    }
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       
@@ -141,15 +178,22 @@ export function ReverseSingingSession({ session }: Props) {
 
           <View style={styles.gridRow}>
             <Pressable 
-              style={[styles.squareBtn, { backgroundColor: '#007AFF' }, !p1Uri && styles.disabled]}
+              style={[styles.squareBtn, { backgroundColor: '#007AFF' }, (!p1Uri || isReversingPlayer === 1) && styles.disabled]}
               onPress={() => {
-                alert('True reverse playback requires a backend or native module. Playing normal for now.');
-                playSound(p1Uri);
+                if (p1ReversedUri) {
+                  playSound(p1ReversedUri);
+                } else {
+                  reverseAudioBackend(p1Uri!, 1);
+                }
               }}
-              disabled={!p1Uri}
+              disabled={!p1Uri || isReversingPlayer === 1}
             >
-              <IconSymbol name="backward.fill" size={28} color="white" />
-              <Text style={styles.btnText}>Play Reverse (Mock)</Text>
+              {isReversingPlayer === 1 ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <IconSymbol name="backward.fill" size={28} color="white" />
+              )}
+              <Text style={styles.btnText}>{p1ReversedUri ? "Play Reversed" : "Generate Reverse"}</Text>
             </Pressable>
 
             <Pressable 
@@ -211,12 +255,22 @@ export function ReverseSingingSession({ session }: Props) {
 
           <View style={styles.gridRow}>
             <Pressable 
-              style={[styles.squareBtn, { backgroundColor: Colors.green }, !p2Uri && styles.disabled]}
-              onPress={() => playSound(p2Uri)} // Mock reverse
-              disabled={!p2Uri}
+              style={[styles.squareBtn, { backgroundColor: Colors.green }, (!p2Uri || isReversingPlayer === 2) && styles.disabled]}
+              onPress={() => {
+                if (p2ReversedUri) {
+                  playSound(p2ReversedUri);
+                } else {
+                  reverseAudioBackend(p2Uri!, 2);
+                }
+              }}
+              disabled={!p2Uri || isReversingPlayer === 2}
             >
-              <IconSymbol name="sparkles" size={28} color="white" />
-              <Text style={styles.btnText}>Result</Text>
+              {isReversingPlayer === 2 ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <IconSymbol name="sparkles" size={28} color="white" />
+              )}
+              <Text style={styles.btnText}>{p2ReversedUri ? "Play Result" : "Generate Result"}</Text>
             </Pressable>
 
             <Pressable 
