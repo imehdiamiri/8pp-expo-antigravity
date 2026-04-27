@@ -410,7 +410,7 @@ export default function GameSetupScreen() {
           <>
             <View style={st.card}>
               <View style={st.cardHeader}>
-                <IconSymbol name="square.grid.3x3.fill" size={16} color=Colors.orange />
+                <IconSymbol name="square.grid.3x3.fill" size={16} color={Colors.orange} />
                 <Text style={[st.cardTitle, { color: Colors.orange }]}>Grid Size</Text>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
@@ -431,7 +431,7 @@ export default function GameSetupScreen() {
 
             <View style={st.card}>
               <View style={st.cardHeader}>
-                <IconSymbol name="number" size={16} color=Colors.orange />
+                <IconSymbol name="number" size={16} color={Colors.orange} />
                 <Text style={[st.cardTitle, { color: Colors.orange }]}>Numbers</Text>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>

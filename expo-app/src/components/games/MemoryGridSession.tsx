@@ -347,7 +347,7 @@ export function MemoryGridSession({ session }: Props) {
 
           <View style={styles.statsGroup}>
             <View style={[styles.statPill, { backgroundColor: 'rgba(255,149,0,0.1)' }]}>
-              <IconSymbol name="hand.tap.fill" size={12} color=Colors.orange />
+              <IconSymbol name="hand.tap.fill" size={12} color={Colors.orange} />
               <Text style={[styles.statPillText, { color: Colors.orange }]}>{moveCount}</Text>
             </View>
             <View style={[styles.statPill, { backgroundColor: 'rgba(90,200,250,0.1)' }]}>
@@ -430,7 +430,7 @@ export function MemoryGridSession({ session }: Props) {
     return (
       <View style={styles.container}>
         <View style={styles.centerContent}>
-          <IconSymbol name="checkmark.circle.fill" size={56} color=Colors.green />
+          <IconSymbol name="checkmark.circle.fill" size={56} color={Colors.green} />
           <Text style={[styles.readyTitle, { marginTop: 16 }]}>
             {players[currentPlayerIndex]?.username} Finished!
           </Text>
@@ -459,7 +459,7 @@ export function MemoryGridSession({ session }: Props) {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.resultsContent}>
         <View style={styles.trophyHeader}>
-          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
+          <IconSymbol name="trophy.fill" size={44} color={Colors.yellow} />
           <Text style={styles.trophyTitle}>
             {players.length > 1 ? 'Final Rankings' : 'Complete!'}
           </Text>
@@ -487,7 +487,7 @@ export function MemoryGridSession({ session }: Props) {
                     {result ? `${formatTime(result.elapsedSeconds)} · ${result.moveCount} moves` : '—'}
                   </Text>
                 </View>
-                {index === 0 && <IconSymbol name="crown.fill" size={18} color=Colors.yellow />}
+                {index === 0 && <IconSymbol name="crown.fill" size={18} color={Colors.yellow} />}
               </View>
             );
           })}

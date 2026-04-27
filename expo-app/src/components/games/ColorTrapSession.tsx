@@ -180,7 +180,7 @@ export function ColorTrapSession({ session }: Props) {
     return (
       <View style={st.container}><View style={st.center}>
         <View style={[st.iconBox, { backgroundColor: 'rgba(255,59,48,0.14)' }]}>
-          <IconSymbol name="paintpalette.fill" size={52} color=Colors.red />
+          <IconSymbol name="paintpalette.fill" size={52} color={Colors.red} />
         </View>
         <Text style={st.title}>Color Trap</Text>
         <Text style={st.sub}>Tap every tile EXCEPT the forbidden color!</Text>
@@ -285,7 +285,7 @@ export function ColorTrapSession({ session }: Props) {
     <View style={st.container}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         <View style={{ alignItems: 'center', gap: 8, marginVertical: 20 }}>
-          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
+          <IconSymbol name="trophy.fill" size={44} color={Colors.yellow} />
           <Text style={st.title}>{players.length > 1 ? 'Final Rankings' : 'Complete!'}</Text>
         </View>
         {sorted.map((r, i) => {

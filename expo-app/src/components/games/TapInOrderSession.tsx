@@ -179,12 +179,12 @@ export function TapInOrderSession({ session }: Props) {
       <View style={st.container}>
         <View style={st.center}>
           <View style={[st.iconBox, { backgroundColor: 'rgba(255,149,0,0.14)' }]}>
-            <IconSymbol name="brain.head.profile" size={52} color=Colors.orange />
+            <IconSymbol name="brain.head.profile" size={52} color={Colors.orange} />
           </View>
           <Text style={st.title}>Tap in Order</Text>
           <Text style={st.sub}>Memorize the numbers, then tap 1→{TILE_COUNT}</Text>
           {players.length > 1 && <View style={st.pill}><Text style={st.pillTx}>Now · {player.username}</Text></View>}
-          <View style={st.label}><IconSymbol name="checkmark.seal.fill" size={12} color=Colors.green /><Text style={st.labelTx}>Fewest mistakes wins</Text></View>
+          <View style={st.label}><IconSymbol name="checkmark.seal.fill" size={12} color={Colors.green} /><Text style={st.labelTx}>Fewest mistakes wins</Text></View>
           <View style={st.bubbleRow}>
             <View style={st.bubble}><Text style={st.bv}>{GRID_SIZE}×{GRID_SIZE}</Text><Text style={st.bl}>Grid</Text></View>
             <View style={st.bubble}><Text style={st.bv}>{TILE_COUNT}</Text><Text style={st.bl}>Tiles</Text></View>
@@ -218,7 +218,7 @@ export function TapInOrderSession({ session }: Props) {
     return (
       <View style={st.container}>
         <View style={st.center}>
-          <IconSymbol name="hand.raised.fill" size={56} color=Colors.orange />
+          <IconSymbol name="hand.raised.fill" size={56} color={Colors.orange} />
           <Text style={st.title}>Pass the Phone</Text>
           <Text style={st.sub}>Give to {players[playerIndex + 1]?.username}</Text>
           <Pressable style={[st.btn, { marginTop: 40 }]} onPress={() => { setPlayerIndex(i => i+1); setPhase('ready'); }}>
@@ -250,21 +250,21 @@ export function TapInOrderSession({ session }: Props) {
         <View style={st.statsRow}>
           <View style={[st.statCard, { backgroundColor: 'rgba(255,59,48,0.1)' }]}>
             <View style={st.statCardInner}>
-              <IconSymbol name="xmark.circle.fill" size={12} color=Colors.red />
+              <IconSymbol name="xmark.circle.fill" size={12} color={Colors.red} />
               <Text style={[st.statVal, { color: Colors.red }]}>{missTaps}</Text>
             </View>
             <Text style={st.statLbl}>Mistakes</Text>
           </View>
           <View style={[st.statCard, { backgroundColor: 'rgba(52,199,89,0.1)' }]}>
             <View style={st.statCardInner}>
-              <IconSymbol name="checkmark.seal.fill" size={12} color=Colors.green />
+              <IconSymbol name="checkmark.seal.fill" size={12} color={Colors.green} />
               <Text style={[st.statVal, { color: Colors.green }]}>{correctCount}/{totalTargets}</Text>
             </View>
             <Text style={st.statLbl}>Correct</Text>
           </View>
           <View style={[st.statCard, { backgroundColor: 'rgba(255,149,0,0.1)' }]}>
             <View style={st.statCardInner}>
-              <IconSymbol name={isPreview ? 'eye.fill' : 'timer'} size={12} color=Colors.orange />
+              <IconSymbol name={isPreview ? 'eye.fill' : 'timer'} size={12} color={Colors.orange} />
               <Text style={[st.statVal, { color: Colors.orange }]}>
                 {isPreview ? previewLeft.toFixed(1) : formatTime(elapsed)}
               </Text>
@@ -333,7 +333,7 @@ export function TapInOrderSession({ session }: Props) {
         {/* Give Up button */}
         {phase === 'playing' && (
           <Pressable style={st.giveUp} onPress={handleGiveUp}>
-            <IconSymbol name="flag.fill" size={14} color=Colors.red />
+            <IconSymbol name="flag.fill" size={14} color={Colors.red} />
             <Text style={st.giveUpTx}>Give Up</Text>
           </Pressable>
         )}
@@ -351,7 +351,7 @@ export function TapInOrderSession({ session }: Props) {
     <View style={st.container}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         <View style={{ alignItems: 'center', gap: 8, marginVertical: 20 }}>
-          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
+          <IconSymbol name="trophy.fill" size={44} color={Colors.yellow} />
           <Text style={st.title}>{players.length > 1 ? 'Final Rankings' : 'Complete!'}</Text>
         </View>
         {sorted.map((r, i) => {
@@ -365,7 +365,7 @@ export function TapInOrderSession({ session }: Props) {
                 <Text style={st.rankName}>{p?.username}</Text>
                 <Text style={st.rankDet}>{r.correctCount}/{r.totalTargets} correct · {r.missTaps} miss · {(r.timeMs/1000).toFixed(1)}s</Text>
               </View>
-              {i === 0 && r.didFinish && <IconSymbol name="crown.fill" size={16} color=Colors.yellow />}
+              {i === 0 && r.didFinish && <IconSymbol name="crown.fill" size={16} color={Colors.yellow} />}
             </View>
           );
         })}

@@ -206,7 +206,7 @@ export function ImposterSession({ session }: Props) {
                   </>
                 ) : (
                   <>
-                    <IconSymbol name="checkmark.shield.fill" size={64} color=Colors.green />
+                    <IconSymbol name="checkmark.shield.fill" size={64} color={Colors.green} />
                     <Text style={styles.roleSubtitle}>The secret word is:</Text>
                     <View style={styles.wordBadge}>
                       <Text style={styles.wordText}>{secretWord}</Text>
@@ -379,7 +379,7 @@ export function ImposterSession({ session }: Props) {
 
       {phase === 'finished' && (
         <ScrollView contentContainerStyle={[styles.scrollContent, { alignItems: 'center' }]}>
-          <IconSymbol name="trophy.fill" size={64} color=Colors.yellow style={{ marginTop: 40 }} />
+          <IconSymbol name="trophy.fill" size={64} color={Colors.yellow} style={{ marginTop: 40 }} />
           <Text style={[styles.title, { marginTop: 20 }]}>Final Results</Text>
 
           <View style={[styles.card, { width: '100%', marginTop: 20 }]}>

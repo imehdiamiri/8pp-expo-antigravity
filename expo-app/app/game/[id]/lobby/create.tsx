@@ -81,7 +81,7 @@ export default function CreateLobbyScreen() {
           
           <View style={styles.heroSection}>
             <View style={styles.heroIcon}>
-              <IconSymbol name="person.3.fill" size={32} color=Colors.green />
+              <IconSymbol name="person.3.fill" size={32} color={Colors.green} />
             </View>
             <Text style={styles.heroTitle}>Create a Party Room</Text>
             <Text style={styles.heroSubtitle}>No login needed. Share the code with friends.</Text>

@@ -239,7 +239,7 @@ function CardFace({ card, category }: { card: PartyCard, category: any }) {
       <View style={styles.cardContent}>
         {card.isSpicy && (
           <View style={styles.spicyBadge}>
-            <IconSymbol name="flame.fill" size={12} color=Colors.orange />
+            <IconSymbol name="flame.fill" size={12} color={Colors.orange} />
             <Text style={styles.spicyText}>SPICY</Text>
           </View>
         )}

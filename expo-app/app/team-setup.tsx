@@ -218,7 +218,7 @@ export default function TeamSetupScreen() {
                       style={[styles.assignBtn, { backgroundColor: 'rgba(255,149,0,0.12)' }]}
                       onPress={() => assignPlayer(player.id, 'team_a')}
                     >
-                      <IconSymbol name="flame.fill" size={9} color=Colors.orange />
+                      <IconSymbol name="flame.fill" size={9} color={Colors.orange} />
                       <Text style={[styles.assignBtnText, { color: Colors.orange }]}>A</Text>
                     </TouchableOpacity>
                     <TouchableOpacity

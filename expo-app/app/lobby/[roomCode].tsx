@@ -163,7 +163,7 @@ export default function LobbyScreen() {
                 
                 {player.isHost && (
                   <View style={styles.hostBadge}>
-                    <IconSymbol name="star.fill" size={10} color=Colors.yellow />
+                    <IconSymbol name="star.fill" size={10} color={Colors.yellow} />
                     <Text style={styles.hostBadgeText}>HOST</Text>
                   </View>
                 )}

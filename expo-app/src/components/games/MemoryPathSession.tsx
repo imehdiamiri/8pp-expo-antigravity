@@ -335,7 +335,7 @@ export function MemoryPathSession({ session }: Props) {
     return (
       <View style={s.container}>
         <View style={s.center}>
-          <IconSymbol name="checkmark.circle.fill" size={56} color=Colors.green />
+          <IconSymbol name="checkmark.circle.fill" size={56} color={Colors.green} />
           <Text style={s.title}>Path Cleared!</Text>
           <Text style={s.sub}>{player.username} — {formatTime(elapsed)}</Text>
           <Pressable style={[s.btn, { marginTop: 40 }]} onPress={() => { setPlayerIndex(i => i+1); setPhase('ready'); }}>
@@ -357,7 +357,7 @@ export function MemoryPathSession({ session }: Props) {
     <View style={s.container}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         <View style={{ alignItems: 'center', gap: 8, marginVertical: 20 }}>
-          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
+          <IconSymbol name="trophy.fill" size={44} color={Colors.yellow} />
           <Text style={s.title}>Final Rankings</Text>
         </View>
         {sorted.map((r, i) => {
@@ -371,7 +371,7 @@ export function MemoryPathSession({ session }: Props) {
                 <Text style={s.rankName}>{p?.username}</Text>
                 <Text style={s.rankDet}>{r.finished ? `${(r.timeMs/1000).toFixed(1)}s · ${r.attempts} tries` : `${r.progress} steps`}</Text>
               </View>
-              {i === 0 && <IconSymbol name="crown.fill" size={16} color=Colors.yellow />}
+              {i === 0 && <IconSymbol name="crown.fill" size={16} color={Colors.yellow} />}
             </View>
           );
         })}

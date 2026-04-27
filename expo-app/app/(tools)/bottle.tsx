@@ -166,7 +166,7 @@ export default function BottleToolScreen() {
                 ]}
               >
                 {isSelected ? (
-                  <CurrentTurnPill playerName={name} accent=Colors.green />
+                  <CurrentTurnPill playerName={name} accent={Colors.green} />
                 ) : (
                   <Text style={styles.nameText} numberOfLines={1}>{name}</Text>
                 )}

@@ -146,7 +146,7 @@ export default function FactoryScreen() {
           {/* Players Card */}
           <BlurView tint="dark" intensity={30} style={[styles.surfaceCard, { overflow: 'hidden' }]}>
             <View style={styles.playersRow}>
-              <IconSymbol name="person.2.fill" size={18} color=Colors.green />
+              <IconSymbol name="person.2.fill" size={18} color={Colors.green} />
               <Text style={styles.playersLabel}>Players</Text>
               <View style={{ flex: 1 }} />
               
@@ -155,7 +155,7 @@ export default function FactoryScreen() {
                 onPress={() => setPlayerCount(Math.max(minPlayers, playerCount - 1))}
                 disabled={playerCount <= minPlayers}
               >
-                <IconSymbol name="minus" size={14} color=Colors.green />
+                <IconSymbol name="minus" size={14} color={Colors.green} />
               </TouchableOpacity>
               
               <Text style={styles.playerCount}>{playerCount}</Text>
@@ -165,7 +165,7 @@ export default function FactoryScreen() {
                 onPress={() => setPlayerCount(Math.min(maxPlayers, playerCount + 1))}
                 disabled={playerCount >= maxPlayers}
               >
-                <IconSymbol name="plus" size={14} color=Colors.green />
+                <IconSymbol name="plus" size={14} color={Colors.green} />
               </TouchableOpacity>
             </View>
           </BlurView>
@@ -242,7 +242,7 @@ export default function FactoryScreen() {
                     <View style={{ padding: 14 }}>
                       <View style={styles.ideaHeaderRow}>
                         <View style={styles.ideaIcon}>
-                          <IconSymbol name="sparkle" size={18} color=Colors.yellow />
+                          <IconSymbol name="sparkle" size={18} color={Colors.yellow} />
                         </View>
                         <View style={styles.ideaTexts}>
                           <Text style={styles.ideaTitle}>{idea.title}</Text>

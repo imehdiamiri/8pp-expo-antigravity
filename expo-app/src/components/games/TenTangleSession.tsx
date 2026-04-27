@@ -146,7 +146,7 @@ export function TenTangleSession({ session }: Props) {
   if (phase === 'guesserAnnounce') {
     return (
       <View style={st.container}><View style={st.center}>
-        <View style={st.iconBox}><IconSymbol name="eye.fill" size={52} color=Colors.orange /></View>
+        <View style={st.iconBox}><IconSymbol name="eye.fill" size={52} color={Colors.orange} /></View>
         <Text style={st.roundLabel}>Round {round} of {totalRounds}</Text>
         <Text style={[st.title, { color: Colors.orange }]}>{guesser.username}</Text>
         <Text style={st.sub}>You are the Guesser this round!</Text>
@@ -192,7 +192,7 @@ export function TenTangleSession({ session }: Props) {
   if (phase === 'scenarioReveal') {
     return (
       <View style={st.container}><View style={st.center}>
-        <IconSymbol name="theatermask.and.paintbrush.fill" size={52} color=Colors.yellow />
+        <IconSymbol name="theatermask.and.paintbrush.fill" size={52} color={Colors.yellow} />
         <Text style={st.roundLabel}>Scenario</Text>
         <View style={st.scenarioCard}>
           <Text style={st.scenarioText}>{scenario}</Text>
@@ -207,7 +207,7 @@ export function TenTangleSession({ session }: Props) {
   if (phase === 'acting') {
     return (
       <View style={st.container}><View style={st.center}>
-        <IconSymbol name="person.3.fill" size={52} color=Colors.green />
+        <IconSymbol name="person.3.fill" size={52} color={Colors.green} />
         <Text style={st.title}>Acting Time!</Text>
         <View style={st.scenarioCard}><Text style={st.scenarioText}>{scenario}</Text></View>
         <Text style={st.sub}>{guesser.username} — watch everyone carefully!</Text>
@@ -267,7 +267,7 @@ export function TenTangleSession({ session }: Props) {
                 <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
                   <Text style={st.revealGuess}>Guess: {guess}</Text>
                   <Text style={[st.revealActual, { color: ok ? Colors.green : Colors.red }]}>Actual: {actual}</Text>
-                  {ok && <IconSymbol name="checkmark.circle.fill" size={18} color=Colors.green />}
+                  {ok && <IconSymbol name="checkmark.circle.fill" size={18} color={Colors.green} />}
                 </View>
               </View>
             );
@@ -306,7 +306,7 @@ export function TenTangleSession({ session }: Props) {
     <View style={st.container}>
       <ScrollView contentContainerStyle={st.scrollPad}>
         <View style={{ alignItems: 'center', gap: 8, marginBottom: 20 }}>
-          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
+          <IconSymbol name="trophy.fill" size={44} color={Colors.yellow} />
           <Text style={st.title}>Final Results</Text>
         </View>
         {sortedScores.map((p, i) => (

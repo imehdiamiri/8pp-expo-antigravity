@@ -125,7 +125,7 @@ function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial
               <View style={styles.divider} />
               <View style={styles.section}>
                 <View style={styles.sectionTitleRow}>
-                  <IconSymbol name="exclamationmark.triangle.fill" size={14} color=Colors.orange />
+                  <IconSymbol name="exclamationmark.triangle.fill" size={14} color={Colors.orange} />
                   <Text style={[styles.sectionTitle, { color: Colors.orange }]}>Rules</Text>
                 </View>
                 <View style={styles.rulesContainer}>

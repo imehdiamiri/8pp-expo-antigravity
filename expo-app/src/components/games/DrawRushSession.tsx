@@ -165,7 +165,7 @@ export function DrawRushSession({ session }: Props) {
   if (phase === 'drawerReveal') {
     return (
       <View style={st.container}><View style={st.center}>
-        <IconSymbol name="eye.slash.fill" size={40} color=Colors.orange />
+        <IconSymbol name="eye.slash.fill" size={40} color={Colors.orange} />
         <Text style={st.title}>{conceptMode === 'preset' ? 'Your Word' : 'Free Draw'}</Text>
         <View style={st.conceptCard}>
           <Text style={st.conceptTx}>{conceptMode === 'preset' ? concept : 'Draw anything!'}</Text>
@@ -202,7 +202,7 @@ export function DrawRushSession({ session }: Props) {
         </ScrollView>
         <View style={{flexDirection:'row',gap:12,paddingHorizontal:16,marginTop:8}}>
           <Pressable style={st.toolBtn} onPress={() => setStrokes(prev => prev.slice(0,-1))}><IconSymbol name="arrow.uturn.backward" size={18} color="#fff" /><Text style={st.toolTx}>Undo</Text></Pressable>
-          <Pressable style={st.toolBtn} onPress={() => setStrokes([])}><IconSymbol name="trash" size={18} color=Colors.red /><Text style={[st.toolTx,{color:Colors.red}]}>Clear</Text></Pressable>
+          <Pressable style={st.toolBtn} onPress={() => setStrokes([])}><IconSymbol name="trash" size={18} color={Colors.red} /><Text style={[st.toolTx,{color:Colors.red}]}>Clear</Text></Pressable>
           <Pressable style={[st.toolBtn,{flex:1,backgroundColor:'rgba(52,199,89,0.15)'}]} onPress={handleFinishEarly}><Text style={[st.toolTx,{color:Colors.green}]}>Done Early</Text></Pressable>
         </View>
       </View>
@@ -213,7 +213,7 @@ export function DrawRushSession({ session }: Props) {
   if (phase === 'passForGuesses') {
     return (
       <View style={st.container}><View style={st.center}>
-        <IconSymbol name="hand.raised.fill" size={52} color=Colors.orange />
+        <IconSymbol name="hand.raised.fill" size={52} color={Colors.orange} />
         <Text style={st.title}>Time's Up!</Text>
         <Text style={st.sub}>Pass the phone to the guessers.</Text>
         <Text style={st.hint}>Each player will type their guess one at a time.</Text>
@@ -257,8 +257,8 @@ export function DrawRushSession({ session }: Props) {
               </View>
               {!a.isJudged ? (
                 <View style={{flexDirection:'row',gap:8}}>
-                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(52,199,89,0.2)'}]} onPress={() => handleJudge(a.id,true)}><IconSymbol name="checkmark" size={18} color=Colors.green /></Pressable>
-                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(255,59,48,0.2)'}]} onPress={() => handleJudge(a.id,false)}><IconSymbol name="xmark" size={18} color=Colors.red /></Pressable>
+                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(52,199,89,0.2)'}]} onPress={() => handleJudge(a.id,true)}><IconSymbol name="checkmark" size={18} color={Colors.green} /></Pressable>
+                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(255,59,48,0.2)'}]} onPress={() => handleJudge(a.id,false)}><IconSymbol name="xmark" size={18} color={Colors.red} /></Pressable>
                 </View>
               ) : (
                 <IconSymbol name={a.isCorrect?"checkmark.circle.fill":"xmark.circle.fill"} size={24} color={a.isCorrect?Colors.green:Colors.red} />
@@ -299,7 +299,7 @@ export function DrawRushSession({ session }: Props) {
     <View style={st.container}>
       <ScrollView contentContainerStyle={{padding:16,paddingBottom:40}}>
         <View style={{alignItems:'center',gap:8,marginVertical:20}}>
-          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
+          <IconSymbol name="trophy.fill" size={44} color={Colors.yellow} />
           <Text style={st.title}>Final Results</Text>
         </View>
         {sorted.map((p,i) => (

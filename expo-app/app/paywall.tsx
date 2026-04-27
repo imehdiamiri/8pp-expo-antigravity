@@ -130,8 +130,8 @@ export default function PaywallScreen() {
         {/* Features Block */}
         <View style={styles.featuresBlock}>
           <FeatureRow icon="gamecontroller.fill" color="#007AFF" text="All 4 Premium games unlocked" />
-          <FeatureRow icon="star.fill" color=Colors.orange text="Star bonus each billing period" />
-          <FeatureRow icon="sparkles" color=Colors.yellow text="AI cards at 1 ★ (instead of 5)" />
+          <FeatureRow icon="star.fill" color={Colors.orange} text="Star bonus each billing period" />
+          <FeatureRow icon="sparkles" color={Colors.yellow} text="AI cards at 1 ★ (instead of 5)" />
           <FeatureRow icon="sparkles" color="#AF52DE" text="Support ongoing development" />
         </View>
 
@@ -200,7 +200,7 @@ export default function PaywallScreen() {
                 key={pkg.identifier} 
                 pkg={pkg} 
                 icon="star.fill"
-                iconColor=Colors.orange
+                iconColor={Colors.orange}
                 onPurchase={() => handlePurchase(pkg)}
                 isPurchasing={isPurchasing}
               />
@@ -255,7 +255,7 @@ export default function PaywallScreen() {
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color=Colors.orange />
+          <ActivityIndicator size="large" color={Colors.orange} />
         </View>
       ) : (
         <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}>

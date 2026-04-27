@@ -201,7 +201,7 @@ export function PassGuessSession({ session }: Props) {
       {phase === 'intro' && (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.iconHeader}>
-            <IconSymbol name="text.bubble.fill" size={48} color=Colors.yellow />
+            <IconSymbol name="text.bubble.fill" size={48} color={Colors.yellow} />
           </View>
           <Text style={styles.title}>Round {roundNumber} of {totalRounds}</Text>
           <Text style={styles.subtitle}>Everyone writes a private answer first. No reveals until the end.</Text>
@@ -402,7 +402,7 @@ export function PassGuessSession({ session }: Props) {
 
       {phase === 'finished' && (
         <ScrollView contentContainerStyle={[styles.scrollContent, { alignItems: 'center' }]}>
-          <IconSymbol name="trophy.fill" size={64} color=Colors.yellow style={{ marginTop: 40 }} />
+          <IconSymbol name="trophy.fill" size={64} color={Colors.yellow} style={{ marginTop: 40 }} />
           <Text style={[styles.title, { marginTop: 20 }]}>Final Results</Text>
 
           <View style={[styles.card, { width: '100%', marginTop: 20 }]}>

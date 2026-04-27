@@ -26,7 +26,7 @@ export function SetupPlayersSection({
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <View style={styles.titleContainer}>
-          <IconSymbol name="person.2.fill" size={16} color=Colors.green />
+          <IconSymbol name="person.2.fill" size={16} color={Colors.green} />
           <Text style={[styles.title, { color: Colors.green }]}>Players</Text>
         </View>
         
@@ -36,7 +36,7 @@ export function SetupPlayersSection({
             onPress={() => onUpdateCount(Math.max(minPlayers, playerCount - 1))}
             disabled={playerCount <= minPlayers}
           >
-            <IconSymbol name="minus" size={14} color=Colors.green />
+            <IconSymbol name="minus" size={14} color={Colors.green} />
           </Pressable>
           
           <Text style={[styles.stepperValue, { color: Colors.green }]}>{playerCount}</Text>
@@ -46,7 +46,7 @@ export function SetupPlayersSection({
             onPress={() => onUpdateCount(Math.min(maxPlayers, playerCount + 1))}
             disabled={playerCount >= maxPlayers}
           >
-            <IconSymbol name="plus" size={14} color=Colors.green />
+            <IconSymbol name="plus" size={14} color={Colors.green} />
           </Pressable>
         </View>
       </View>
@@ -90,7 +90,7 @@ export function SetupRoundsSection({
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <View style={styles.titleContainer}>
-          <IconSymbol name="repeat" size={16} color=Colors.orange />
+          <IconSymbol name="repeat" size={16} color={Colors.orange} />
           <Text style={[styles.title, { color: Colors.orange }]}>Rounds</Text>
         </View>
         
@@ -100,7 +100,7 @@ export function SetupRoundsSection({
             onPress={() => onUpdateRounds(Math.max(minRounds, roundCount - 1))}
             disabled={roundCount <= minRounds}
           >
-            <IconSymbol name="minus" size={14} color=Colors.orange />
+            <IconSymbol name="minus" size={14} color={Colors.orange} />
           </Pressable>
           
           <Text style={[styles.stepperValue, { color: Colors.orange }]}>{roundCount}</Text>
@@ -110,7 +110,7 @@ export function SetupRoundsSection({
             onPress={() => onUpdateRounds(Math.min(maxRounds, roundCount + 1))}
             disabled={roundCount >= maxRounds}
           >
-            <IconSymbol name="plus" size={14} color=Colors.orange />
+            <IconSymbol name="plus" size={14} color={Colors.orange} />
           </Pressable>
         </View>
       </View>

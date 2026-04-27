@@ -183,7 +183,7 @@ export function SpinBottleSession({ session }: Props) {
           </Text>
         </View>
         <View style={st.vibePill}>
-          <IconSymbol name="flame.fill" size={11} color=Colors.red />
+          <IconSymbol name="flame.fill" size={11} color={Colors.red} />
           <Text style={st.vibeTx}>{difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</Text>
         </View>
       </View>
@@ -218,7 +218,7 @@ export function SpinBottleSession({ session }: Props) {
               transform: [{ translateX: x }, { translateY: y }],
             }]}>
               {isSelected ? (
-                <CurrentTurnPill playerName={p.username} accent=Colors.green />
+                <CurrentTurnPill playerName={p.username} accent={Colors.green} />
               ) : (
                 <Text style={st.playerNodeTx}>{p.username}</Text>
               )}

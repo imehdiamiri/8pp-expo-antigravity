@@ -39,7 +39,7 @@ export function GamePassPhoneView({
         </View>
 
         <Text style={styles.passPhoneTitle}>Pass the phone to</Text>
-        <CurrentTurnPill playerName={playerName} accent=Colors.green scale={1.2} />
+        <CurrentTurnPill playerName={playerName} accent={Colors.green} scale={1.2} />
         <Text style={styles.passPhoneSubtitle}>{subtitle}</Text>
       </View>
       <View style={{ flex: 1 }} />

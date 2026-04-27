@@ -117,7 +117,7 @@ export default function FriendsScreen() {
         {/* Quick Join Card */}
         <BlurView intensity={30} tint="dark" style={styles.quickJoinCard}>
           <View style={styles.quickJoinIconContainer}>
-            <IconSymbol name="number.square.fill" size={22} color=Colors.blue />
+            <IconSymbol name="number.square.fill" size={22} color={Colors.blue} />
           </View>
           <View style={styles.quickJoinTextContainer}>
             <Text style={styles.quickJoinTitle}>Join with Code</Text>
@@ -347,7 +347,7 @@ export default function FriendsScreen() {
               <Text style={styles.publicRoomsSubtitle}>Open multiplayer rooms you can join.</Text>
             </View>
             <TouchableOpacity style={styles.loginButton} onPress={() => router.push('/auth')}>
-              <IconSymbol name="person.crop.circle" size={12} color=Colors.blue />
+              <IconSymbol name="person.crop.circle" size={12} color={Colors.blue} />
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
           </View>
