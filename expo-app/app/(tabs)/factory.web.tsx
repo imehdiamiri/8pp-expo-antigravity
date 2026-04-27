@@ -119,7 +119,7 @@ export default function WebFactoryScreen() {
                       </View>
                     ))}
                   </View>
-                  <Text style={[styles.sectionTitle, { fontSize: 14, marginTop: 16 }]}>Steps</Text>
+                  <Text style={[styles.sectionTitle, { fontSize: 13, marginTop: 16 }]}>Steps</Text>
                   {idea.steps.map((step: string, i: number) => (
                     <Text key={i} style={styles.stepText}>{i + 1}. {step}</Text>
                   ))}
@@ -136,11 +136,11 @@ export default function WebFactoryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, position: 'relative' },
   scrollContent: { padding: 48, maxWidth: 1100, alignSelf: 'center', width: '100%' },
-  pageTitle: { color: 'white', fontSize: 36, fontWeight: '800', marginBottom: 8 },
+  pageTitle: { color: 'white', fontSize: 34, fontWeight: '800', marginBottom: 8 },
   pageSubtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 16, marginBottom: 40 },
   twoCol: { flexDirection: 'row', gap: 48 },
   col: { flex: 1 },
-  sectionTitle: { color: 'white', fontSize: 18, fontWeight: '700', marginBottom: 16 },
+  sectionTitle: { color: 'white', fontSize: 17, fontWeight: '700', marginBottom: 16 },
   vibeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   vibeChip: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
@@ -148,14 +148,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)', cursor: 'pointer',
   },
-  vibeText: { color: 'rgba(255,255,255,0.7)', fontSize: 14, fontWeight: '600' },
+  vibeText: { color: 'rgba(255,255,255,0.7)', fontSize: 13, fontWeight: '600' },
   playerRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
   playerBtn: {
     width: 44, height: 44, borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.08)', justifyContent: 'center', alignItems: 'center', cursor: 'pointer',
   },
-  playerBtnText: { color: 'white', fontSize: 24, fontWeight: '600' },
-  playerCount: { color: 'white', fontSize: 36, fontWeight: '800', minWidth: 50, textAlign: 'center' },
+  playerBtnText: { color: 'white', fontSize: 22, fontWeight: '600' },
+  playerCount: { color: 'white', fontSize: 34, fontWeight: '800', minWidth: 50, textAlign: 'center' },
   promptInput: {
     backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)', borderRadius: 14,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   generateBtnText: { color: '#000', fontSize: 17, fontWeight: '700' },
   emptyState: { alignItems: 'center', padding: 48, gap: 12 },
   emptyTitle: { color: 'rgba(255,255,255,0.6)', fontSize: 20, fontWeight: '600' },
-  emptySub: { color: 'rgba(255,255,255,0.4)', fontSize: 14, textAlign: 'center', maxWidth: 300 },
+  emptySub: { color: 'rgba(255,255,255,0.4)', fontSize: 13, textAlign: 'center', maxWidth: 300 },
   ideaCard: {
     padding: 24, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', marginBottom: 20,
@@ -182,5 +182,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10, paddingVertical: 4,
   },
   tagText: { color: '#5AC8FA', fontSize: 12, fontWeight: '700' },
-  stepText: { color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 22, marginBottom: 4 },
+  stepText: { color: 'rgba(255,255,255,0.7)', fontSize: 13, lineHeight: 22, marginBottom: 4 },
 });

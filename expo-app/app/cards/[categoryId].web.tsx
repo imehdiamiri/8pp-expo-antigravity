@@ -42,6 +42,6 @@ const s = StyleSheet.create({
     padding: 20, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.06)', zIndex: 2,
   },
   backLink: { padding: 10, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 8, textDecorationLine: 'none' },
-  backText: { color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: '600' },
+  backText: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' },
   title: { fontSize: 22, fontWeight: '800' },
 });

@@ -136,7 +136,7 @@ const st = StyleSheet.create({
     elevation: 8,
   },
   bannerText: {
-    flex: 1, color: '#fff', fontSize: 14, fontWeight: '500',
+    flex: 1, color: '#fff', fontSize: 13, fontWeight: '500',
     lineHeight: 18,
   },
 });

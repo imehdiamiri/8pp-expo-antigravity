@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   },
   sectionSubtitle: {
     color: Colors.secondary,
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 2,
   },
   identityRow: {
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     color: Colors.white,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '600',
   },
   cameraIconContainer: {
@@ -505,7 +505,7 @@ const styles = StyleSheet.create({
   },
   identityIdText: {
     color: Colors.secondary,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     marginTop: 2,
   },
@@ -597,7 +597,7 @@ const styles = StyleSheet.create({
   },
   planBadgeText: {
     color: Colors.white,
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: '900',
   },
   planRowRight: {

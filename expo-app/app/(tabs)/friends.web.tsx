@@ -98,12 +98,12 @@ export default function WebFriendsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, position: 'relative' },
   scrollContent: { padding: 48, maxWidth: 1100, alignSelf: 'center', width: '100%' },
-  pageTitle: { color: 'white', fontSize: 36, fontWeight: '800', marginBottom: 8 },
+  pageTitle: { color: 'white', fontSize: 34, fontWeight: '800', marginBottom: 8 },
   pageSubtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 16, marginBottom: 40 },
   twoCol: { flexDirection: 'row', gap: 48 },
   col: { flex: 1 },
   sectionTitle: { color: 'white', fontSize: 22, fontWeight: '700', marginBottom: 4 },
-  sectionSub: { color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 24 },
+  sectionSub: { color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 24 },
   addRow: { flexDirection: 'row', gap: 12, marginBottom: 20 },
   input: {
     flex: 1, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1,
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 18,
     backgroundColor: 'rgba(90,200,250,0.2)', justifyContent: 'center', alignItems: 'center',
   },
-  avatarText: { color: '#5AC8FA', fontWeight: '800', fontSize: 14 },
+  avatarText: { color: '#5AC8FA', fontWeight: '800', fontSize: 13 },
   friendName: { color: 'white', fontSize: 16, fontWeight: '600', flex: 1 },
   meBadge: {
     backgroundColor: 'rgba(90,200,250,0.15)', color: '#5AC8FA',
@@ -136,12 +136,12 @@ const styles = StyleSheet.create({
   },
   removeBtnText: { color: '#FF3B30', fontSize: 12, fontWeight: '700' },
   emptyState: { alignItems: 'center', padding: 40, gap: 12 },
-  emptyTitle: { color: 'rgba(255,255,255,0.6)', fontSize: 18, fontWeight: '600' },
-  emptySub: { color: 'rgba(255,255,255,0.4)', fontSize: 14, textAlign: 'center' },
+  emptyTitle: { color: 'rgba(255,255,255,0.6)', fontSize: 17, fontWeight: '600' },
+  emptySub: { color: 'rgba(255,255,255,0.4)', fontSize: 13, textAlign: 'center' },
   inviteCard: {
     padding: 24, borderRadius: 16, backgroundColor: 'rgba(90,200,250,0.08)',
     borderWidth: 1, borderColor: 'rgba(90,200,250,0.2)', gap: 8, marginTop: 20,
   },
   inviteTitle: { color: 'white', fontSize: 17, fontWeight: '700' },
-  inviteSub: { color: 'rgba(255,255,255,0.5)', fontSize: 14 },
+  inviteSub: { color: 'rgba(255,255,255,0.5)', fontSize: 13 },
 });

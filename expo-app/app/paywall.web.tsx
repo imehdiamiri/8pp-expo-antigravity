@@ -72,7 +72,7 @@ export default function WebPaywallScreen() {
             {STAR_PACKS.map((p, i) => (
               <View key={i} style={[s.starCard, p.popular && { borderColor: '#5AC8FA', backgroundColor: 'rgba(90,200,250,0.08)' }]}>
                 {p.popular && <View style={s.popularBadge}><Text style={s.popularText}>POPULAR</Text></View>}
-                <Text style={{ fontSize: 32 }}>⭐</Text>
+                <Text style={{ fontSize: 34 }}>⭐</Text>
                 <Text style={s.starCount}>{p.stars} Stars</Text>
                 <Text style={s.starPrice}>{p.price}</Text>
               </View>
@@ -90,9 +90,9 @@ const s = StyleSheet.create({
   container: { flex: 1, position: 'relative', height: '100vh', width: '100vw' },
   topNav: { padding: 24, zIndex: 2 },
   backLink: { padding: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 8, alignSelf: 'flex-start', textDecorationLine: 'none' },
-  backText: { color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: '600' },
+  backText: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' },
   scroll: { padding: 48, maxWidth: 800, alignSelf: 'center', width: '100%', alignItems: 'center' },
-  title: { color: 'white', fontSize: 36, fontWeight: '800', marginTop: 16, textAlign: 'center' },
+  title: { color: 'white', fontSize: 34, fontWeight: '800', marginTop: 16, textAlign: 'center' },
   subtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 16, marginBottom: 32, textAlign: 'center' },
   tabRow: { flexDirection: 'row', gap: 12, marginBottom: 32 },
   tab: { paddingVertical: 10, paddingHorizontal: 24, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.06)', cursor: 'pointer' },
@@ -104,15 +104,15 @@ const s = StyleSheet.create({
   featureSub: { color: 'rgba(255,255,255,0.5)', fontSize: 13, textAlign: 'center' },
   planCard: { width: '100%', padding: 24, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', alignItems: 'center', marginBottom: 16, gap: 8, cursor: 'pointer' },
   planTitle: { color: 'white', fontSize: 20, fontWeight: '700' },
-  planPrice: { color: 'white', fontSize: 32, fontWeight: '800' },
-  planSub: { color: 'rgba(255,255,255,0.5)', fontSize: 14 },
+  planPrice: { color: 'white', fontSize: 34, fontWeight: '800' },
+  planSub: { color: 'rgba(255,255,255,0.5)', fontSize: 13 },
   bestBadge: { backgroundColor: '#FFCC00', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 3, marginBottom: 4 },
   bestBadgeText: { color: '#000', fontSize: 11, fontWeight: '800' },
   starsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, justifyContent: 'center', width: '100%' },
   starCard: { width: 180, padding: 24, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', alignItems: 'center', gap: 8, cursor: 'pointer' },
   popularBadge: { backgroundColor: '#5AC8FA', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 3 },
-  popularText: { color: '#000', fontSize: 10, fontWeight: '800' },
+  popularText: { color: '#000', fontSize: 11, fontWeight: '800' },
   starCount: { color: 'white', fontSize: 20, fontWeight: '700' },
-  starPrice: { color: '#5AC8FA', fontSize: 18, fontWeight: '800' },
+  starPrice: { color: '#5AC8FA', fontSize: 17, fontWeight: '800' },
   legal: { color: 'rgba(255,255,255,0.3)', fontSize: 12, textAlign: 'center', marginTop: 32 },
 });

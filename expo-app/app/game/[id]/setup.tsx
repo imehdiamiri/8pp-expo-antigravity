@@ -466,7 +466,7 @@ export default function GameSetupScreen() {
                     style={[st.modeChip, sel && { borderColor: d.color + '80', backgroundColor: d.color + '33' }]}>
                     <IconSymbol name={d.icon as any} size={20} color={sel ? d.color : 'rgba(255,255,255,0.4)'} />
                     <Text style={[st.modeChipTx, sel && { color: '#fff' }]}>{d.title}</Text>
-                    <Text style={{color: sel ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)', fontSize: 10, marginTop: 2}}>{d.sub}</Text>
+                    <Text style={{color: sel ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 2}}>{d.sub}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -513,7 +513,7 @@ export default function GameSetupScreen() {
                     style={[st.modeChip, sel && { borderColor: 'rgba(0,122,255,0.5)', backgroundColor: 'rgba(0,122,255,0.2)' }]}>
                     <IconSymbol name={d.icon as any} size={20} color={sel ? '#007AFF' : 'rgba(255,255,255,0.4)'} />
                     <Text style={[st.modeChipTx, sel && { color: '#fff' }]}>{d.title}</Text>
-                    <Text style={{color: sel ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)', fontSize: 10, marginTop: 2}}>{d.sub}</Text>
+                    <Text style={{color: sel ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 2}}>{d.sub}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -534,7 +534,7 @@ export default function GameSetupScreen() {
 const st = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'black' },
   centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  errorText: { color: 'white', fontSize: 18, fontWeight: 'bold', marginBottom: 20 },
+  errorText: { color: 'white', fontSize: 17, fontWeight: 'bold', marginBottom: 20 },
   backBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8 },
   backBtnTx: { color: 'white', fontWeight: 'bold' },
   scrollContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 120, gap: 14 },

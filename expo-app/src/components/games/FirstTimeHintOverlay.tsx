@@ -95,7 +95,7 @@ const st = StyleSheet.create({
     color: '#fff', fontSize: 20, fontWeight: 'bold', textAlign: 'center',
   },
   tip: {
-    color: 'rgba(255,255,255,0.55)', fontSize: 14, textAlign: 'center',
+    color: 'rgba(255,255,255,0.55)', fontSize: 13, textAlign: 'center',
     lineHeight: 20, paddingHorizontal: 8,
   },
   btn: {

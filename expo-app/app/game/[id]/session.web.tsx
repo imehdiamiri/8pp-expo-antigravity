@@ -48,6 +48,6 @@ const s = StyleSheet.create({
     padding: 16, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.06)', zIndex: 2,
   },
   exitBtn: { padding: 10, backgroundColor: 'rgba(255,59,48,0.15)', borderRadius: 10, cursor: 'pointer' },
-  exitText: { color: '#FF3B30', fontSize: 14, fontWeight: '600' },
+  exitText: { color: '#FF3B30', fontSize: 13, fontWeight: '600' },
   headerTitle: { fontFamily: 'Viral-Black', color: 'white', fontSize: 20 },
 });

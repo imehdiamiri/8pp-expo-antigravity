@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   roundText: {
     color: 'rgba(255,255,255,0.6)',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
   },
   nowPlayingBadge: {
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   statusText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 'bold',
   },
   resultHeader: {
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   },
   resultTitle: {
     color: 'rgba(255,255,255,0.6)',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
   },
   badge: {
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
     marginBottom: 4,
   },
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   },
   sectionSubtitle: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 4,
     marginBottom: 16,
   },

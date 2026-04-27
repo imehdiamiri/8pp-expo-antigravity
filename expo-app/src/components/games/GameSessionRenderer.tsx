@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   roundText: {
     color: 'rgba(255, 255, 255, 0.5)',
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 20,
   }
 });

@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   sidebarSubtitle: {
     color: '#5AC8FA',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     marginTop: 4,
     marginBottom: 48,

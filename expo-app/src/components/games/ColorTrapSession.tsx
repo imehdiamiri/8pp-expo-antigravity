@@ -298,7 +298,7 @@ export function ColorTrapSession({ session }: Props) {
                 <Text style={st.rankName}>{p?.username}</Text>
                 <Text style={st.rankDet}>{r.hits} hits · {r.fails} fails · {r.survivalTime.toFixed(1)}s{r.eliminated ? ' · Eliminated' : ''}</Text>
               </View>
-              <Text style={{ color: '#FF9500', fontSize: 18, fontWeight: 'bold' }}>{r.score}</Text>
+              <Text style={{ color: '#FF9500', fontSize: 17, fontWeight: 'bold' }}>{r.score}</Text>
             </View>
           );
         })}
@@ -311,12 +311,12 @@ const st = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
   iconBox: { width: 100, height: 100, borderRadius: 28, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
-  title: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
+  title: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
   sub: { color: 'rgba(255,255,255,0.5)', fontSize: 15, marginTop: 8, textAlign: 'center' },
   pill: { backgroundColor: 'rgba(52,199,89,0.15)', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, marginTop: 12, borderWidth: 1, borderColor: 'rgba(52,199,89,0.3)' },
-  pillTx: { color: '#34C759', fontSize: 14, fontWeight: '700' },
+  pillTx: { color: '#34C759', fontSize: 13, fontWeight: '700' },
   btn: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 16, width: '100%', alignItems: 'center', marginTop: 32 },
-  btnTx: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  btnTx: { color: '#fff', fontSize: 17, fontWeight: 'bold' },
   diffChip: { alignItems: 'center', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
   diffTx: { color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 'bold' },
   diffSub: { color: 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2 },

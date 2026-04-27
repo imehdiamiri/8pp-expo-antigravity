@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: 'Viral-Black',
     marginBottom: 20,
   },

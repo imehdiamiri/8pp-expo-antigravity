@@ -162,7 +162,7 @@ export function TenTangleSession({ session }: Props) {
       <View style={st.container}><View style={st.center}>
         <IconSymbol name="hand.raised.fill" size={52} color="#5AC8FA" />
         <Text style={st.title}>Pass to</Text>
-        <Text style={[st.title, { color: '#5AC8FA', fontSize: 32 }]}>{p?.username}</Text>
+        <Text style={[st.title, { color: '#5AC8FA', fontSize: 34 }]}>{p?.username}</Text>
         <Text style={st.sub}>Tap below to see your secret number</Text>
         <Text style={st.hint}>{guesser.username} should look away!</Text>
         <Pressable style={st.btn} onPress={handleShowNumber}><Text style={st.btnTx}>Show My Number</Text></Pressable>
@@ -325,12 +325,12 @@ const st = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
   scrollPad: { padding: 16, paddingBottom: 40 },
   iconBox: { width: 100, height: 100, borderRadius: 28, backgroundColor: 'rgba(255,149,0,0.14)', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
-  title: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
+  title: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
   sub: { color: 'rgba(255,255,255,0.5)', fontSize: 15, marginTop: 8, textAlign: 'center' },
   hint: { color: 'rgba(255,255,255,0.35)', fontSize: 13, marginTop: 12, textAlign: 'center', paddingHorizontal: 20 },
-  roundLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '600', marginBottom: 8 },
+  roundLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: '600', marginBottom: 8 },
   btn: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 16, width: '100%', alignItems: 'center', marginTop: 32 },
-  btnTx: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  btnTx: { color: '#fff', fontSize: 17, fontWeight: 'bold' },
   bigNumber: { fontSize: 96, fontWeight: '800' },
   numLabel: { fontSize: 22, fontWeight: 'bold', marginTop: 4 },
   scenarioCard: { backgroundColor: 'rgba(255,204,0,0.12)', borderRadius: 20, padding: 24, marginTop: 20, borderWidth: 1, borderColor: 'rgba(255,204,0,0.3)', width: '100%' },
@@ -338,16 +338,16 @@ const st = StyleSheet.create({
   guessRow: { marginBottom: 16 },
   guessName: { color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 8 },
   numBtn: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.15)' },
-  numBtnTx: { color: 'rgba(255,255,255,0.7)', fontSize: 18, fontWeight: 'bold' },
+  numBtnTx: { color: 'rgba(255,255,255,0.7)', fontSize: 17, fontWeight: 'bold' },
   revealRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, borderRadius: 14, marginBottom: 10, borderWidth: 1 },
   revealOk: { backgroundColor: 'rgba(52,199,89,0.1)', borderColor: 'rgba(52,199,89,0.3)' },
   revealWrong: { backgroundColor: 'rgba(255,59,48,0.08)', borderColor: 'rgba(255,59,48,0.2)' },
   revealName: { color: '#fff', fontSize: 15, fontWeight: '600' },
   revealGuess: { color: 'rgba(255,255,255,0.5)', fontSize: 13 },
-  revealActual: { fontSize: 14, fontWeight: 'bold' },
+  revealActual: { fontSize: 13, fontWeight: 'bold' },
   scoreRow: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 14, marginBottom: 10, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)' },
   scoreFirst: { backgroundColor: 'rgba(255,204,0,0.06)', borderColor: 'rgba(255,204,0,0.2)' },
   scoreRank: { fontSize: 20, width: 40, textAlign: 'center' },
   scoreName: { color: '#fff', fontSize: 16, fontWeight: '600', flex: 1 },
-  scoreVal: { color: '#FF9500', fontSize: 18, fontWeight: 'bold' },
+  scoreVal: { color: '#FF9500', fontSize: 17, fontWeight: 'bold' },
 });

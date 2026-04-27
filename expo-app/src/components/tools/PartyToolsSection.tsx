@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   headerTitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '900',
     color: 'rgba(255,255,255,0.55)',
     letterSpacing: 1.4,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
   },
 });

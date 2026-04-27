@@ -23,7 +23,7 @@ export default function WebPurchaseDetailScreen() {
         <View style={s.grid}>
           {TIERS.map(t => (
             <View key={t.id} style={[s.card, { borderColor: t.color + '40' }]}>
-              <Text style={{ fontSize: 40 }}>{t.emoji}</Text>
+              <Text style={{ fontSize: 34 }}>{t.emoji}</Text>
               <Text style={[s.cardTitle, { color: t.color }]}>{t.name}</Text>
               <Text style={s.cardPrice}>{t.price}</Text>
               {t.stars > 0 && <Text style={s.cardStars}>{t.stars} ⭐ included</Text>}
@@ -45,9 +45,9 @@ const s = StyleSheet.create({
   container: { flex: 1, position: 'relative', height: '100vh', width: '100vw' },
   topNav: { padding: 24, zIndex: 2 },
   backLink: { padding: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 8, alignSelf: 'flex-start', textDecorationLine: 'none' },
-  backText: { color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: '600' },
+  backText: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' },
   scroll: { padding: 48, maxWidth: 800, alignSelf: 'center', width: '100%', alignItems: 'center' },
-  title: { color: 'white', fontSize: 32, fontWeight: '800', marginBottom: 8 },
+  title: { color: 'white', fontSize: 34, fontWeight: '800', marginBottom: 8 },
   subtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 16, marginBottom: 32 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 20, justifyContent: 'center', width: '100%' },
   card: {
@@ -55,7 +55,7 @@ const s = StyleSheet.create({
     borderWidth: 1, alignItems: 'center', gap: 8,
   },
   cardTitle: { fontSize: 20, fontWeight: '800' },
-  cardPrice: { color: 'white', fontSize: 24, fontWeight: '800' },
+  cardPrice: { color: 'white', fontSize: 22, fontWeight: '800' },
   cardStars: { color: 'rgba(255,255,255,0.5)', fontSize: 13 },
   selectBtn: { borderRadius: 12, paddingVertical: 10, paddingHorizontal: 32, marginTop: 12, cursor: 'pointer' },
   selectBtnText: { color: 'white', fontSize: 15, fontWeight: '700' },

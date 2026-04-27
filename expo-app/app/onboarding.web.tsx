@@ -23,22 +23,22 @@ export default function WebOnboardingScreen() {
 
         <View style={styles.featuresGrid}>
           <View style={styles.featureCard}>
-            <Text style={{ fontSize: 32 }}>🧩</Text>
+            <Text style={{ fontSize: 34 }}>🧩</Text>
             <Text style={styles.featureTitle}>11+ Games</Text>
             <Text style={styles.featureSub}>Memory Grid, Imposter, Truth or Dare and more</Text>
           </View>
           <View style={styles.featureCard}>
-            <Text style={{ fontSize: 32 }}>🌐</Text>
+            <Text style={{ fontSize: 34 }}>🌐</Text>
             <Text style={styles.featureTitle}>Multiplayer</Text>
             <Text style={styles.featureSub}>Play across phones, tablets, and computers</Text>
           </View>
           <View style={styles.featureCard}>
-            <Text style={{ fontSize: 32 }}>🛠</Text>
+            <Text style={{ fontSize: 34 }}>🛠</Text>
             <Text style={styles.featureTitle}>Party Tools</Text>
             <Text style={styles.featureSub}>Dice, Bottle Spin, Timer, Coin Flip</Text>
           </View>
           <View style={styles.featureCard}>
-            <Text style={{ fontSize: 32 }}>✨</Text>
+            <Text style={{ fontSize: 34 }}>✨</Text>
             <Text style={styles.featureTitle}>AI Factory</Text>
             <Text style={styles.featureSub}>Generate custom game ideas with AI</Text>
           </View>
@@ -67,5 +67,5 @@ const styles = StyleSheet.create({
   startBtn: {
     backgroundColor: '#5AC8FA', borderRadius: 16, paddingVertical: 18, paddingHorizontal: 64, cursor: 'pointer',
   },
-  startBtnText: { color: '#000', fontSize: 18, fontWeight: '700' },
+  startBtnText: { color: '#000', fontSize: 17, fontWeight: '700' },
 });

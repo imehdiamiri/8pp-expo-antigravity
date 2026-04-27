@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: 13,
     color: 'rgba(255,255,255,0.5)',
     textAlign: 'center',
   },
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   },
   spicyText: {
     color: '#FF9500',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '900',
   },
   cardSubtype: {

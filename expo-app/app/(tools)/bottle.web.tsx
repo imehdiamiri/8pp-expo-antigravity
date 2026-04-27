@@ -117,5 +117,5 @@ const styles = StyleSheet.create({
   resultLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: '600' },
   resultName: { color: '#FF2D55', fontSize: 28, fontWeight: '800' },
   spinBtn: { backgroundColor: '#FF2D55', borderRadius: 16, paddingVertical: 18, alignItems: 'center', cursor: 'pointer' },
-  spinBtnText: { color: 'white', fontSize: 18, fontWeight: '700' },
+  spinBtnText: { color: 'white', fontSize: 17, fontWeight: '700' },
 });

@@ -285,13 +285,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   heroTitle: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '800',
     color: '#fff',
     marginBottom: 4,
   },
   heroSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: 'rgba(255,255,255,0.5)',
     textAlign: 'center',
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   pricePer: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: 'rgba(255,255,255,0.4)',
     marginLeft: 6,
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   benefitText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: 'rgba(255,255,255,0.85)',
     flex: 1,
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.35)',
   },
   legalText: {
-    fontSize: 10,
+    fontSize: 11,
     color: 'rgba(255,255,255,0.2)',
     textAlign: 'center',
     lineHeight: 14,
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.35)',
   },
   legalDot: {
-    fontSize: 10,
+    fontSize: 11,
     color: 'rgba(255,255,255,0.2)',
   },
 });

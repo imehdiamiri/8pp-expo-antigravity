@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   },
   meBadgeText: {
     color: '#0A84FF',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   friendActions: {

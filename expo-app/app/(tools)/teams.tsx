@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   teamCountLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 1.4,
     color: 'rgba(255,255,255,0.55)',
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.1)',
   },
   countBtnText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '900',
   },
   countBtnTextSelected: {

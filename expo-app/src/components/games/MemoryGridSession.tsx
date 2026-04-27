@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   readyTextGroup: { alignItems: 'center', marginTop: 20, gap: 8 },
-  readyTitle: { color: 'white', fontSize: 24, fontWeight: 'bold' },
+  readyTitle: { color: 'white', fontSize: 22, fontWeight: 'bold' },
   readySubtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 15 },
 
   turnPill: {
@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20,
     borderWidth: 1, borderColor: 'rgba(52,199,89,0.3)',
   },
-  turnPillText: { color: '#34C759', fontSize: 14, fontWeight: '700' },
+  turnPillText: { color: '#34C759', fontSize: 13, fontWeight: '700' },
 
   statBubbleRow: { flexDirection: 'row', gap: 16, marginTop: 24 },
   statBubble: {
@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 16,
     width: '100%', alignItems: 'center', marginTop: 32,
   },
-  primaryBtnText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+  primaryBtnText: { color: 'white', fontSize: 17, fontWeight: 'bold' },
 
   // Game header
   gameHeader: {
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 5,
     paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20,
   },
-  statPillText: { fontSize: 14, fontWeight: 'bold', fontVariant: ['tabular-nums'] },
+  statPillText: { fontSize: 13, fontWeight: 'bold', fontVariant: ['tabular-nums'] },
 
   // Progress bar
   progressBarContainer: { paddingHorizontal: 16, paddingBottom: 12 },
@@ -570,7 +570,7 @@ const styles = StyleSheet.create({
 
   // Results
   trophyHeader: { alignItems: 'center', gap: 8, paddingTop: 20, marginBottom: 20 },
-  trophyTitle: { color: 'white', fontSize: 24, fontWeight: 'bold' },
+  trophyTitle: { color: 'white', fontSize: 22, fontWeight: 'bold' },
   rankingList: { gap: 10, marginBottom: 24 },
   rankRow: {
     flexDirection: 'row', alignItems: 'center', padding: 12, gap: 12,

@@ -434,8 +434,8 @@ const styles = StyleSheet.create({
   // Intro
   turnLabel: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.5)', marginTop: 12 },
   drawerPill: { backgroundColor: 'rgba(52,199,89,0.2)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
-  drawerPillText: { fontSize: 14, fontWeight: '700', color: '#34C759' },
-  subText: { fontSize: 14, color: 'rgba(255,255,255,0.5)', textAlign: 'center', maxWidth: 280 },
+  drawerPillText: { fontSize: 13, fontWeight: '700', color: '#34C759' },
+  subText: { fontSize: 13, color: 'rgba(255,255,255,0.5)', textAlign: 'center', maxWidth: 280 },
 
   // Header
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, paddingHorizontal: 4 },
@@ -443,8 +443,8 @@ const styles = StyleSheet.create({
   timerPillDanger: { backgroundColor: 'rgba(255,59,48,0.15)' },
   timerText: { fontSize: 16, fontWeight: '800', color: '#fff' },
   drawerInfo: { alignItems: 'flex-end' },
-  drawerInfoLabel: { fontSize: 10, fontWeight: '600', color: 'rgba(255,255,255,0.4)' },
-  drawerInfoName: { fontSize: 14, fontWeight: '700', color: '#5AC8FA' },
+  drawerInfoLabel: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.4)' },
+  drawerInfoName: { fontSize: 13, fontWeight: '700', color: '#5AC8FA' },
   conceptText: { fontSize: 16, fontWeight: '700', color: '#5AC8FA', textAlign: 'center', marginBottom: 8 },
 
   // Canvas
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
   },
-  canvasPlaceholder: { fontSize: 24, color: 'rgba(255,255,255,0.2)' },
+  canvasPlaceholder: { fontSize: 22, color: 'rgba(255,255,255,0.2)' },
 
   // Guess
   guessRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
@@ -468,11 +468,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     color: '#fff',
-    fontSize: 14,
+    fontSize: 13,
   },
   submitBtn: { backgroundColor: '#5AC8FA', borderRadius: 12, paddingHorizontal: 14, justifyContent: 'center' },
   submitBtnDisabled: { backgroundColor: '#555' },
-  submitText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  submitText: { fontSize: 13, fontWeight: '700', color: '#fff' },
 
   // Locked
   lockedBanner: {
@@ -485,11 +485,11 @@ const styles = StyleSheet.create({
   // Strip
   strip: { flexGrow: 0, marginBottom: 8 },
   stripPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.06)', paddingHorizontal: 8, paddingVertical: 5, borderRadius: 20, marginRight: 6 },
-  stripName: { fontSize: 10, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
+  stripName: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
 
   // Judge
   judgeTitle: { fontSize: 20, fontWeight: '700', color: '#fff', marginTop: 8 },
-  conceptLabel: { fontSize: 14, fontWeight: '600', color: '#5AC8FA' },
+  conceptLabel: { fontSize: 13, fontWeight: '600', color: '#5AC8FA' },
   judgeHint: { fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 16 },
   emptyText: { fontSize: 13, color: 'rgba(255,255,255,0.3)' },
   judgeRow: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: 12, marginBottom: 8, width: '100%' },
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
   judgeBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' },
   judgeBtnCorrect: { backgroundColor: 'rgba(52,199,89,0.3)' },
   judgeBtnWrong: { backgroundColor: 'rgba(255,59,48,0.3)' },
-  judgeBtnText: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  judgeBtnText: { fontSize: 17, fontWeight: '700', color: '#fff' },
 
   // Action Button
   actionBtn: { borderRadius: 16, overflow: 'hidden', width: '100%' },
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
 
   // Waiting
   waitingRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 20 },
-  waitingText: { fontSize: 14, fontWeight: '500', color: 'rgba(255,255,255,0.4)' },
+  waitingText: { fontSize: 13, fontWeight: '500', color: 'rgba(255,255,255,0.4)' },
 
   // Results
   resultLabel: { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
@@ -526,14 +526,14 @@ const styles = StyleSheet.create({
   answerText: { flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.6)' },
   standingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   standingRank: { fontSize: 12, fontWeight: '700', color: 'rgba(255,255,255,0.4)', width: 28 },
-  standingName: { fontSize: 14, fontWeight: '600', color: '#fff', flex: 1 },
-  standingScore: { fontSize: 14, fontWeight: '800', color: '#5AC8FA' },
+  standingName: { fontSize: 13, fontWeight: '600', color: '#fff', flex: 1 },
+  standingScore: { fontSize: 13, fontWeight: '800', color: '#5AC8FA' },
 
   // Final
   trophy: { fontSize: 48, marginBottom: 4 },
-  finalTitle: { fontSize: 26, fontWeight: '800', color: '#fff', marginBottom: 16 },
+  finalTitle: { fontSize: 28, fontWeight: '800', color: '#fff', marginBottom: 16 },
   finalRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   finalEmoji: { fontSize: 20, width: 36 },
   finalName: { fontSize: 16, fontWeight: '700', color: '#fff', flex: 1 },
-  finalScore: { fontSize: 18, fontWeight: '800', color: '#5AC8FA' },
+  finalScore: { fontSize: 17, fontWeight: '800', color: '#5AC8FA' },
 });

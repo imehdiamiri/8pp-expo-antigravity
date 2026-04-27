@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   playerCountText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
     color: 'rgba(255,255,255,0.7)',
     marginTop: 4,

@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   headerSubtitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 2,
     color: 'rgba(255,255,255,0.45)',
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   sectionSubtitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 2,
     color: 'rgba(255,255,255,0.45)',
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontFamily: 'Viral-Black',
-    fontSize: 18,
+    fontSize: 17,
     color: 'white',
   },
   categorySubtitle: {

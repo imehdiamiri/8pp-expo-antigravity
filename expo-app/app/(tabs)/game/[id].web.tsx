@@ -17,7 +17,7 @@ export default function WebGameDetailScreen() {
       <View style={styles.webContainer}>
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', zIndex: 2 }}>
-          <Text style={{ color: 'white', fontSize: 24 }}>Game not found</Text>
+          <Text style={{ color: 'white', fontSize: 22 }}>Game not found</Text>
           <Link href="/" style={{ marginTop: 16, padding: 12, backgroundColor: 'white', borderRadius: 8 }}>
             <Text style={{ color: 'black', fontWeight: '600' }}>Go Back</Text>
           </Link>
@@ -92,7 +92,7 @@ export default function WebGameDetailScreen() {
                   style={styles.modeCard}
                 >
                   <View style={styles.modeIconBox}>
-                    <Text style={{ fontSize: 24 }}>{getModeEmoji(mode)}</Text>
+                    <Text style={{ fontSize: 22 }}>{getModeEmoji(mode)}</Text>
                   </View>
                   <View style={styles.modeTextCol}>
                     <Text style={styles.modeTitle}>{modeDetail.title}</Text>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   navBackText: {
     color: 'rgba(255,255,255,0.8)',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
   },
   scrollContent: {
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: 'white',
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
     marginBottom: 24,
   },
@@ -234,12 +234,12 @@ const styles = StyleSheet.create({
   },
   modeTitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     marginBottom: 4,
   },
   modeDesc: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: 13,
   },
 });

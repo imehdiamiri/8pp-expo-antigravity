@@ -328,13 +328,13 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   statTitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 1.4,
     color: 'rgba(255,255,255,0.6)',
   },
   statValue: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '900',
     color: 'white',
     fontVariant: ['tabular-nums'],
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.55)',
   },
   resultText: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: '900',
     color: 'rgba(255,255,255,0.85)',
     textAlign: 'center',

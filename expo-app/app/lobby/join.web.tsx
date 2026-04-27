@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'white',
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: '800',
     marginBottom: 8,
     textAlign: 'center',
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'rgba(255,255,255,0.7)',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     marginBottom: 8,
   },
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     padding: 16,
     outlineStyle: 'none',
   },
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   joinBtnText: {
     color: '#000',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
   },
 });

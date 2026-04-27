@@ -460,13 +460,13 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
     marginBottom: 6,
   },
   cardSubtitle: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: 13,
     marginBottom: 16,
   },
   tabsRow: {
@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
   },
   privacyTitle: {
@@ -540,13 +540,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   privacyName: {
-    fontSize: 40,
+    fontSize: 34,
     fontWeight: 'bold',
     marginVertical: 10,
   },
   privacySubtitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
     paddingHorizontal: 40,
   },
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
   badgeText: {
     color: 'white',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 13,
   },
   turnPill: {
     backgroundColor: '#34C759',
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: 13,
   },
   questionPrompt: {
     color: 'white',
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   voterName: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
     marginBottom: 4,
   },
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,122,255,0.1)',
   },
   candidateText: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
   },
   answerText: {
@@ -625,7 +625,7 @@ const styles = StyleSheet.create({
   },
   correctText: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: 13,
   },
   leaderboardRow: {
     paddingVertical: 12,
@@ -639,13 +639,13 @@ const styles = StyleSheet.create({
     width: 30,
   },
   leaderboardName: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
     flex: 1,
   },
   scoreText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
   }
 });

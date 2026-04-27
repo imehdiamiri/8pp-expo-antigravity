@@ -361,13 +361,13 @@ const styles = StyleSheet.create({
   },
   aiBadgeText: {
     color: 'rgba(255,255,255,0.9)',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 1.2,
   },
   heroTitle: {
     color: 'white',
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '900',
   },
   heroSubtitle: {
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   vibeTileText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   detailsContainer: {
@@ -652,7 +652,7 @@ const styles = StyleSheet.create({
   },
   tagText: {
     color: 'rgba(255,255,255,0.75)',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
   },
 });

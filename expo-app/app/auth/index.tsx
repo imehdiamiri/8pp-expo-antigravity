@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   viralTitle: {
     fontFamily: Typography.viralTitle.fontFamily,
-    fontSize: 32,
+    fontSize: 34,
     color: Colors.white,
     marginBottom: 10,
   },

@@ -523,7 +523,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: 'white',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   planSubtitle: {
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
   },
   planPrice: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
   },
   ctaButton: {
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: 'white',
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   sectionDescription: {
@@ -602,7 +602,7 @@ const styles = StyleSheet.create({
   },
   legalDisclaimer: {
     color: 'rgba(255,255,255,0.4)',
-    fontSize: 10,
+    fontSize: 11,
     textAlign: 'center',
   },
   legalLinksRow: {
@@ -612,11 +612,11 @@ const styles = StyleSheet.create({
   },
   legalLink: {
     color: 'rgba(255,255,255,0.6)',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '500',
   },
   legalDot: {
     color: 'rgba(255,255,255,0.4)',
-    fontSize: 10,
+    fontSize: 11,
   }
 });

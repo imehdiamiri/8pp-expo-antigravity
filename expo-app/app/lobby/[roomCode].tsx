@@ -267,12 +267,12 @@ const styles = StyleSheet.create({
   },
   waitingTitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
   },
   waitingSubtitle: {
     color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 14,
+    fontSize: 13,
   },
   startButton: {
     flexDirection: 'row',
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
   },
   hostBadgeText: {
     color: '#FFD60A',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.5,
   },

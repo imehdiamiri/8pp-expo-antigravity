@@ -25,7 +25,7 @@ export default function WebProfileScreen() {
         {/* Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.avatarLarge}>
-            <Text style={{ fontSize: 40 }}>👤</Text>
+            <Text style={{ fontSize: 34 }}>👤</Text>
           </View>
           <Text style={styles.username}>{currentUser?.displayName || currentUser?.email || 'Guest Player'}</Text>
           <Text style={styles.email}>{currentUser?.email || 'Not signed in'}</Text>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, position: 'relative', height: '100vh', width: '100vw' },
   topNav: { padding: 24, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.05)', zIndex: 2 },
   backBtn: { padding: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 8, alignSelf: 'flex-start', cursor: 'pointer', textDecorationLine: 'none' },
-  backText: { color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: '600' },
+  backText: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' },
   scrollContent: { padding: 48, maxWidth: 900, alignSelf: 'center', width: '100%' },
   profileCard: {
     alignItems: 'center', padding: 40, borderRadius: 24,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     width: 80, height: 80, borderRadius: 40,
     backgroundColor: 'rgba(90,200,250,0.15)', justifyContent: 'center', alignItems: 'center', marginBottom: 12,
   },
-  username: { color: 'white', fontSize: 24, fontWeight: '800' },
+  username: { color: 'white', fontSize: 22, fontWeight: '800' },
   email: { color: 'rgba(255,255,255,0.5)', fontSize: 15 },
   guestBadge: { backgroundColor: 'rgba(255,149,0,0.15)', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4, marginTop: 8 },
   guestBadgeText: { color: '#FF9500', fontSize: 12, fontWeight: '700' },

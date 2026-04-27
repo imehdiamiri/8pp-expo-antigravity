@@ -318,7 +318,7 @@ export function TapInOrderSession({ session }: Props) {
                     <Text style={[st.tileNum, { color: numColor }]}>{num}</Text>
                   )}
                   {!isPreview && tappedCorrect && num !== undefined && (
-                    <Text style={[st.tileNum, { color: numColor, fontSize: 19 }]}>{num}</Text>
+                    <Text style={[st.tileNum, { color: numColor, fontSize: 20 }]}>{num}</Text>
                   )}
                   {!isPreview && tappedWrongPersist && (
                     <IconSymbol name="xmark" size={18} color="rgba(255,255,255,0.8)" />
@@ -380,10 +380,10 @@ const st = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
   iconBox: { width: 100, height: 100, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
-  title: { color: '#fff', fontSize: 24, fontWeight: 'bold', marginTop: 16 },
+  title: { color: '#fff', fontSize: 22, fontWeight: 'bold', marginTop: 16 },
   sub: { color: 'rgba(255,255,255,0.5)', fontSize: 15, marginTop: 8, textAlign: 'center' },
   pill: { backgroundColor: 'rgba(52,199,89,0.15)', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, marginTop: 12, borderWidth: 1, borderColor: 'rgba(52,199,89,0.3)' },
-  pillTx: { color: '#34C759', fontSize: 14, fontWeight: '700' },
+  pillTx: { color: '#34C759', fontSize: 13, fontWeight: '700' },
   label: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12 },
   labelTx: { color: '#34C759', fontSize: 12, fontWeight: '600' },
   bubbleRow: { flexDirection: 'row', gap: 16, marginTop: 24 },
@@ -391,15 +391,15 @@ const st = StyleSheet.create({
   bv: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   bl: { color: 'rgba(255,255,255,0.5)', fontSize: 12 },
   btn: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 16, width: '100%', alignItems: 'center', marginTop: 32 },
-  btnTx: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  btnTx: { color: '#fff', fontSize: 17, fontWeight: 'bold' },
   topBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 },
   hName: { color: '#fff', fontSize: 17, fontWeight: 'bold' },
   hSub: { color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 2 },
   statsRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingBottom: 10 },
   statCard: { flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
   statCardInner: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  statVal: { fontSize: 14, fontWeight: '800', fontVariant: ['tabular-nums'] },
-  statLbl: { color: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: '600', marginTop: 2 },
+  statVal: { fontSize: 13, fontWeight: '800', fontVariant: ['tabular-nums'] },
+  statLbl: { color: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: '600', marginTop: 2 },
   progWrap: { paddingHorizontal: 16, paddingBottom: 12 },
   progBg: { height: 6, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden' },
   progFill: { height: 6, borderRadius: 3 },

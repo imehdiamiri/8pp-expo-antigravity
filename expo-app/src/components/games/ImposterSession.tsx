@@ -402,23 +402,23 @@ const styles = StyleSheet.create({
   centerContent: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingBottom: 40 },
   centerItems: { alignItems: 'center', width: '100%' },
   
-  title: { color: 'white', fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
+  title: { color: 'white', fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
   subtitle: { color: 'rgba(255,255,255,0.6)', fontSize: 16, textAlign: 'center' },
-  playerName: { fontSize: 40, fontWeight: 'bold', marginBottom: 20 },
+  playerName: { fontSize: 34, fontWeight: 'bold', marginBottom: 20 },
   
   card: { backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 20, padding: 24, width: '100%', marginBottom: 16 },
-  cardTitle: { color: 'white', fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
-  cardSubtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 16 },
+  cardTitle: { color: 'white', fontSize: 17, fontWeight: 'bold', marginBottom: 4 },
+  cardSubtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 16 },
   
   primaryBtn: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 16, alignItems: 'center', width: '100%' },
-  primaryBtnText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+  primaryBtnText: { color: 'white', fontSize: 17, fontWeight: 'bold' },
   secondaryBtn: { backgroundColor: 'rgba(255,255,255,0.1)', paddingVertical: 16, borderRadius: 16, alignItems: 'center', width: '100%', marginTop: 10 },
   secondaryBtnText: { color: 'white', fontSize: 16, fontWeight: '600' },
   
   roleTitle: { fontSize: 28, fontWeight: 'bold', marginTop: 16 },
   roleSubtitle: { fontSize: 16, color: 'rgba(255,255,255,0.7)', marginTop: 8 },
   wordBadge: { backgroundColor: 'rgba(52, 199, 89, 0.2)', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 14, marginTop: 16 },
-  wordText: { color: 'white', fontSize: 24, fontWeight: 'bold' },
+  wordText: { color: 'white', fontSize: 22, fontWeight: 'bold' },
   
   timerText: { fontSize: 72, fontWeight: 'bold', color: 'white', fontFamily: 'monospace' },
   
@@ -430,14 +430,14 @@ const styles = StyleSheet.create({
   
   candidateBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: 16, borderWidth: 1, borderColor: 'transparent' },
   candidateBtnActive: { borderColor: '#007AFF', backgroundColor: 'rgba(0,122,255,0.1)' },
-  candidateText: { fontSize: 18, fontWeight: 'bold' },
+  candidateText: { fontSize: 17, fontWeight: 'bold' },
   
   resultRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8 },
   resultName: { fontSize: 16, fontWeight: '600' },
-  resultCount: { color: 'rgba(255,255,255,0.5)', fontSize: 14 },
+  resultCount: { color: 'rgba(255,255,255,0.5)', fontSize: 13 },
   
   leaderboardRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
   rank: { color: 'rgba(255,255,255,0.4)', fontSize: 16, fontWeight: 'bold', width: 30 },
-  leaderboardName: { fontSize: 18, fontWeight: 'bold', flex: 1 },
-  scoreText: { color: 'white', fontSize: 18, fontWeight: 'bold' }
+  leaderboardName: { fontSize: 17, fontWeight: 'bold', flex: 1 },
+  scoreText: { color: 'white', fontSize: 17, fontWeight: 'bold' }
 });

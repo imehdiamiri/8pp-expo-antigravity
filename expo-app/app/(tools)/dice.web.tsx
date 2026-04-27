@@ -85,9 +85,9 @@ const styles = StyleSheet.create({
   countRow: { marginBottom: 32 },
   label: { color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: '800', letterSpacing: 1.5, marginBottom: 12 },
   countPicker: { flexDirection: 'row', gap: 10 },
-  countText: { color: 'white', fontSize: 18, fontWeight: '800' },
+  countText: { color: 'white', fontSize: 17, fontWeight: '800' },
   diceArea: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 24 },
   diceGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 20 },
   totalText: { color: 'white', fontSize: 28, fontWeight: '800' },
-  rollBtnText: { color: '#000', fontSize: 18, fontWeight: '700' },
+  rollBtnText: { color: '#000', fontSize: 17, fontWeight: '700' },
 });

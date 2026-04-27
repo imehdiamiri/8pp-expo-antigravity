@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   colon: {
-    fontSize: 40,
+    fontSize: 34,
     fontWeight: '900',
     color: 'rgba(255,255,255,0.5)',
   },
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   wheelTitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 1.4,
     color: 'rgba(255,255,255,0.5)',
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   wheelItemText: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: '900',
     color: 'white',
     fontVariant: ['tabular-nums'],

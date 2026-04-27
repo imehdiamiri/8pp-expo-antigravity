@@ -264,13 +264,13 @@ const styles = StyleSheet.create({
   },
   emptyStateTitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: 'Viral-Black',
     marginTop: 8,
   },
   emptyStateDesc: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: 13,
     textAlign: 'center',
   },
 });

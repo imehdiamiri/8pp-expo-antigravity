@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 2,
   },
   helperText: {
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   },
   durationText: {
     color: 'rgba(255,255,255,0.5)',
-    fontSize: 14,
+    fontSize: 13,
     fontVariant: ['tabular-nums'],
   },
   grid: {

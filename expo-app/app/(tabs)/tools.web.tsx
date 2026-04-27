@@ -71,7 +71,7 @@ export default function WebToolsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, position: 'relative' },
   scrollContent: { padding: 48, maxWidth: 1000, alignSelf: 'center', width: '100%' },
-  pageTitle: { color: 'white', fontSize: 36, fontWeight: '800', marginBottom: 8 },
+  pageTitle: { color: 'white', fontSize: 34, fontWeight: '800', marginBottom: 8 },
   pageSubtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 16, marginBottom: 32 },
   toolsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 20 },
   toolCard: {

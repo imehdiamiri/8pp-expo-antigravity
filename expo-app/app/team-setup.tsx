@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
   },
-  roomGameName: { fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 6 },
+  roomGameName: { fontSize: 17, fontWeight: '700', color: '#fff', marginBottom: 6 },
   modePill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignSelf: 'flex-start',
   },
-  modePillText: { fontSize: 10, fontWeight: '700', color: '#fff' },
+  modePillText: { fontSize: 11, fontWeight: '700', color: '#fff' },
   codeRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   codeLabel: { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.4)', flex: 1 },
-  codeText: { fontSize: 26, fontWeight: '900', color: '#A855F7', letterSpacing: 4, fontVariant: ['tabular-nums'] },
+  codeText: { fontSize: 28, fontWeight: '900', color: '#A855F7', letterSpacing: 4, fontVariant: ['tabular-nums'] },
   toolbar: {
     flexDirection: 'row',
     gap: 10,
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 10,
   },
-  teamName: { fontSize: 14, fontWeight: '700' },
+  teamName: { fontSize: 13, fontWeight: '700' },
   teamCount: { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.4)' },
   emptyTeam: {
     flexDirection: 'row',
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: 'rgba(0,0,0,0.6)',
   },
-  playerName: { fontSize: 14, fontWeight: '600', color: '#fff' },
+  playerName: { fontSize: 13, fontWeight: '600', color: '#fff' },
   assignBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
   sectionCard: {
     marginBottom: 14,
   },
-  sectionTitle: { fontSize: 14, fontWeight: '700', color: '#fff', marginBottom: 4 },
+  sectionTitle: { fontSize: 13, fontWeight: '700', color: '#fff', marginBottom: 4 },
   sectionSubtitle: { fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 10 },
   startSection: { marginTop: 6 },
   startBtn: {

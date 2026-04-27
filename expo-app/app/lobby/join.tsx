@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0, 122, 255, 0.35)',
     borderRadius: 18,
     color: 'white',
-    fontSize: 40,
+    fontSize: 34,
     fontWeight: '900',
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     textAlign: 'center',
