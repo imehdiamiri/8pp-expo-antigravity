@@ -153,7 +153,7 @@ export default function PurchaseDetailScreen() {
     const success = await restorePurchases();
     if (success) {
       showToast.success('Purchases restored!');
-      router.back();
+      if (router.canGoBack()) { router.back(); } else { router.replace('/'); }
     }
   };
 
@@ -161,14 +161,20 @@ export default function PurchaseDetailScreen() {
     <View style={styles.container}>
       <AppBackgroundView />
 
-      {/* Close Button */}
-      <TouchableOpacity
-        style={[styles.closeBtn, { top: insets.top + 8 }]}
-        onPress={() => router.back()}
-        activeOpacity={0.7}
-      >
-        <IconSymbol name="xmark.circle.fill" size={28} color="rgba(255,255,255,0.4)" />
-      </TouchableOpacity>
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+        <TouchableOpacity 
+          onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 8,
+            paddingVertical: 6,
+          }}
+        >
+          <IconSymbol name="xmark" size={16} color="white" />
+          <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Close</Text>
+        </TouchableOpacity>
+      </View>
 
       <ScrollView
         contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 50, paddingBottom: insets.bottom + 32 }]}
@@ -256,9 +262,12 @@ export default function PurchaseDetailScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  closeBtn: {
-    position: 'absolute',
-    left: 16,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
     zIndex: 10,
   },
   scroll: {

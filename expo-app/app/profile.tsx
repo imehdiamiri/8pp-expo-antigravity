@@ -42,6 +42,7 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   
   const { authAccount, signOut } = useAuthStore();
+  const safeBack = () => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } };
   const isGuest = authAccount?.provider === 'guest';
   const { activeSession, exitActiveSession } = useGameStore();
   const { stars, isPremium, restorePurchases } = usePaywallStore();
@@ -62,14 +63,14 @@ export default function ProfileScreen() {
             onPress: () => {
               exitActiveSession();
               signOut();
-              router.back();
+              safeBack();
             }
           }
         ]
       );
     } else {
       signOut();
-      router.back();
+      safeBack();
     }
   };
 
@@ -86,7 +87,7 @@ export default function ProfileScreen() {
             if (activeSession) exitActiveSession();
             // TODO: Actually delete account
             signOut();
-            router.back();
+            safeBack();
           }
         }
       ]
@@ -305,18 +306,16 @@ export default function ProfileScreen() {
           headerTitleStyle: { color: Colors.white, fontWeight: '700' },
           headerRight: () => (
             <TouchableOpacity 
-              onPress={() => router.back()} 
+              onPress={() => safeBack()} 
               style={{ 
                 marginRight: Platform.OS === 'ios' ? 0 : 16,
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                paddingHorizontal: 16,
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 8,
                 paddingVertical: 6,
-                borderRadius: 999,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.12)'
               }}
             >
-              <Text style={{ color: Colors.blue, fontWeight: '600', fontSize: 15 }}>Done</Text>
+              <Text style={{ color: 'white', fontWeight: '600', fontSize: 16 }}>Done</Text>
             </TouchableOpacity>
           ),
           headerBackVisible: false,

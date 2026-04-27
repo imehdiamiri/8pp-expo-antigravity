@@ -89,7 +89,7 @@ export default function RootLayout() {
         <Stack.Screen name="auth" options={{ headerShown: false, animation: 'fade' }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'fade' }} />
         <Stack.Screen name="(tools)" options={{ headerShown: false, presentation: 'modal' }} />
-        <Stack.Screen name="profile" options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="profile" options={{ presentation: 'modal' }} />
         <Stack.Screen name="purchase-detail" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="team-setup" options={{ headerShown: false }} />
       </Stack>

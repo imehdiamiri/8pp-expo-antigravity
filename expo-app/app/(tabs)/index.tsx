@@ -28,13 +28,12 @@ export default function GamesScreen() {
   return (
     <View style={styles.container}>
       <AppBackgroundView />
-      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 6, paddingBottom: 96 }]}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 6, paddingBottom: 120 }]}>
         <View style={styles.header}>
           <Text style={styles.title}>8PartyPlay</Text>
           <View style={{ flex: 1 }} />
           <TouchableOpacity style={styles.joinButton} onPress={() => router.push('/lobby/join')} activeOpacity={0.7}>
-            <BlurView tint="dark" intensity={30} style={StyleSheet.absoluteFill} />
-            <IconSymbol name="number" size={13} color="white" weight="bold" />
+            <IconSymbol name="number" size={13} color="black" weight="bold" />
             <Text style={styles.joinText}>Join</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')} activeOpacity={0.7}>
@@ -147,17 +146,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 7,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'white',
     overflow: 'hidden',
   },
   joinText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
+    color: 'black',
+    fontSize: 13,
+    fontWeight: '800',
   },
   profileButton: {
     width: 36,

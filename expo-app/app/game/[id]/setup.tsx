@@ -65,7 +65,7 @@ export default function GameSetupScreen() {
   const [roundCount, setRoundCount] = useState(3);
 
   // Games that have rounds (not grid/special games)
-  const needsRounds = !['memory_grid', 'memory_path', 'tap_in_order', 'ten_tangle', 'color_trap', 'spin_bottle', 'draw_rush'].includes(id || '');
+  const needsRounds = !['reverse_singing', 'memory_grid', 'memory_path', 'tap_in_order', 'ten_tangle', 'color_trap', 'spin_bottle', 'draw_rush'].includes(id || '');
 
   // ─── Memory Grid state ───
   const [mgGridSize, setMgGridSize] = useState<MemoryGridSize>('tiny3x4');
@@ -140,7 +140,7 @@ export default function GameSetupScreen() {
         <AppBackgroundView />
         <View style={st.centerContent}>
           <Text style={st.errorText}>Game not found</Text>
-          <TouchableOpacity onPress={() => router.back()} style={st.backBtn}>
+          <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={st.backBtn}>
             <Text style={st.backBtnTx}>Go Back</Text>
           </TouchableOpacity>
         </View>
@@ -221,23 +221,19 @@ export default function GameSetupScreen() {
           headerTransparent: true,
           headerBlurEffect: 'dark',
           headerTintColor: 'white',
+          headerBackVisible: false,
           headerLeft: () => (
             <TouchableOpacity 
-              onPress={() => router.back()}
+              onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}
               hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                paddingHorizontal: 12,
+                paddingHorizontal: 8,
                 paddingVertical: 6,
-                borderRadius: 20,
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.15)',
-                marginLeft: Platform.OS === 'ios' ? -8 : 0,
               }}
             >
-              <IconSymbol name="chevron.left" size={18} color="white" />
+              <IconSymbol name="chevron.left" size={16} color="white" />
               <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Back</Text>
             </TouchableOpacity>
           ),

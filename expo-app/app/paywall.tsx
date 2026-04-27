@@ -60,7 +60,11 @@ export default function PaywallScreen() {
   useEffect(() => {
     if (isPremium && tab === PaywallTab.Subscription) {
       // If user successfully subscribed, dismiss paywall
-      router.back();
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/');
+      }
     }
   }, [isPremium, tab]);
 
@@ -243,7 +247,7 @@ export default function PaywallScreen() {
       
       {/* Navigation Bar */}
       <View style={[styles.navBar, { paddingTop: insets.top }]}>
-        <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.closeButton} onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}>
           <IconSymbol name="xmark.circle.fill" size={28} color="rgba(255,255,255,0.6)" />
         </TouchableOpacity>
       </View>

@@ -66,7 +66,7 @@ export default function FactoryScreen() {
   return (
     <View style={styles.container}>
       <AppBackgroundView />
-      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 6, paddingBottom: 96 }]}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 6, paddingBottom: 120 }]}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Factory</Text>

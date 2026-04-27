@@ -108,7 +108,7 @@ export default function TeamSetupScreen() {
       isHost ? 'This will close the room for everyone.' : 'You will leave this room.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Leave', style: 'destructive', onPress: () => router.back() },
+        { text: 'Leave', style: 'destructive', onPress: () => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } } },
       ]
     );
   };
@@ -136,8 +136,17 @@ export default function TeamSetupScreen() {
       >
         {/* Header */}
         <View style={styles.headerRow}>
-          <TouchableOpacity onPress={handleLeave}>
-            <Text style={styles.leaveText}>Leave</Text>
+          <TouchableOpacity 
+            onPress={handleLeave}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: 8,
+              paddingVertical: 6,
+            }}
+          >
+            <IconSymbol name="chevron.left" size={16} color="white" />
+            <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Leave</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Team Setup</Text>
           <View style={{ width: 50 }} />

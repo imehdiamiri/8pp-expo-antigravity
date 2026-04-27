@@ -26,7 +26,7 @@ export default function GameDetailScreen() {
         <AppBackgroundView />
         <View style={styles.centerContent}>
           <Text style={styles.errorText}>Game not found</Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={styles.backButton}>
             <Text style={styles.backButtonText}>Go Back</Text>
           </TouchableOpacity>
         </View>
@@ -76,36 +76,24 @@ export default function GameDetailScreen() {
     <View style={styles.container}>
       <AppBackgroundView />
       
-      <Stack.Screen 
-        options={{
-          title: game.name,
-          headerShown: true,
-          headerTransparent: true,
-          headerBlurEffect: 'dark',
-          headerTintColor: 'white',
-          headerLargeTitle: false,
-          headerLeft: () => (
-            <TouchableOpacity 
-              onPress={() => router.back()}
-              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-                borderRadius: 20,
-                borderWidth: 1,
-                borderColor: 'rgba(255,255,255,0.15)',
-                marginLeft: Platform.OS === 'ios' ? -8 : 0,
-              }}
-            >
-              <IconSymbol name="chevron.left" size={18} color="white" />
-              <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Back</Text>
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+        <TouchableOpacity 
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/');
+            }
+          }}
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          style={styles.backButtonCustom}
+        >
+          <IconSymbol name="chevron.left" size={16} color="white" />
+          <Text style={styles.backButtonCustomText}>Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitleCustom}>{game.name}</Text>
+        <View style={{ width: 60 }} />
+      </View>
 
       <ScrollView 
         contentContainerStyle={[styles.scrollContent, { paddingTop: Platform.OS === 'android' ? insets.top + 60 : 0 }]}
@@ -258,6 +246,25 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  backButtonCustom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  backButtonCustomText: {
+    color: 'white', 
+    fontSize: 16, 
+    fontWeight: '500', 
+    marginLeft: 4,
+  },
+  headerTitleCustom: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'center',
   },
   header: {
     flexDirection: 'row',

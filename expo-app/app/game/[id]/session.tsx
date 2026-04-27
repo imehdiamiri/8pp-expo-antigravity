@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -36,8 +36,7 @@ export default function GameSessionScreen() {
           style: 'destructive',
           onPress: () => {
             exitActiveSession();
-            router.back();
-            router.back(); // Go back to game detail or library
+            router.replace('/');
           }
         }
       ]
@@ -46,12 +45,22 @@ export default function GameSessionScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
       <AppBackgroundView />
       
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <TouchableOpacity onPress={handleExit} style={styles.headerButton}>
-          <IconSymbol name="xmark" size={20} color="white" />
+        <TouchableOpacity 
+          onPress={handleExit} 
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 8,
+            paddingVertical: 6,
+          }}
+        >
+          <IconSymbol name="xmark" size={16} color="white" />
+          <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Exit</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{activeSession.game.name}</Text>
         <View style={styles.headerButton} />

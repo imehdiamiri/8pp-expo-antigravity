@@ -95,7 +95,7 @@ export default function FriendsScreen() {
     <View style={styles.container}>
       <AppBackgroundView />
       <ScrollView 
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 6, paddingBottom: 96 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 6, paddingBottom: 120 }]}
         keyboardDismissMode="interactive"
       >
         {/* Header */}

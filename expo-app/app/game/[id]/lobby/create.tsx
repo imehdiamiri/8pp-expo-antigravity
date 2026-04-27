@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
@@ -27,7 +27,7 @@ export default function CreateLobbyScreen() {
         <AppBackgroundView />
         <View style={styles.centerContent}>
           <Text style={styles.errorText}>Game not found</Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.joinButton}>
+          <TouchableOpacity onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} style={styles.joinButton}>
             <Text style={styles.joinButtonText}>Go Back</Text>
           </TouchableOpacity>
         </View>
@@ -51,12 +51,22 @@ export default function CreateLobbyScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
       <AppBackgroundView />
       
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
-          <IconSymbol name="chevron.left" size={24} color="white" />
+        <TouchableOpacity 
+          onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }} 
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 8,
+            paddingVertical: 6,
+          }}
+        >
+          <IconSymbol name="chevron.left" size={18} color="white" />
+          <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{game.name} — Setup</Text>
         <View style={styles.headerButton} />

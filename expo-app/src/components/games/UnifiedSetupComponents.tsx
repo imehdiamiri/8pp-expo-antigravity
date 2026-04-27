@@ -31,7 +31,7 @@ export function SetupPlayersSection({
         
         <View style={styles.stepperContainer}>
           <Pressable 
-            style={[styles.stepperButton, { backgroundColor: 'rgba(52, 199, 89, 0.12)' }]}
+            style={[styles.stepperButton, { backgroundColor: 'rgba(52, 199, 89, 0.12)', opacity: playerCount <= minPlayers ? 0.3 : 1 }]}
             onPress={() => onUpdateCount(Math.max(minPlayers, playerCount - 1))}
             disabled={playerCount <= minPlayers}
           >
@@ -41,7 +41,7 @@ export function SetupPlayersSection({
           <Text style={[styles.stepperValue, { color: '#34C759' }]}>{playerCount}</Text>
           
           <Pressable 
-            style={[styles.stepperButton, { backgroundColor: 'rgba(52, 199, 89, 0.12)' }]}
+            style={[styles.stepperButton, { backgroundColor: 'rgba(52, 199, 89, 0.12)', opacity: playerCount >= maxPlayers ? 0.3 : 1 }]}
             onPress={() => onUpdateCount(Math.min(maxPlayers, playerCount + 1))}
             disabled={playerCount >= maxPlayers}
           >

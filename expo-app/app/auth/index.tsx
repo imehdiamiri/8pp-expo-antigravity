@@ -74,12 +74,19 @@ export default function AuthScreen() {
           {showCloseButton && (
             <View style={[styles.closeRow, { marginTop: insets.top + 12 }]}>
               <TouchableOpacity 
-                style={styles.closeBtn}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingHorizontal: 8,
+                  paddingVertical: 6,
+                }}
                 onPress={() => {
                   if (router.canGoBack()) router.back();
+                  else router.replace('/');
                 }}
               >
-                <Ionicons name="close" size={20} color={Colors.secondary} />
+                <Ionicons name="close" size={16} color="white" />
+                <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Close</Text>
               </TouchableOpacity>
             </View>
           )}

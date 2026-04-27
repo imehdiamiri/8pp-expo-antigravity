@@ -53,12 +53,12 @@ export const Games: Record<string, GameType> = {
     name: 'Reverse Singing',
     shortDescription: 'Pass the phone. Record anything. Hear it reversed. Mimic it. Compare the chaos.',
     minPlayers: 2,
-    maxPlayers: 30,
+    maxPlayers: 2,
     unlockCostStars: 0,
     isFreeForever: true,
     hasFreeTrial: false,
     isPremium: false,
-    symbolName: 'fast-rewind', // SF: backward.fill
+    symbolName: 'backward.fill', // SF: backward.fill
     supportedModes: [GameMode.singleDevice],
     roundDuration: 75,
     heroImageURL: 'https://r2-pub.rork.com/generated-images/b17e5d76-7bf4-46aa-b32c-34db233473bd.png',
@@ -73,7 +73,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: true,
     hasFreeTrial: false,
     isPremium: false,
-    symbolName: 'timer', // SF: stopwatch.fill
+    symbolName: 'stopwatch.fill', // SF: stopwatch.fill
     supportedModes: [GameMode.singleDevice],
     roundDuration: 90,
     heroImageURL: 'https://r2-pub.rork.com/generated-images/d8092484-fefa-4921-9732-636c97a59a09.png',
@@ -88,7 +88,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: false,
     hasFreeTrial: false,
     isPremium: true,
-    symbolName: 'theater-comedy', // SF: theatermasks.fill
+    symbolName: 'theatermasks.fill', // SF: theatermasks.fill
     supportedModes: [GameMode.singleDevice],
     roundDuration: 0,
     heroImageURL: 'https://r2-pub.rork.com/generated-images/e877a51b-281e-4b8c-bb95-823ae44216f1.png',
@@ -103,7 +103,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: true,
     hasFreeTrial: false,
     isPremium: false,
-    symbolName: 'visibility', // SF: eye.fill
+    symbolName: 'eye.fill', // SF: eye.fill
     supportedModes: [GameMode.singleDevice],
     roundDuration: 0,
     heroImageURL: 'https://r2-pub.rork.com/generated-images/01a6d899-88d4-4d01-8758-7dd451fd48da.png',
@@ -118,7 +118,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: true,
     hasFreeTrial: false,
     isPremium: false,
-    symbolName: 'grid-view', // SF: square.grid.3x3.fill
+    symbolName: 'square.grid.3x3.fill', // SF: square.grid.3x3.fill
     supportedModes: [GameMode.singleDevice, GameMode.multiDevice, GameMode.teamMode],
     roundDuration: 0,
     heroImageURL: 'https://r2-pub.rork.com/generated-images/630d9ac5-1895-4593-9ea2-7cd581f42ce6.png',
@@ -133,7 +133,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: false,
     hasFreeTrial: false,
     isPremium: true,
-    symbolName: 'map', // SF: map.fill
+    symbolName: 'map.fill', // SF: map.fill
     supportedModes: [GameMode.singleDevice, GameMode.multiDevice, GameMode.teamMode],
     roundDuration: 0,
     heroImageURL: 'https://r2-pub.rork.com/generated-images/8f997aac-f4e2-46f7-92d6-aa55f8b197ff.png',
@@ -148,7 +148,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: false,
     hasFreeTrial: false,
     isPremium: true,
-    symbolName: '123', // SF: number.square.fill -> roughly 123
+    symbolName: 'number.square.fill', // SF: number.square.fill -> roughly 123
     supportedModes: [GameMode.singleDevice, GameMode.multiDevice],
     roundDuration: 0,
     heroImageURL: null,
@@ -163,7 +163,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: false,
     hasFreeTrial: false,
     isPremium: true,
-    symbolName: 'palette', // SF: paintpalette.fill
+    symbolName: 'paintpalette.fill', // SF: paintpalette.fill
     supportedModes: [GameMode.singleDevice, GameMode.multiDevice],
     roundDuration: 0,
     heroImageURL: null,
@@ -178,7 +178,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: false,
     hasFreeTrial: false,
     isPremium: true,
-    symbolName: 'chat-bubble', // SF: text.bubble.fill
+    symbolName: 'text.bubble.fill', // SF: text.bubble.fill
     supportedModes: [GameMode.singleDevice],
     roundDuration: 0,
     heroImageURL: 'https://r2-pub.rork.com/generated-images/9501d164-3c05-4a45-9d4e-51ffe0fd7aca.png',
@@ -193,7 +193,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: true,
     hasFreeTrial: false,
     isPremium: false,
-    symbolName: 'sync', // SF: arrow.triangle.2.circlepath
+    symbolName: 'arrow.triangle.2.circlepath', // SF: arrow.triangle.2.circlepath
     supportedModes: [GameMode.singleDevice],
     roundDuration: 0,
     heroImageURL: null,
@@ -208,7 +208,7 @@ export const Games: Record<string, GameType> = {
     isFreeForever: false,
     hasFreeTrial: false,
     isPremium: true,
-    symbolName: 'edit', // SF: pencil.and.scribble
+    symbolName: 'pencil.and.scribble', // SF: pencil.and.scribble
     supportedModes: [GameMode.singleDevice, GameMode.multiDevice],
     roundDuration: 100,
     heroImageURL: null,

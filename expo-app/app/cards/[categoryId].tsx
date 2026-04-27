@@ -26,8 +26,17 @@ export default function CardsDeckScreen() {
     <View style={styles.container}>
       <AppBackgroundView />
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity 
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 8,
+            paddingVertical: 6,
+          }} 
+          onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace('/'); } }}
+        >
           <IconSymbol name="chevron.left" size={16} color="white" />
+          <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Back</Text>
         </TouchableOpacity>
         
         <View style={styles.headerTitleContainer}>
@@ -58,16 +67,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     zIndex: 10,
   },
-  backButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+
   headerTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Viral-Black',
     fontSize: 20,
+    fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
     minHeight: 24,
