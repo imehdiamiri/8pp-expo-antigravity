@@ -1,5 +1,5 @@
 import { rtdb as database } from '../lib/firebase';
-import { ref, set, get, onValue, update, remove, push } from 'firebase/database';
+import { ref, set, get, onValue, update, remove, push, onDisconnect } from 'firebase/database';
 import { GameType } from '../models/AppModels';
 
 export interface MultiplayerPlayer {
@@ -47,6 +47,8 @@ class MultiplayerService {
       }
     });
 
+    await onDisconnect(roomRef).remove();
+
     return roomCode;
   }
 
@@ -75,6 +77,9 @@ class MultiplayerService {
       [playerId]: newPlayer
     });
 
+    const playerRef = ref(database, `rooms/${roomCode}/players/${playerId}`);
+    await onDisconnect(playerRef).remove();
+
     return true;
   }
 
@@ -92,6 +97,7 @@ class MultiplayerService {
 
   async leaveRoom(roomCode: string, playerId: string): Promise<void> {
     const playerRef = ref(database, `rooms/${roomCode}/players/${playerId}`);
+    await onDisconnect(playerRef).cancel();
     await remove(playerRef);
   }
 
@@ -102,6 +108,7 @@ class MultiplayerService {
 
   async closeRoom(roomCode: string): Promise<void> {
     const roomRef = ref(database, `rooms/${roomCode}`);
+    await onDisconnect(roomRef).cancel();
     await remove(roomRef);
   }
 }

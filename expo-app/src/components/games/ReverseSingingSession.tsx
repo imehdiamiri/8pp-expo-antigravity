@@ -142,16 +142,19 @@ export function ReverseSingingSession({ session }: Props) {
           <View style={styles.gridRow}>
             <Pressable 
               style={[styles.squareBtn, { backgroundColor: '#007AFF' }, !p1Uri && styles.disabled]}
-              onPress={() => playSound(p1Uri)} // Mock reverse
+              onPress={() => {
+                alert('True reverse playback requires a backend or native module. Playing normal for now.');
+                playSound(p1Uri);
+              }}
               disabled={!p1Uri}
             >
               <IconSymbol name="backward.fill" size={28} color="white" />
-              <Text style={styles.btnText}>Play Reverse</Text>
+              <Text style={styles.btnText}>Play Reverse (Mock)</Text>
             </Pressable>
 
             <Pressable 
               style={[styles.circleBtn, !p1Uri && styles.disabled]}
-              onPress={() => playSound(p1Uri, 0.5)}
+              onPress={() => playSound(p1Uri, 2.0)}
               disabled={!p1Uri}
             >
               <IconSymbol name="hare.fill" size={24} color="white" />
