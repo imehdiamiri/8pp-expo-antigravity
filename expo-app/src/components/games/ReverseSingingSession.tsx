@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Audio } from 'expo-av';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -8,45 +8,54 @@ interface Props {
   session: GameSession;
 }
 
+const WAVEFORM_BARS = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.4, 0.3, 0.6, 0.5];
+
 export function ReverseSingingSession({ session }: Props) {
   const [activeStep, setActiveStep] = useState<'playerOne' | 'playerTwo'>('playerOne');
   
   // Player 1 State
   const [p1Recording, setP1Recording] = useState<Audio.Recording | null>(null);
   const [p1Uri, setP1Uri] = useState<string | null>(null);
-  const [isP1Playing, setIsP1Playing] = useState(false);
+  const [p1Duration, setP1Duration] = useState(0);
 
   // Player 2 State
   const [p2Recording, setP2Recording] = useState<Audio.Recording | null>(null);
   const [p2Uri, setP2Uri] = useState<string | null>(null);
-  const [isP2Playing, setIsP2Playing] = useState(false);
+  const [p2Duration, setP2Duration] = useState(0);
 
-  // General audio
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
+    let interval: ReturnType<typeof setInterval>;
+    if (p1Recording) {
+      interval = setInterval(() => setP1Duration(prev => prev + 1), 1000);
+    } else if (p2Recording) {
+      interval = setInterval(() => setP2Duration(prev => prev + 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [p1Recording, p2Recording]);
+
+  useEffect(() => {
+    return sound ? () => { sound.unloadAsync(); } : undefined;
   }, [sound]);
 
   async function startRecording(player: 1 | 2) {
     try {
       await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-
-      const { recording } = await Audio.Recording.createAsync( Audio.RecordingOptionsPresets.HIGH_QUALITY );
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+      const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      
       if (player === 1) {
         setP1Recording(recording);
         setP1Uri(null);
+        setP1Duration(0);
+        // Reset Player 2 when Player 1 records again
+        setP2Uri(null);
+        setP2Duration(0);
       } else {
         setP2Recording(recording);
         setP2Uri(null);
+        setP2Duration(0);
       }
     } catch (err) {
       console.error('Failed to start recording', err);
@@ -57,14 +66,12 @@ export function ReverseSingingSession({ session }: Props) {
     try {
       if (player === 1 && p1Recording) {
         await p1Recording.stopAndUnloadAsync();
-        const uri = p1Recording.getURI();
-        setP1Uri(uri);
+        setP1Uri(p1Recording.getURI());
         setP1Recording(null);
         setActiveStep('playerTwo');
       } else if (player === 2 && p2Recording) {
         await p2Recording.stopAndUnloadAsync();
-        const uri = p2Recording.getURI();
-        setP2Uri(uri);
+        setP2Uri(p2Recording.getURI());
         setP2Recording(null);
       }
       await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
@@ -73,109 +80,179 @@ export function ReverseSingingSession({ session }: Props) {
     }
   }
 
-  async function playSound(uri: string | null) {
+  async function playSound(uri: string | null, rate: number = 1.0) {
     if (!uri) return;
-    
-    // Stop current sound if playing
-    if (sound) {
-      await sound.unloadAsync();
-    }
-
-    const { sound: newSound } = await Audio.Sound.createAsync({ uri });
+    if (sound) await sound.unloadAsync();
+    const { sound: newSound } = await Audio.Sound.createAsync({ uri }, { rate, shouldCorrectPitch: false });
     setSound(newSound);
     await newSound.playAsync();
-  }
-
-  // Placeholder for reversing audio - since RN can't do this easily natively without a custom module,
-  // we'll just play it normally but tag the UI for it.
-  async function playReversedSound(uri: string | null) {
-    // In a real implementation, we'd send the audio to a server to reverse it or use a native module.
-    // For now, just play it as normal to show the flow.
-    alert("Audio reversing requires a native module. Playing original sound for now.");
-    playSound(uri);
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       
       {/* Player 1 Card */}
-      <View style={[styles.card, activeStep === 'playerOne' && styles.cardActive]}>
+      <View style={[styles.card, activeStep === 'playerOne' && styles.cardActive, activeStep !== 'playerOne' && { opacity: 0.76 }]}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Player 1</Text>
-          <Text style={styles.cardSubtitle}>record anything you want</Text>
-          {activeStep === 'playerOne' && <Text style={styles.statusActive}>Active</Text>}
+          <View>
+            <Text style={styles.cardTitle}>Player 1</Text>
+            <Text style={styles.cardSubtitle}>record anything you want</Text>
+          </View>
+          <View style={[styles.statusPill, activeStep === 'playerOne' ? styles.statusActive : styles.statusInactive]}>
+            <Text style={styles.statusText}>{activeStep === 'playerOne' ? 'Active' : 'Done'}</Text>
+          </View>
         </View>
 
-        <View style={styles.actions}>
-          <TouchableOpacity 
-            style={[styles.recordButton, p1Recording && styles.recordingButton]}
-            onPress={() => p1Recording ? stopRecording(1) : startRecording(1)}
-            disabled={activeStep !== 'playerOne' && !p1Uri}
-          >
-            <IconSymbol name={p1Recording ? "stop.fill" : "record.circle.fill"} size={24} color="white" />
-            <Text style={styles.actionText}>{p1Recording ? "Stop" : "Record"}</Text>
-          </TouchableOpacity>
+        {p1Uri && (
+          <View style={styles.waveformContainer}>
+            <View style={styles.waveformBars}>
+              {WAVEFORM_BARS.map((val, i) => (
+                <View key={i} style={[styles.waveformBar, { height: Math.max(5, val * 24) }]} />
+              ))}
+            </View>
+            <Text style={styles.durationText}>{p1Duration}.0s</Text>
+          </View>
+        )}
 
-          <TouchableOpacity 
-            style={[styles.actionButton, !p1Uri && styles.disabledButton]}
-            onPress={() => playSound(p1Uri)}
-            disabled={!p1Uri}
-          >
-            <IconSymbol name="play.fill" size={24} color="white" />
-            <Text style={styles.actionText}>Play</Text>
-          </TouchableOpacity>
+        <View style={styles.grid}>
+          <View style={styles.gridRow}>
+            <TouchableOpacity 
+              style={[styles.squareBtn, { backgroundColor: p1Recording ? '#8E1C16' : '#FF3B30' }]}
+              onPress={() => p1Recording ? stopRecording(1) : startRecording(1)}
+            >
+              <IconSymbol name={p1Recording ? "stop.fill" : "record.circle.fill"} size={28} color="white" />
+              <Text style={styles.btnText}>{p1Recording ? `${p1Duration}s / 60s` : "Record"}</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.actionButton, !p1Uri && styles.disabledButton, { backgroundColor: '#FF9500' }]}
-            onPress={() => playReversedSound(p1Uri)}
-            disabled={!p1Uri}
-          >
-            <IconSymbol name="backward.fill" size={24} color="white" />
-            <Text style={styles.actionText}>Play Reverse</Text>
-          </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.circleBtn, !p1Uri && styles.disabled]}
+              onPress={() => playSound(p1Uri)}
+              disabled={!p1Uri}
+            >
+              <IconSymbol name="play.fill" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.gridRow}>
+            <TouchableOpacity 
+              style={[styles.squareBtn, { backgroundColor: '#007AFF' }, !p1Uri && styles.disabled]}
+              onPress={() => playSound(p1Uri)} // Mock reverse
+              disabled={!p1Uri}
+            >
+              <IconSymbol name="backward.fill" size={28} color="white" />
+              <Text style={styles.btnText}>Play Reverse</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.circleBtn, !p1Uri && styles.disabled]}
+              onPress={() => playSound(p1Uri, 0.5)}
+              disabled={!p1Uri}
+            >
+              <IconSymbol name="hare.fill" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
       {/* Player 2 Card */}
-      <View style={[styles.card, activeStep === 'playerTwo' && styles.cardActive, { opacity: activeStep === 'playerOne' ? 0.5 : 1 }]}>
+      <View style={[styles.card, activeStep === 'playerTwo' && styles.cardActive, activeStep !== 'playerTwo' && { opacity: 0.76 }]}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Player 2</Text>
-          <Text style={styles.cardSubtitle}>try to copy reversed</Text>
-          {activeStep === 'playerTwo' ? (
-            <Text style={styles.statusActive}>Active</Text>
-          ) : (
-            <Text style={styles.statusWaiting}>Waiting</Text>
-          )}
+          <View>
+            <Text style={styles.cardTitle}>Player 2</Text>
+            <Text style={styles.cardSubtitle}>try to copy reversed</Text>
+            {activeStep === 'playerTwo' && !p2Uri && !p2Recording && (
+              <Text style={styles.helperText}>Listen and record the mimic.</Text>
+            )}
+          </View>
+          <View style={[styles.statusPill, activeStep === 'playerTwo' ? styles.statusActive : styles.statusWaiting]}>
+            <Text style={styles.statusText}>{activeStep === 'playerTwo' ? 'Active' : 'Waiting'}</Text>
+          </View>
         </View>
 
-        <View style={styles.actions}>
-          <TouchableOpacity 
-            style={[styles.recordButton, p2Recording && styles.recordingButton, activeStep !== 'playerTwo' && styles.disabledButton]}
-            onPress={() => p2Recording ? stopRecording(2) : startRecording(2)}
-            disabled={activeStep !== 'playerTwo'}
-          >
-            <IconSymbol name={p2Recording ? "stop.fill" : "record.circle.fill"} size={24} color="white" />
-            <Text style={styles.actionText}>{p2Recording ? "Stop" : "Record Mimic"}</Text>
-          </TouchableOpacity>
+        {p2Uri && (
+          <View style={styles.waveformContainer}>
+            <View style={styles.waveformBars}>
+              {WAVEFORM_BARS.slice().reverse().map((val, i) => (
+                <View key={i} style={[styles.waveformBar, { height: Math.max(5, val * 24), backgroundColor: '#AF52DE' }]} />
+              ))}
+            </View>
+            <Text style={styles.durationText}>{p2Duration}.0s</Text>
+          </View>
+        )}
 
-          <TouchableOpacity 
-            style={[styles.actionButton, !p2Uri && styles.disabledButton]}
-            onPress={() => playSound(p2Uri)}
-            disabled={!p2Uri}
-          >
-            <IconSymbol name="play.fill" size={24} color="white" />
-            <Text style={styles.actionText}>Play</Text>
-          </TouchableOpacity>
+        <View style={styles.grid}>
+          <View style={styles.gridRow}>
+            <TouchableOpacity 
+              style={[styles.squareBtn, { backgroundColor: p2Recording ? '#8E1C16' : '#FF3B30' }, activeStep !== 'playerTwo' && styles.disabled]}
+              onPress={() => p2Recording ? stopRecording(2) : startRecording(2)}
+              disabled={activeStep !== 'playerTwo'}
+            >
+              <IconSymbol name={p2Recording ? "stop.fill" : "record.circle.fill"} size={28} color="white" />
+              <Text style={styles.btnText}>{p2Recording ? `${p2Duration}s / 60s` : "Record Mimic"}</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.actionButton, !p2Uri && styles.disabledButton, { backgroundColor: '#AF52DE' }]}
-            onPress={() => playReversedSound(p2Uri)}
-            disabled={!p2Uri}
-          >
-            <IconSymbol name="sparkles" size={24} color="white" />
-            <Text style={styles.actionText}>Result</Text>
+            <TouchableOpacity 
+              style={[styles.circleBtn, !p2Uri && styles.disabled]}
+              onPress={() => playSound(p2Uri)}
+              disabled={!p2Uri}
+            >
+              <IconSymbol name="play.fill" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.gridRow}>
+            <TouchableOpacity 
+              style={[styles.squareBtn, { backgroundColor: '#34C759' }, !p2Uri && styles.disabled]}
+              onPress={() => playSound(p2Uri)} // Mock reverse
+              disabled={!p2Uri}
+            >
+              <IconSymbol name="sparkles" size={28} color="white" />
+              <Text style={styles.btnText}>Result</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.circleBtn, !p2Uri && styles.disabled]}
+              onPress={() => alert('Share sheet would open here')}
+              disabled={!p2Uri}
+            >
+              <IconSymbol name="square.and.arrow.up" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      {/* History Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <View>
+            <Text style={styles.cardTitle}>History</Text>
+            <Text style={styles.cardSubtitle}>Last 20 only</Text>
+          </View>
+          <TouchableOpacity style={styles.openBtn}>
+            <Text style={styles.openBtnText}>Open</Text>
           </TouchableOpacity>
         </View>
+
+        {p2Uri ? (
+          <View style={styles.historyRow}>
+            <View style={styles.historyDate}>
+              <Text style={styles.historyDateText}>Just now</Text>
+            </View>
+            <View style={styles.historyActions}>
+              <TouchableOpacity style={[styles.historyCircleBtn, { backgroundColor: '#FF2D55' }]} onPress={() => playSound(p2Uri)}>
+                <IconSymbol name="mic.fill" size={16} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.historyCircleBtn, { backgroundColor: '#007AFF' }]} onPress={() => playSound(p2Uri)}>
+                <IconSymbol name="sparkles" size={16} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.historyCircleBtn} onPress={() => alert('Share')}>
+                <IconSymbol name="ellipsis" size={16} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <Text style={styles.emptyHistory}>No history yet.</Text>
+        )}
       </View>
 
     </ScrollView>
@@ -185,85 +262,162 @@ export function ReverseSingingSession({ session }: Props) {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    gap: 20,
+    gap: 16,
     paddingBottom: 40,
   },
   card: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 24,
     padding: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.05)',
   },
   cardActive: {
-    borderColor: 'rgba(52, 199, 89, 0.5)',
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderColor: 'rgba(52, 199, 89, 0.4)',
+    backgroundColor: 'rgba(255,255,255,0.12)',
   },
   cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 20,
   },
   cardTitle: {
     color: 'white',
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   cardSubtitle: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 16,
-    marginTop: 4,
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 14,
+    marginTop: 2,
+  },
+  helperText: {
+    color: '#007AFF',
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 6,
+  },
+  statusPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
   statusActive: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    color: '#34C759',
-    fontWeight: '600',
+    backgroundColor: 'rgba(52, 199, 89, 0.2)',
+  },
+  statusInactive: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   statusWaiting: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    color: '#FF9500',
-    fontWeight: '600',
+    backgroundColor: 'rgba(255, 149, 0, 0.2)',
   },
-  actions: {
+  statusText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  waveformContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  waveformBars: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  waveformBar: {
+    width: 3,
+    backgroundColor: '#34C759',
+    borderRadius: 2,
+  },
+  durationText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 14,
+    fontVariant: ['tabular-nums'],
+  },
+  grid: {
     gap: 12,
   },
-  actionButton: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+  gridRow: {
     flexDirection: 'row',
+    gap: 12,
+  },
+  squareBtn: {
+    flex: 1,
+    borderRadius: 20,
+    padding: 16,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    minHeight: 100,
+  },
+  btnText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 12,
+  },
+  circleBtn: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
   },
-  recordButton: {
-    flex: 1,
-    minWidth: '100%',
-    backgroundColor: '#FF3B30',
-    paddingVertical: 16,
+  disabled: {
+    opacity: 0.3,
+  },
+  openBtn: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
     paddingHorizontal: 16,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
+    paddingVertical: 8,
+    borderRadius: 16,
   },
-  recordingButton: {
-    backgroundColor: '#8E1C16',
-  },
-  disabledButton: {
-    opacity: 0.5,
-  },
-  actionText: {
+  openBtnText: {
     color: 'white',
     fontWeight: '600',
-    fontSize: 16,
+  },
+  emptyHistory: {
+    color: 'rgba(255,255,255,0.4)',
+    textAlign: 'center',
+    paddingVertical: 20,
+  },
+  historyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    padding: 12,
+    borderRadius: 16,
+  },
+  historyDate: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  historyDateText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  historyActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  historyCircleBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });

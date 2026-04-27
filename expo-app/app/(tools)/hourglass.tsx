@@ -14,13 +14,8 @@ import Animated, {
 import * as Haptics from 'expo-haptics';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
-const STAGE_URLS = [
-  "https://r2-pub.rork.com/generated-images/78c5fcee-8aa7-4dfd-b7ea-f172199c5379.png", // 100% top
-  "https://r2-pub.rork.com/generated-images/66eedb95-d55e-4e8f-a692-33e3cf5c79ea.png", // 75%
-  "https://r2-pub.rork.com/generated-images/cc809ffb-12b4-424b-a9f1-ea496b5f37d2.png", // 50%
-  "https://r2-pub.rork.com/generated-images/11d8d6aa-472b-493a-8d47-41817ecc11a6.png", // 25%
-  "https://r2-pub.rork.com/generated-images/256779c5-8b00-4986-9571-a0bb26478349.png"  // 0% top
-];
+// Using the same single static hourglass image as the iOS version
+const HOURGLASS_URL = "https://r2-pub.rork.com/generated-images/cc809ffb-12b4-424b-a9f1-ea496b5f37d2.png";
 
 const PRESETS = [
   { label: "30s", seconds: 30 },
@@ -66,29 +61,6 @@ const WheelPicker = ({ title, value, range, onChange }: { title: string, value: 
         })}
       </ScrollView>
     </View>
-  );
-};
-
-// --- Realistic Hourglass Animation ---
-const HourglassLayer = ({ url, index, progressSV }: { url: string, index: number, progressSV: SharedValue<number> }) => {
-  const style = useAnimatedStyle(() => {
-    const p = Math.max(0, Math.min(1, progressSV.value));
-    const continuous = (1 - p) * 4;
-    const stageIndex = Math.min(4, Math.floor(continuous));
-    const blend = continuous - stageIndex;
-    const nextStageIndex = Math.min(4, stageIndex + 1);
-
-    let opacity = 0;
-    if (index === stageIndex) opacity = 1 - blend * 0.9;
-    else if (index === nextStageIndex && nextStageIndex !== stageIndex) opacity = blend;
-
-    return { opacity };
-  });
-
-  return (
-    <Animated.View style={[StyleSheet.absoluteFill, style]}>
-      <Image source={{ uri: url }} style={{ width: '100%', height: '100%' }} contentFit="contain" />
-    </Animated.View>
   );
 };
 
@@ -258,10 +230,11 @@ export default function HourglassToolScreen() {
         </Text>
 
         <View style={styles.hourglassWrapper}>
-          {STAGE_URLS.map((url, i) => (
-            <HourglassLayer key={i} url={url} index={i} progressSV={progressSV} />
-          ))}
-          <View style={styles.hourglassShadow} />
+          <Image 
+            source={{ uri: HOURGLASS_URL }} 
+            style={{ width: '100%', height: '100%' }} 
+            contentFit="contain" 
+          />
         </View>
       </Animated.View>
 

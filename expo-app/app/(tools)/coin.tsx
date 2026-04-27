@@ -70,9 +70,6 @@ const CoinComponent = ({
   return (
     <Pressable onPress={onPress}>
       <Animated.View style={[styles.coinContainer, { width: size, height: size }, containerStyle]}>
-        {/* Glow */}
-        <View style={styles.coinGlow} />
-
         {/* Tails (Back) */}
         <Animated.View style={[styles.coinFace, backStyle]}>
           <Image source={{ uri: TAILS_URL }} style={styles.coinImage} contentFit="contain" />
@@ -402,18 +399,6 @@ const styles = StyleSheet.create({
   coinContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  coinGlow: {
-    position: 'absolute',
-    width: '120%',
-    height: '120%',
-    borderRadius: 999,
-    backgroundColor: 'rgba(255, 214, 10, 0.15)',
-    shadowColor: '#FFD60A',
-    shadowRadius: 18,
-    shadowOpacity: 0.35,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 10,
   },
   coinFace: {
     position: 'absolute',

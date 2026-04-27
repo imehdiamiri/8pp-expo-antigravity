@@ -30,6 +30,7 @@ import { Colors, Typography } from '../src/theme/Colors';
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { useSettingsStore } from '../src/store/useSettingsStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { GlowView } from '@/src/components/ui/GlowView';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -106,7 +107,7 @@ export default function OnboardingScreen() {
   const WelcomePage = () => (
     <View style={styles.page}>
       <View style={styles.iconSection}>
-        <View style={[styles.halo, { backgroundColor: 'rgba(0, 122, 255, 0.4)' }]} />
+        <GlowView color="rgba(0, 122, 255, 0.6)" size={320} style={{ position: 'absolute' }} />
         <BouncingIcon active={currentPage === 0}>
           <LinearGradient
             colors={[Colors.blue, Colors.cyan]}
@@ -130,7 +131,7 @@ export default function OnboardingScreen() {
   const ShowcasePage = () => (
     <View style={styles.page}>
       <View style={styles.iconSection}>
-        <View style={[styles.halo, { backgroundColor: 'rgba(52, 199, 89, 0.4)' }]} />
+        <GlowView color="rgba(52, 199, 89, 0.6)" size={320} style={{ position: 'absolute' }} />
         <BouncingIcon active={currentPage === 1}>
           <LinearGradient
             colors={[Colors.green, Colors.mint]}
@@ -159,7 +160,7 @@ export default function OnboardingScreen() {
   const NameEntryPage = () => (
     <View style={styles.page}>
       <View style={styles.iconSection}>
-        <View style={[styles.halo, { backgroundColor: 'rgba(175, 82, 222, 0.35)', width: 180, height: 180 }]} />
+        <GlowView color="rgba(175, 82, 222, 0.6)" size={320} style={{ position: 'absolute' }} />
         <BouncingIcon active={currentPage === 2}>
           <LinearGradient
             colors={[Colors.purple, Colors.pink]}

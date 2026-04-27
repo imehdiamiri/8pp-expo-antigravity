@@ -251,8 +251,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   ideasContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
     paddingVertical: 40,
   },
   ideasPlaceholderText: {

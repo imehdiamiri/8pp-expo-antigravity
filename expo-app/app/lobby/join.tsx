@@ -5,22 +5,30 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useMultiplayerStore } from '@/src/store/useMultiplayerStore';
 
 export default function JoinLobbyScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   
+  const { joinRoom, isBusy } = useMultiplayerStore();
   const [roomCode, setRoomCode] = useState('');
   const [displayName, setDisplayName] = useState('');
   
-  const isJoinDisabled = roomCode.trim().length < 6 || displayName.trim().length < 2;
+  const isJoinDisabled = roomCode.trim().length < 6 || displayName.trim().length < 2 || isBusy;
 
-  const handleJoin = () => {
+  const handleJoin = async () => {
     if (isJoinDisabled) return;
-    router.push({
-      pathname: `/lobby/[roomCode]`,
-      params: { roomCode: roomCode.trim(), isHost: 'false', displayName: displayName.trim() }
-    });
+    
+    try {
+      await joinRoom(roomCode.trim(), displayName.trim());
+      router.push({
+        pathname: `/lobby/[roomCode]`,
+        params: { roomCode: roomCode.trim() }
+      });
+    } catch (err) {
+      // Error handled by store/alert
+    }
   };
 
   return (
@@ -83,7 +91,7 @@ export default function JoinLobbyScreen() {
             onPress={handleJoin}
             disabled={isJoinDisabled}
           >
-            <Text style={styles.joinButtonText}>Join Room</Text>
+            <Text style={styles.joinButtonText}>{isBusy ? 'Joining...' : 'Join Room'}</Text>
           </TouchableOpacity>
 
         </ScrollView>

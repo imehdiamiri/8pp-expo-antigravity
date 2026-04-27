@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Games } from '@/src/models/AppModels';
+import { useMultiplayerStore } from '@/src/store/useMultiplayerStore';
 
 export default function CreateLobbyScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -15,9 +16,10 @@ export default function CreateLobbyScreen() {
   const gameKey = Object.keys(Games).find(key => Games[key].id === id);
   const game = gameKey ? Games[gameKey] : null;
 
+  const { createRoom, isBusy } = useMultiplayerStore();
   const [displayName, setDisplayName] = useState('');
   
-  const isCreateDisabled = displayName.trim().length < 2;
+  const isCreateDisabled = displayName.trim().length < 2 || isBusy;
 
   if (!game) {
     return (
@@ -33,21 +35,18 @@ export default function CreateLobbyScreen() {
     );
   }
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (isCreateDisabled) return;
     
-    // Generate a random 6-digit room code for demo purposes
-    const roomCode = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    router.push({
-      pathname: `/lobby/[roomCode]`,
-      params: { 
-        roomCode, 
-        isHost: 'true', 
-        displayName: displayName.trim(),
-        gameId: game.id 
-      }
-    });
+    try {
+      const roomCode = await createRoom(game.id, displayName.trim());
+      router.push({
+        pathname: `/lobby/[roomCode]`,
+        params: { roomCode }
+      });
+    } catch (err) {
+      // Error handled by store/alert
+    }
   };
 
   return (
@@ -97,7 +96,7 @@ export default function CreateLobbyScreen() {
             onPress={handleCreate}
             disabled={isCreateDisabled}
           >
-            <Text style={styles.joinButtonText}>Create Room</Text>
+            <Text style={styles.joinButtonText}>{isBusy ? 'Creating...' : 'Create Room'}</Text>
           </TouchableOpacity>
 
         </ScrollView>

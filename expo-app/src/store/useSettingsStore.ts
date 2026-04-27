@@ -7,10 +7,13 @@ interface SettingsState {
   isVibrationEnabled: boolean;
   hasCompletedOnboarding: boolean;
   playerName: string;
+  lastGameConfigs: Record<string, Record<string, any>>;
+  lastPlayerNames: Record<string, string[]>;
   setSoundEnabled: (enabled: boolean) => void;
   setVibrationEnabled: (enabled: boolean) => void;
   setHasCompletedOnboarding: (completed: boolean) => void;
   setPlayerName: (name: string) => void;
+  saveGameConfig: (gameId: string, config: Record<string, any>, playerNames: string[]) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -20,10 +23,16 @@ export const useSettingsStore = create<SettingsState>()(
       isVibrationEnabled: true,
       hasCompletedOnboarding: false,
       playerName: '',
+      lastGameConfigs: {},
+      lastPlayerNames: {},
       setSoundEnabled: (enabled) => set({ isSoundEnabled: enabled }),
       setVibrationEnabled: (enabled) => set({ isVibrationEnabled: enabled }),
       setHasCompletedOnboarding: (completed) => set({ hasCompletedOnboarding: completed }),
       setPlayerName: (name) => set({ playerName: name }),
+      saveGameConfig: (gameId, config, playerNames) => set((state) => ({
+        lastGameConfigs: { ...state.lastGameConfigs, [gameId]: config },
+        lastPlayerNames: { ...state.lastPlayerNames, [gameId]: playerNames },
+      })),
     }),
     {
       name: 'settings-storage',

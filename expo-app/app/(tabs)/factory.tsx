@@ -402,10 +402,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    justifyContent: 'space-between',
   },
   vibeTile: {
-    width: '23.5%', // Slightly less than 25% to account for gap
+    width: '23%', // approx 4 items per row accounting for gap
     height: 64,
     borderRadius: 14,
     borderWidth: 1,

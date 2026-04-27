@@ -11,9 +11,21 @@ export default function ToolsLayout() {
         headerStyle: { backgroundColor: '#1A1A1A' },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: '700', fontSize: 17 },
+        contentStyle: { backgroundColor: '#111' },
         headerRight: () => (
-          <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Text style={{ color: '#0A84FF', fontSize: 17, fontWeight: '600' }}>Done</Text>
+          <TouchableOpacity 
+            onPress={() => router.back()} 
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              paddingHorizontal: 16,
+              paddingVertical: 6,
+              borderRadius: 999,
+              borderWidth: 1,
+              borderColor: 'rgba(255, 255, 255, 0.12)'
+            }}
+          >
+            <Text style={{ color: '#0A84FF', fontSize: 15, fontWeight: '600' }}>Done</Text>
           </TouchableOpacity>
         ),
       }}

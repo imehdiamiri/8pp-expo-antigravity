@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { GlowView } from '@/src/components/ui/GlowView';
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { usePaywallStore } from '@/src/store/usePaywallStore';
 import { PurchasesPackage } from 'react-native-purchases';
@@ -96,8 +97,8 @@ export default function PaywallScreen() {
   const renderHeroSection = () => (
     <View style={styles.heroSection}>
       <View style={styles.iconContainer}>
-        {/* Mocking radial gradient behind icon using layered views */}
-        <View style={styles.iconGlow} />
+        {/* Real radial gradient behind icon using SVG GlowView */}
+        <GlowView color="rgba(255, 165, 0, 0.5)" size={180} style={{ position: 'absolute' }} />
         <IconSymbol 
           name={isPremium ? "crown.fill" : "sparkles"} 
           size={44} 
@@ -398,17 +399,6 @@ const styles = StyleSheet.create({
     height: 110,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  iconGlow: {
-    position: 'absolute',
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(255, 165, 0, 0.4)',
-    shadowColor: '#FFA500',
-    shadowOpacity: 0.8,
-    shadowRadius: 20,
-    elevation: 10,
   },
   heroTitle: {
     color: 'white',

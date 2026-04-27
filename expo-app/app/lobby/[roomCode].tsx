@@ -1,80 +1,81 @@
-import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Games, GameMode } from '@/src/models/AppModels';
-import { useGameStore } from '@/src/store/useGameStore';
+import { Games } from '@/src/models/AppModels';
+import { useMultiplayerStore } from '@/src/store/useMultiplayerStore';
 import * as Clipboard from 'expo-clipboard';
 
 export default function LobbyScreen() {
-  const { roomCode, isHost, displayName, gameId } = useLocalSearchParams<{ 
-    roomCode: string, 
-    isHost: string, 
-    displayName: string,
-    gameId?: string 
-  }>();
-  
+  const { roomCode } = useLocalSearchParams<{ roomCode: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   
-  // Mock finding a game if gameId is passed, or default to some game if guest just joined
-  const gameKey = Object.keys(Games).find(key => Games[key].id === (gameId ?? 'casual-reverse-singing'));
-  const game = gameKey ? Games[gameKey] : Games['casualReverseSinging'];
+  const { currentRoom, isHost, localPlayerId, leaveRoom, startGame, error } = useMultiplayerStore();
 
-  const { startSingleDeviceSession } = useGameStore();
+  const gameKey = currentRoom ? Object.keys(Games).find(key => Games[key].id === currentRoom.gameId) : null;
+  const game = gameKey ? Games[gameKey] : null;
 
-  const isHostView = isHost === 'true';
-
-  // Mock players list for demo
-  const [players, setPlayers] = useState([
-    { id: '1', name: displayName || 'You', isHost: isHostView, isMe: true },
-    ...(isHostView ? [] : [{ id: '2', name: 'Host Player', isHost: true, isMe: false }])
-  ]);
+  // Convert the players record to an array for rendering
+  const players = currentRoom ? Object.values(currentRoom.players) : [];
 
   useEffect(() => {
-    // In a real app, listen to socket for new players
-    if (isHostView) {
-      const timer = setTimeout(() => {
-        setPlayers(prev => [...prev, { id: '3', name: 'Guest Player', isHost: false, isMe: false }]);
-      }, 3000);
-      return () => clearTimeout(timer);
+    // If room is closed or game started, handle navigation
+    if (currentRoom?.status === 'playing') {
+      router.replace(`/game/${currentRoom.gameId}/session` as any);
     }
-  }, [isHostView]);
+  }, [currentRoom?.status, router]);
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Error', error, [
+        { text: 'OK', onPress: () => router.dismissAll() }
+      ]);
+    }
+  }, [error]);
 
   const handleCopyCode = async () => {
-    await Clipboard.setStringAsync(roomCode);
-    Alert.alert('Copied', 'Room code copied to clipboard!');
+    if (roomCode) {
+      await Clipboard.setStringAsync(roomCode);
+      Alert.alert('Copied', 'Room code copied to clipboard!');
+    }
   };
 
-  const handleStartGame = () => {
-    // Navigate to session for this mock implementation
-    // Ideally we would send a 'start game' signal to guests via websocket
-    
-    // In a real multi-device setup, we would initialize a MultiDevice session
-    startSingleDeviceSession(game, players.map(p => p.name), 3);
-    router.push(`/game/${game.id}/session` as any);
+  const handleStartGame = async () => {
+    if (isHost) {
+      await startGame();
+    }
   };
 
   const handleCloseRoom = () => {
     Alert.alert(
-      isHostView ? "Close Room?" : "Leave Room?",
-      isHostView ? "This will close the room for everyone and expire the code." : "Are you sure you want to leave?",
+      isHost ? "Close Room?" : "Leave Room?",
+      isHost ? "This will close the room for everyone and expire the code." : "Are you sure you want to leave?",
       [
         { text: "Cancel", style: "cancel" },
         { 
-          text: isHostView ? "Close Room" : "Leave", 
+          text: isHost ? "Close Room" : "Leave", 
           style: "destructive", 
-          onPress: () => {
+          onPress: async () => {
+            await leaveRoom();
             router.dismissAll();
           }
         }
       ]
     );
   };
+
+  if (!currentRoom) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <AppBackgroundView />
+        <ActivityIndicator size="large" color="white" />
+        <Text style={{ color: 'white', marginTop: 10 }}>Connecting...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -83,9 +84,9 @@ export default function LobbyScreen() {
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <View style={styles.headerButton} />
-        <Text style={styles.headerTitle}>{isHostView ? 'Host Lobby' : 'Game Lobby'}</Text>
+        <Text style={styles.headerTitle}>{isHost ? 'Host Lobby' : 'Game Lobby'}</Text>
         <TouchableOpacity onPress={handleCloseRoom} style={styles.headerButtonRight}>
-          <Text style={styles.leaveText}>{isHostView ? 'Close Room' : 'Leave'}</Text>
+          <Text style={styles.leaveText}>{isHost ? 'Close Room' : 'Leave'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -97,7 +98,7 @@ export default function LobbyScreen() {
           
           <View style={styles.codeContainer}>
             <Text style={styles.codeLabel}>ROOM CODE</Text>
-            <Text style={styles.codeText}>{roomCode}</Text>
+            <Text style={styles.codeText}>{currentRoom.roomCode}</Text>
             
             <View style={styles.actionButtons}>
               <TouchableOpacity style={styles.actionButton} onPress={handleCopyCode}>
@@ -114,7 +115,7 @@ export default function LobbyScreen() {
         </View>
 
         {/* Host Actions or Guest Status */}
-        {isHostView ? (
+        {isHost ? (
           <View style={styles.actionsCard}>
             <Text style={styles.sectionTitle}>Host Actions</Text>
             <Text style={styles.hintText}>Wait for everyone to join before starting.</Text>
@@ -155,7 +156,7 @@ export default function LobbyScreen() {
                     <IconSymbol name="person.fill" size={16} color="white" />
                   </View>
                   <Text style={styles.playerName}>
-                    {player.name} {player.isMe ? '(You)' : ''}
+                    {player.name} {player.id === localPlayerId ? '(You)' : ''}
                   </Text>
                 </View>
                 
@@ -166,7 +167,7 @@ export default function LobbyScreen() {
                   </View>
                 )}
                 
-                {isHostView && !player.isMe && (
+                {isHost && player.id !== localPlayerId && (
                   <TouchableOpacity style={styles.kickButton}>
                     <Text style={styles.kickText}>Remove</Text>
                   </TouchableOpacity>
@@ -183,6 +184,7 @@ export default function LobbyScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  centerContent: { justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

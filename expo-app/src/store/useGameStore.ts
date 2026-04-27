@@ -26,18 +26,19 @@ export interface GameSession {
   phase: MatchPhase;
   rounds?: any[];
   maxRounds?: number;
+  gameConfig?: Record<string, any>;
 }
 
 interface GameStoreState {
   activeSession: GameSession | null;
-  startSingleDeviceSession: (game: GameType, playerNames: string[], rounds: number) => void;
+  startSingleDeviceSession: (game: GameType, playerNames: string[], rounds: number, gameConfig?: Record<string, any>) => void;
   exitActiveSession: () => void;
 }
 
 export const useGameStore = create<GameStoreState>((set) => ({
   activeSession: null,
   
-  startSingleDeviceSession: (game, playerNames, rounds) => {
+  startSingleDeviceSession: (game, playerNames, rounds, gameConfig) => {
     const players: PlayerProfile[] = playerNames.map((name, index) => ({
       id: `player_${index}`,
       username: name,
@@ -52,6 +53,8 @@ export const useGameStore = create<GameStoreState>((set) => ({
         players,
         currentRoundIndex: 0,
         phase: MatchPhase.playing,
+        maxRounds: rounds,
+        gameConfig,
       }
     });
   },

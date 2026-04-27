@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -11,6 +12,7 @@ import { PartyToolsSection } from '@/src/components/tools/PartyToolsSection';
 
 export default function ToolsScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [showSaved, setShowSaved] = useState(false);
 
   const totalCardsCount = 520; // Mock total count for now
@@ -74,7 +76,12 @@ export default function ToolsScreen() {
             {/* Categories */}
             <View style={styles.categoriesContainer}>
               {CardCategoriesList.map((category) => (
-                <TouchableOpacity key={category.id} style={styles.rowContainer} activeOpacity={0.8}>
+                <TouchableOpacity 
+                  key={category.id} 
+                  style={styles.rowContainer} 
+                  activeOpacity={0.8}
+                  onPress={() => router.push(`/cards/${category.id}` as any)}
+                >
                   <BlurView intensity={25} tint="dark" style={styles.categoryRow}>
                     <LinearGradient colors={['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.00)']} style={styles.categoryBackground}>
                       <View style={[styles.categoryIconContainer, { backgroundColor: category.accentColor + '20' }]}>

@@ -14,7 +14,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
-import { auth } from '../lib/firebase';
+import { auth, syncUserProfile, setUserOnline } from '../lib/firebase';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -82,6 +82,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           },
           isInitialized: true,
         });
+
+        // Sync profile to Firebase RTDB + Firestore & set online
+        syncUserProfile({
+          uid: user.uid,
+          username: displayName,
+          email: user.email ?? undefined,
+          provider,
+        });
+        setUserOnline(user.uid);
       } else {
         set({
           currentUser: null,

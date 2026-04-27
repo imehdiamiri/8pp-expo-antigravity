@@ -1,0 +1,546 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { GameSession } from '@/src/store/useGameStore';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
+
+interface Props {
+  session: GameSession;
+}
+
+type Phase = 'ready' | 'playing' | 'playerComplete' | 'results';
+
+// Matches iOS MemoryGridViewModel.tileSymbols exactly
+const TILE_SYMBOLS: string[] = [
+  'star.fill', 'heart.fill', 'moon.fill', 'sun.max.fill',
+  'bolt.fill', 'flame.fill', 'leaf.fill', 'drop.fill',
+  'snowflake', 'cloud.fill', 'wind', 'tornado',
+  'sparkles', 'bell.fill', 'flag.fill', 'crown.fill',
+  'diamond.fill', 'globe.americas.fill'
+];
+
+// Matches iOS MemoryTileView.tileColors exactly
+const TILE_COLORS = [
+  '#5AC8FA', '#FF2D55', '#FF9500', '#34C759', '#AF52DE',
+  '#FFCC00', '#00C7BE', '#FF3B30', '#5856D6', '#30B0C7'
+];
+
+interface MemoryTile {
+  id: string;
+  pairId: number;
+  symbol: string;
+  colorIndex: number;
+  isFlipped: boolean;
+  isMatched: boolean;
+}
+
+interface PlayerTime {
+  playerId: string;
+  elapsedSeconds: number;
+  moveCount: number;
+}
+
+const GRID_SIZES: Record<string, {cols:number;rows:number}> = {
+  tiny3x4: {cols:3,rows:4}, small4x4: {cols:4,rows:4},
+  medium4x5: {cols:4,rows:5}, large5x6: {cols:5,rows:6}, huge6x6: {cols:6,rows:6},
+};
+
+function getGridDims(session: {gameConfig?: Record<string,any>}) {
+  const key = session.gameConfig?.gridSize || 'small4x4';
+  return GRID_SIZES[key] || GRID_SIZES.small4x4;
+}
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+export function MemoryGridSession({ session }: Props) {
+  const [phase, setPhase] = useState<Phase>('ready');
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+
+  const [tiles, setTiles] = useState<MemoryTile[]>([]);
+  const [firstFlippedIndex, setFirstFlippedIndex] = useState<number | null>(null);
+  const [isResolving, setIsResolving] = useState(false);
+  const [matchedPairs, setMatchedPairs] = useState(0);
+  const [moveCount, setMoveCount] = useState(0);
+
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [playerTimes, setPlayerTimes] = useState<PlayerTime[]>([]);
+
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const players = session.players;
+  const currentPlayer = players[currentPlayerIndex];
+
+  // Timer: increments by 0.1 every 100ms, exactly like iOS
+  useEffect(() => {
+    if (phase === 'playing') {
+      timerRef.current = setInterval(() => {
+        setElapsedSeconds(prev => +(prev + 0.1).toFixed(1));
+      }, 100);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [phase]);
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds) % 60;
+    const tenths = Math.floor((seconds * 10) % 10);
+    if (mins > 0) {
+      return `${mins}:${secs.toString().padStart(2, '0')}.${tenths}`;
+    }
+    return `${secs}.${tenths}`;
+  };
+
+  // Generates board exactly like iOS: shuffled symbols, each with colorIndex
+  const { cols, rows } = getGridDims(session);
+  const PAIR_COUNT = Math.floor((cols * rows) / 2);
+
+  const generateBoard = useCallback((): MemoryTile[] => {
+    const symbols = shuffleArray(TILE_SYMBOLS).slice(0, PAIR_COUNT);
+    let board: MemoryTile[] = [];
+    for (let pairId = 0; pairId < symbols.length; pairId++) {
+      const colorIdx = pairId % 10;
+      board.push({
+        id: `a_${pairId}`,
+        pairId,
+        symbol: symbols[pairId],
+        colorIndex: colorIdx,
+        isFlipped: false,
+        isMatched: false,
+      });
+      board.push({
+        id: `b_${pairId}`,
+        pairId,
+        symbol: symbols[pairId],
+        colorIndex: colorIdx,
+        isFlipped: false,
+        isMatched: false,
+      });
+    }
+    return shuffleArray(board);
+  }, []);
+
+  const handleStart = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const board = generateBoard();
+    setTiles(board);
+    setFirstFlippedIndex(null);
+    setIsResolving(false);
+    setMatchedPairs(0);
+    setMoveCount(0);
+    setElapsedSeconds(0);
+    setPhase('playing');
+  };
+
+  const handleFlipTile = (index: number) => {
+    if (!tiles[index] || isResolving) return;
+    if (tiles[index].isFlipped || tiles[index].isMatched) return;
+
+    Haptics.selectionAsync();
+
+    const newTiles = [...tiles];
+    newTiles[index] = { ...newTiles[index], isFlipped: true };
+    setTiles(newTiles);
+
+    if (firstFlippedIndex !== null) {
+      // Second tile flipped - this counts as one "move" (pair attempt)
+      const newMoveCount = moveCount + 1;
+      setMoveCount(newMoveCount);
+
+      if (newTiles[firstFlippedIndex].pairId === newTiles[index].pairId) {
+        // Match!
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        const matched = [...newTiles];
+        matched[firstFlippedIndex] = { ...matched[firstFlippedIndex], isMatched: true };
+        matched[index] = { ...matched[index], isMatched: true };
+        setTiles(matched);
+        const newMatchedPairs = matchedPairs + 1;
+        setMatchedPairs(newMatchedPairs);
+        setFirstFlippedIndex(null);
+
+        if (newMatchedPairs >= PAIR_COUNT) {
+          handlePlayerComplete();
+        }
+      } else {
+        // Mismatch: 800ms delay then flip back (exactly iOS)
+        setIsResolving(true);
+        const capturedFirst = firstFlippedIndex;
+        const capturedSecond = index;
+        setFirstFlippedIndex(null);
+
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        setTimeout(() => {
+          setTiles(prev => {
+            const t = [...prev];
+            t[capturedFirst] = { ...t[capturedFirst], isFlipped: false };
+            t[capturedSecond] = { ...t[capturedSecond], isFlipped: false };
+            return t;
+          });
+          setIsResolving(false);
+        }, 800);
+      }
+    } else {
+      setFirstFlippedIndex(index);
+    }
+  };
+
+  const handlePlayerComplete = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    setPlayerTimes(prev => [...prev, {
+      playerId: currentPlayer.id,
+      elapsedSeconds,
+      moveCount,
+    }]);
+
+    const nextIndex = currentPlayerIndex + 1;
+    if (nextIndex >= players.length) {
+      setPhase('results');
+    } else {
+      setPhase('playerComplete');
+    }
+  };
+
+  const handleNextPlayer = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setCurrentPlayerIndex(prev => prev + 1);
+    setPhase('ready');
+  };
+
+  const handlePlayAgain = () => {
+    setCurrentPlayerIndex(0);
+    setPlayerTimes([]);
+    setPhase('ready');
+  };
+
+  const tileColor = (colorIndex: number) => TILE_COLORS[colorIndex % TILE_COLORS.length];
+
+  const progress = PAIR_COUNT > 0 ? matchedPairs / PAIR_COUNT : 0;
+
+  const screenWidth = Dimensions.get('window').width;
+  const gridPadding = 24;
+  const tileGap = 8;
+  const availableWidth = screenWidth - gridPadding * 2;
+  const tileSize = (availableWidth - tileGap * (cols - 1)) / cols;
+
+  // ──────────── READY VIEW ────────────
+  if (phase === 'ready') {
+    return (
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.centerContent}>
+          <View style={styles.iconContainer}>
+            <IconSymbol name="square.grid.3x3.fill" size={52} color="#5AC8FA" />
+          </View>
+
+          {players.length > 1 ? (
+            <View style={styles.readyTextGroup}>
+              <View style={styles.turnPill}>
+                <Text style={styles.turnPillText}>Now · {currentPlayer.username}</Text>
+              </View>
+              <Text style={styles.readySubtitle}>Your turn! Get ready to memorize.</Text>
+            </View>
+          ) : (
+            <View style={styles.readyTextGroup}>
+              <Text style={styles.readyTitle}>Memory Grid</Text>
+              <Text style={styles.readySubtitle}>Find all matching pairs!</Text>
+            </View>
+          )}
+
+          <View style={styles.statBubbleRow}>
+            <View style={styles.statBubble}>
+              <Text style={styles.statBubbleValue}>4×4</Text>
+              <Text style={styles.statBubbleLabel}>Grid</Text>
+            </View>
+            <View style={styles.statBubble}>
+              <Text style={styles.statBubbleValue}>{PAIR_COUNT}</Text>
+              <Text style={styles.statBubbleLabel}>Pairs</Text>
+            </View>
+            {players.length > 1 && (
+              <View style={styles.statBubble}>
+                <Text style={styles.statBubbleValue}>{currentPlayerIndex + 1}/{players.length}</Text>
+                <Text style={styles.statBubbleLabel}>Player</Text>
+              </View>
+            )}
+          </View>
+
+          <TouchableOpacity style={styles.primaryBtn} onPress={handleStart}>
+            <Text style={styles.primaryBtnText}>Start</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    );
+  }
+
+  // ──────────── PLAYING VIEW ────────────
+  if (phase === 'playing') {
+    return (
+      <View style={styles.container}>
+        {/* Header: matches iOS gameHeader */}
+        <View style={styles.gameHeader}>
+          <View style={{ flex: 1 }}>
+            {players.length > 1 ? (
+              <View style={styles.turnPill}>
+                <Text style={styles.turnPillText}>Now · {currentPlayer.username}</Text>
+              </View>
+            ) : (
+              <Text style={styles.headerTitle}>Memory Grid</Text>
+            )}
+            <Text style={styles.headerSubtitle}>{matchedPairs}/{PAIR_COUNT} pairs</Text>
+          </View>
+
+          <View style={styles.statsGroup}>
+            <View style={[styles.statPill, { backgroundColor: 'rgba(255,149,0,0.1)' }]}>
+              <IconSymbol name="hand.tap.fill" size={12} color="#FF9500" />
+              <Text style={[styles.statPillText, { color: '#FF9500' }]}>{moveCount}</Text>
+            </View>
+            <View style={[styles.statPill, { backgroundColor: 'rgba(90,200,250,0.1)' }]}>
+              <IconSymbol name="timer" size={12} color="#5AC8FA" />
+              <Text style={[styles.statPillText, { color: '#5AC8FA' }]}>{formatTime(elapsedSeconds)}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Progress bar: matches iOS */}
+        <View style={styles.progressBarContainer}>
+          <View style={styles.progressBarBg}>
+            <LinearGradient
+              colors={['#5AC8FA', '#007AFF']}
+              start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+              style={[styles.progressBarFill, { width: `${Math.max(progress * 100, 1)}%` as any }]}
+            />
+          </View>
+        </View>
+
+        {/* Grid: matches iOS gridBoard */}
+        <View style={[styles.gridContainer, { paddingHorizontal: gridPadding - 12 }]}>
+          <View style={[styles.grid, { gap: tileGap }]}>
+            {tiles.map((tile, i) => {
+              const isShowingFront = tile.isFlipped || tile.isMatched;
+              const color = tileColor(tile.colorIndex);
+              return (
+                <TouchableOpacity
+                  key={tile.id}
+                  style={[
+                    styles.tileWrapper,
+                    { width: tileSize, height: tileSize },
+                    tile.isMatched && { opacity: 0.55, transform: [{ scale: 0.94 }] }
+                  ]}
+                  onPress={() => handleFlipTile(i)}
+                  activeOpacity={0.8}
+                  disabled={tile.isFlipped || tile.isMatched || isResolving}
+                  accessible
+                  accessibilityLabel={tile.isFlipped || tile.isMatched ? `Tile ${tile.symbol}` : `Hidden tile ${i + 1}`}
+                  accessibilityHint={tile.isMatched ? 'Already matched' : tile.isFlipped ? 'Flipped' : 'Double-tap to flip'}
+                  accessibilityRole="button"
+                >
+                  {isShowingFront ? (
+                    // Front face: matches iOS frontFace
+                    <LinearGradient
+                      colors={[
+                        color + (tile.isMatched ? '59' : 'A6'),
+                        color + (tile.isMatched ? '33' : '59'),
+                      ]}
+                      start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                      style={[styles.tileFront, {
+                        borderColor: color + (tile.isMatched ? '73' : 'E6'),
+                        shadowColor: color,
+                      }]}
+                    >
+                      <IconSymbol name={tile.symbol as any} size={28} color="white" />
+                    </LinearGradient>
+                  ) : (
+                    // Back face: matches iOS backFace colors exactly
+                    <LinearGradient
+                      colors={['#38408C', '#1E2359']}
+                      start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                      style={styles.tileBack}
+                    >
+                      <IconSymbol name="questionmark" size={24} color="rgba(90,200,250,0.75)" />
+                    </LinearGradient>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  // ──────────── PLAYER COMPLETE VIEW ────────────
+  if (phase === 'playerComplete') {
+    const lastResult = playerTimes[playerTimes.length - 1];
+    return (
+      <View style={styles.container}>
+        <View style={styles.centerContent}>
+          <IconSymbol name="checkmark.circle.fill" size={56} color="#34C759" />
+          <Text style={[styles.readyTitle, { marginTop: 16 }]}>
+            {players[currentPlayerIndex]?.username} Finished!
+          </Text>
+          <Text style={styles.readySubtitle}>
+            {lastResult ? `${formatTime(lastResult.elapsedSeconds)} · ${lastResult.moveCount} moves` : ''}
+          </Text>
+
+          <TouchableOpacity style={[styles.primaryBtn, { marginTop: 40 }]} onPress={handleNextPlayer}>
+            <Text style={styles.primaryBtnText}>
+              {currentPlayerIndex + 1 < players.length ? "Next Player" : "See Results"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+  // ──────────── RESULTS VIEW ────────────
+  const sorted = [...players].sort((a, b) => {
+    const aTime = playerTimes.find(t => t.playerId === a.id)?.elapsedSeconds ?? 999;
+    const bTime = playerTimes.find(t => t.playerId === b.id)?.elapsedSeconds ?? 999;
+    return aTime - bTime;
+  });
+
+  return (
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.resultsContent}>
+        <View style={styles.trophyHeader}>
+          <IconSymbol name="trophy.fill" size={44} color="#FFCC00" />
+          <Text style={styles.trophyTitle}>
+            {players.length > 1 ? 'Final Rankings' : 'Complete!'}
+          </Text>
+        </View>
+
+        <View style={styles.rankingList}>
+          {sorted.map((player, index) => {
+            const result = playerTimes.find(t => t.playerId === player.id);
+            return (
+              <View
+                key={player.id}
+                style={[
+                  styles.rankRow,
+                  index === 0 && styles.rankRowFirst,
+                ]}
+              >
+                <View style={[styles.rankCircle, index === 0 && styles.rankCircleFirst]}>
+                  <Text style={[styles.rankNumber, index === 0 && { color: '#FFCC00' }]}>
+                    {index + 1}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.rankName}>{player.username}</Text>
+                  <Text style={styles.rankDetail}>
+                    {result ? `${formatTime(result.elapsedSeconds)} · ${result.moveCount} moves` : '—'}
+                  </Text>
+                </View>
+                {index === 0 && <IconSymbol name="crown.fill" size={18} color="#FFCC00" />}
+              </View>
+            );
+          })}
+        </View>
+
+        <TouchableOpacity style={styles.primaryBtn} onPress={handlePlayAgain}>
+          <Text style={styles.primaryBtnText}>Play Again</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#000' },
+  centerContent: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
+  resultsContent: { padding: 16, paddingBottom: 40 },
+
+  // Ready view
+  iconContainer: {
+    width: 100, height: 100, borderRadius: 28,
+    backgroundColor: 'rgba(90,200,250,0.14)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  readyTextGroup: { alignItems: 'center', marginTop: 20, gap: 8 },
+  readyTitle: { color: 'white', fontSize: 24, fontWeight: 'bold' },
+  readySubtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 15 },
+
+  turnPill: {
+    backgroundColor: 'rgba(52,199,89,0.15)',
+    paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20,
+    borderWidth: 1, borderColor: 'rgba(52,199,89,0.3)',
+  },
+  turnPillText: { color: '#34C759', fontSize: 14, fontWeight: '700' },
+
+  statBubbleRow: { flexDirection: 'row', gap: 16, marginTop: 24 },
+  statBubble: {
+    alignItems: 'center', paddingVertical: 10, paddingHorizontal: 14,
+    backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 14, minWidth: 60,
+  },
+  statBubbleValue: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+  statBubbleLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 2 },
+
+  primaryBtn: {
+    backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 16,
+    width: '100%', alignItems: 'center', marginTop: 32,
+  },
+  primaryBtnText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+
+  // Game header
+  gameHeader: {
+    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16,
+    paddingTop: 8, paddingBottom: 12,
+  },
+  headerTitle: { color: 'white', fontSize: 17, fontWeight: 'bold' },
+  headerSubtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 4 },
+  statsGroup: { flexDirection: 'row', gap: 10 },
+  statPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20,
+  },
+  statPillText: { fontSize: 14, fontWeight: 'bold', fontVariant: ['tabular-nums'] },
+
+  // Progress bar
+  progressBarContainer: { paddingHorizontal: 16, paddingBottom: 12 },
+  progressBarBg: { height: 6, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden' },
+  progressBarFill: { height: 6, borderRadius: 3 },
+
+  // Grid
+  gridContainer: { flex: 1, justifyContent: 'flex-start', paddingTop: 4 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
+  tileWrapper: { },
+  tileFront: {
+    flex: 1, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
+    borderWidth: 2,
+  },
+  tileBack: {
+    flex: 1, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1.5, borderColor: 'rgba(90,200,250,0.4)',
+  },
+
+  // Results
+  trophyHeader: { alignItems: 'center', gap: 8, paddingTop: 20, marginBottom: 20 },
+  trophyTitle: { color: 'white', fontSize: 24, fontWeight: 'bold' },
+  rankingList: { gap: 10, marginBottom: 24 },
+  rankRow: {
+    flexDirection: 'row', alignItems: 'center', padding: 12, gap: 12,
+    backgroundColor: 'rgba(255,255,255,0.035)', borderRadius: 14,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)',
+  },
+  rankRowFirst: {
+    backgroundColor: 'rgba(255,204,0,0.06)',
+    borderColor: 'rgba(255,204,0,0.2)',
+  },
+  rankCircle: {
+    width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  rankCircleFirst: { backgroundColor: 'rgba(255,204,0,0.2)' },
+  rankNumber: { color: 'rgba(255,255,255,0.5)', fontSize: 17, fontWeight: 'bold' },
+  rankName: { color: 'white', fontSize: 15, fontWeight: '600' },
+  rankDetail: { color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 2 },
+});

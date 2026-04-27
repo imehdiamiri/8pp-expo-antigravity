@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Games, GamesDefinitions, GameMode, GameModeDetails } from '@/src/models/AppModels';
+import { getGameInstructions } from '@/src/constants/GameLocalization';
 
 export default function GameDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -83,7 +84,26 @@ export default function GameDetailScreen() {
           headerBlurEffect: 'dark',
           headerTintColor: 'white',
           headerLargeTitle: false,
-          headerBackTitle: 'Back',
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => router.back()}
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 20,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.15)',
+                marginLeft: Platform.OS === 'ios' ? -8 : 0,
+              }}
+            >
+              <IconSymbol name="chevron.left" size={18} color="white" />
+              <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Back</Text>
+            </TouchableOpacity>
+          ),
         }}
       />
 
@@ -197,13 +217,14 @@ export default function GameDetailScreen() {
         <View style={styles.card}>
           <Text style={styles.sectionHeaderTitle}>How it works</Text>
           <View style={styles.instructionsContainer}>
-            <View style={styles.instructionRow}>
-              <View style={styles.stepBadge}>
-                <Text style={styles.stepBadgeText}>1</Text>
+            {getGameInstructions(id!).map((step, i) => (
+              <View key={i} style={styles.instructionRow}>
+                <View style={[styles.stepBadge, { backgroundColor: accentColor + '33' }]}>
+                  <Text style={[styles.stepBadgeText, { color: accentColor }]}>{i + 1}</Text>
+                </View>
+                <Text style={styles.instructionText}>{step}</Text>
               </View>
-              <Text style={styles.instructionText}>{game.shortDescription}</Text>
-            </View>
-            {/* Real app would have localized full instructions mapped here */}
+            ))}
           </View>
         </View>
         

@@ -1,0 +1,56 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && auth.uid == $uid",
+        "wallet": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.uid == $uid"
+        },
+        "inviteCode": {
+          ".read": true,
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      }
+    },
+    "presence": {
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "friendships": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        "$friendUid": {
+          ".write": "auth != null && (auth.uid == $uid || auth.uid == $friendUid)"
+        }
+      }
+    },
+    "friendRequests": {
+      ".read": "auth != null",
+      "$requestId": {
+        ".write": "auth != null"
+      }
+    },
+    "rooms": {
+      "$roomCode": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "sessions": {
+      "$sessionId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "telemetry": {
+      "$eventId": {
+        ".read": false,
+        ".write": "auth != null"
+      }
+    }
+  }
+}

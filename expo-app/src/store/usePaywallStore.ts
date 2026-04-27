@@ -22,9 +22,9 @@ interface PaywallState {
   getDonationPackages: () => PurchasesPackage[];
 }
 
-// NOTE: Replace with your actual RevenueCat public API keys
-const API_KEY_IOS = 'appl_YOUR_REVENUECAT_IOS_KEY';
-const API_KEY_ANDROID = 'goog_YOUR_REVENUECAT_ANDROID_KEY';
+// RevenueCat API keys from environment
+const API_KEY_IOS = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_IOS || '';
+const API_KEY_ANDROID = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID || '';
 
 export const usePaywallStore = create<PaywallState>((set, get) => ({
   isLoading: true,

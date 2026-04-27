@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Platform } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,29 +7,132 @@ import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Games, GameMode } from '@/src/models/AppModels';
 import { useGameStore } from '@/src/store/useGameStore';
+import { useSettingsStore } from '@/src/store/useSettingsStore';
+import { SetupPlayersSection, SetupRoundsSection, SetupStartButton } from '@/src/components/games/UnifiedSetupComponents';
+
+// ─── Game-specific option types ───
+type MemoryGridSize = 'tiny3x4' | 'small4x4' | 'medium4x5' | 'large5x6' | 'huge6x6';
+const GRID_SIZES: { id: MemoryGridSize; title: string; subtitle: string; pairs: number }[] = [
+  { id: 'tiny3x4', title: '3×4', subtitle: '6 pairs', pairs: 6 },
+  { id: 'small4x4', title: '4×4', subtitle: '8 pairs', pairs: 8 },
+  { id: 'medium4x5', title: '4×5', subtitle: '10 pairs', pairs: 10 },
+  { id: 'large5x6', title: '5×6', subtitle: '15 pairs', pairs: 15 },
+  { id: 'huge6x6', title: '6×6', subtitle: '18 pairs', pairs: 18 },
+];
+
+const MP_DIFFICULTIES = [
+  { id: 'easy', gridSize: 5, color: '#34C759' },
+  { id: 'medium', gridSize: 6, color: '#FF9500' },
+  { id: 'hard', gridSize: 7, color: '#FF3B30' },
+  { id: 'expert', gridSize: 8, color: '#AF52DE' },
+];
+
+const MP_MODES = [
+  { id: 'timeRace', title: 'Time Race', icon: 'timer' },
+  { id: 'turnBased', title: 'Turn-Based', icon: 'arrow.trianglehead.2.clockwise.rotate.90' },
+];
+
+const TIO_GRID_SIZES = [4, 5, 6, 7];
+const TIO_TILE_OPTIONS: Record<number, number[]> = {
+  4: [4, 6, 8, 10],
+  5: [6, 8, 10, 14],
+  6: [8, 10, 14, 18],
+  7: [10, 14, 18, 24],
+};
 
 export default function GameSetupScreen() {
   const { id, mode } = useLocalSearchParams<{ id: string, mode: GameMode }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { startSingleDeviceSession } = useGameStore();
+  const { lastGameConfigs, lastPlayerNames, saveGameConfig } = useSettingsStore();
   
   const gameKey = Object.keys(Games).find(key => Games[key].id === id);
   const game = gameKey ? Games[gameKey] : null;
 
   const [playerCount, setPlayerCount] = useState(game ? Math.max(game.minPlayers, Math.min(2, game.maxPlayers)) : 2);
   const [playerNames, setPlayerNames] = useState<string[]>(Array(playerCount).fill(''));
-  const [roundCount, setRoundCount] = useState(3);
   const [showDuplicateError, setShowDuplicateError] = useState(false);
+  const [roundCount, setRoundCount] = useState(3);
+
+  // Games that have rounds (not grid/special games)
+  const needsRounds = !['memory_grid', 'memory_path', 'tap_in_order', 'ten_tangle', 'color_trap', 'spin_bottle', 'draw_rush'].includes(id || '');
+
+  // ─── Memory Grid state ───
+  const [mgGridSize, setMgGridSize] = useState<MemoryGridSize>('tiny3x4');
+
+  // ─── Memory Path state ───
+  const [mpDifficulty, setMpDifficulty] = useState('easy');
+  const [mpGameMode, setMpGameMode] = useState('timeRace');
+  const [mpSteps, setMpSteps] = useState(6);
+
+  // ─── Tap In Order state ───
+  const [tioGridSize, setTioGridSize] = useState(4);
+  const [tioTileCount, setTioTileCount] = useState(6);
+
+  // ─── Spin Bottle (Truth & Dare) state ───
+  const [sbDifficulty, setSbDifficulty] = useState<'mild'|'classic'|'bold'>('classic');
+
+  // ─── Color Trap state ───
+  const [ctDifficulty, setCtDifficulty] = useState<'easy'|'medium'|'hard'>('medium');
+
+  // ─── Draw Rush state ───
+  const [drConceptMode, setDrConceptMode] = useState<'preset'|'freeDraw'>('preset');
+
+  // ─── Imposter state ───
+  const [imposterStyle, setImposterStyle] = useState<'discussion'|'clue'>('discussion');
+
+  // ─── Restore last-used configs from persistent storage ───
+  useEffect(() => {
+    if (!id) return;
+    const saved = lastGameConfigs[id];
+    const savedNames = lastPlayerNames[id];
+    if (savedNames?.length) {
+      setPlayerCount(savedNames.length);
+      setPlayerNames(savedNames);
+    }
+    if (!saved) return;
+    if (id === 'memory_grid' && saved.gridSize) setMgGridSize(saved.gridSize);
+    if (id === 'memory_path') {
+      if (saved.gameMode) setMpGameMode(saved.gameMode);
+      if (saved.gridSize) setMpDifficulty(saved.gridSize);
+      if (saved.pathLength) setMpSteps(saved.pathLength);
+    }
+    if (id === 'tap_in_order') {
+      if (saved.gridSize) setTioGridSize(saved.gridSize);
+      if (saved.tileCount) setTioTileCount(saved.tileCount);
+    }
+    if (id === 'spin_bottle' && saved.difficulty) setSbDifficulty(saved.difficulty);
+    if (id === 'color_trap' && saved.difficulty) setCtDifficulty(saved.difficulty);
+    if (id === 'draw_rush' && saved.conceptMode) setDrConceptMode(saved.conceptMode);
+    if (id === 'imposter' && saved.gameStyle) setImposterStyle(saved.gameStyle);
+  }, [id]);
+
+  // Clamp TIO tile count when grid changes
+  useEffect(() => {
+    const opts = TIO_TILE_OPTIONS[tioGridSize] || [6];
+    if (!opts.includes(tioTileCount)) setTioTileCount(opts[1] || opts[0]);
+  }, [tioGridSize]);
+
+  // Clamp MP steps when difficulty changes
+  useEffect(() => {
+    const diff = MP_DIFFICULTIES.find(d => d.id === mpDifficulty);
+    if (!diff) return;
+    const sz = diff.gridSize;
+    const minSteps = Math.max(3, sz - 1);
+    const maxSteps = Math.floor(sz * sz / 2);
+    const defaults: Record<string, number> = { easy: 6, medium: 10, hard: 14, expert: 18 };
+    setMpSteps(Math.min(Math.max(defaults[mpDifficulty] || 6, minSteps), maxSteps));
+  }, [mpDifficulty]);
 
   if (!game) {
     return (
-      <View style={styles.container}>
+      <View style={st.container}>
         <AppBackgroundView />
-        <View style={styles.centerContent}>
-          <Text style={styles.errorText}>Game not found</Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Text style={styles.backButtonText}>Go Back</Text>
+        <View style={st.centerContent}>
+          <Text style={st.errorText}>Game not found</Text>
+          <TouchableOpacity onPress={() => router.back()} style={st.backBtn}>
+            <Text style={st.backBtnTx}>Go Back</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -37,45 +140,67 @@ export default function GameSetupScreen() {
   }
 
   const hasDuplicateNames = () => {
-    const trimmed = playerNames
-      .map(name => name.trim().toLowerCase())
-      .filter(name => name.length > 0);
+    const trimmed = playerNames.map(n => n.trim().toLowerCase()).filter(n => n.length > 0);
     return new Set(trimmed).size !== trimmed.length;
   };
 
   const updatePlayerName = (index: number, name: string) => {
-    const newNames = [...playerNames];
-    newNames[index] = name;
-    setPlayerNames(newNames);
+    const n = [...playerNames]; n[index] = name; setPlayerNames(n);
     if (showDuplicateError) setShowDuplicateError(false);
   };
 
-  const increasePlayers = () => {
-    if (playerCount < game.maxPlayers) {
-      setPlayerCount(prev => prev + 1);
-      setPlayerNames(prev => [...prev, '']);
-    }
-  };
-
-  const decreasePlayers = () => {
-    if (playerCount > game.minPlayers) {
-      setPlayerCount(prev => prev - 1);
-      setPlayerNames(prev => prev.slice(0, prev.length - 1));
-    }
-  };
-
   const handleStart = () => {
-    if (hasDuplicateNames()) {
-      setShowDuplicateError(true);
-      return;
+    if (hasDuplicateNames()) { setShowDuplicateError(true); return; }
+
+    // Build game-specific config
+    let config: Record<string, any> = {};
+    switch (id) {
+      case 'memory_grid':
+        config = { gridSize: mgGridSize }; break;
+      case 'memory_path':
+        config = { gameMode: mpGameMode, gridSize: mpDifficulty, pathLength: mpSteps }; break;
+      case 'tap_in_order':
+        config = { gridSize: tioGridSize, tileCount: tioTileCount }; break;
+      case 'spin_bottle':
+        config = { difficulty: sbDifficulty }; break;
+      case 'color_trap':
+        config = { difficulty: ctDifficulty }; break;
+      case 'draw_rush':
+        config = { conceptMode: drConceptMode }; break;
+      case 'imposter':
+        config = { gameStyle: imposterStyle }; break;
     }
-    
-    startSingleDeviceSession(game!, playerNames, roundCount);
+
+    startSingleDeviceSession(game!, playerNames, needsRounds ? roundCount : 1, config);
+    saveGameConfig(id!, config, playerNames);
     router.push(`/game/${id}/session` as any);
   };
 
+  // ─── Subtitle for start button ───
+  const getSubtitle = () => {
+    switch (id) {
+      case 'memory_grid': {
+        const gs = GRID_SIZES.find(g => g.id === mgGridSize);
+        return `${gs?.title} · ${gs?.pairs} pairs · ${playerCount} players`;
+      }
+      case 'memory_path': {
+        const diff = MP_DIFFICULTIES.find(d => d.id === mpDifficulty);
+        const mode = MP_MODES.find(m => m.id === mpGameMode);
+        return `${diff?.gridSize}×${diff?.gridSize} · ${mpSteps} steps · ${mode?.title}`;
+      }
+      case 'tap_in_order':
+        return `Number Memory · ${tioGridSize}×${tioGridSize} · ${tioTileCount} tiles`;
+      default:
+        return `${playerCount} players`;
+    }
+  };
+
+  const mpDiffObj = MP_DIFFICULTIES.find(d => d.id === mpDifficulty)!;
+  const mpMinSteps = Math.max(3, (mpDiffObj?.gridSize || 5) - 1);
+  const mpMaxSteps = Math.floor((mpDiffObj?.gridSize || 5) ** 2 / 2);
+
   return (
-    <View style={styles.container}>
+    <View style={st.container}>
       <AppBackgroundView />
       
       <Stack.Screen 
@@ -85,258 +210,374 @@ export default function GameSetupScreen() {
           headerTransparent: true,
           headerBlurEffect: 'dark',
           headerTintColor: 'white',
-          headerLargeTitle: false,
-          headerBackTitle: 'Back',
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => router.back()}
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 20,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.15)',
+                marginLeft: Platform.OS === 'ios' ? -8 : 0,
+              }}
+            >
+              <IconSymbol name="chevron.left" size={18} color="white" />
+              <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Back</Text>
+            </TouchableOpacity>
+          ),
         }}
       />
 
       <ScrollView 
-        contentContainerStyle={[styles.scrollContent, { paddingTop: Platform.OS === 'android' ? insets.top + 60 : 0 }]} 
+        contentContainerStyle={[st.scrollContent, { paddingTop: Platform.OS === 'android' ? insets.top + 60 : 0 }]} 
         keyboardShouldPersistTaps="handled"
         contentInsetAdjustmentBehavior="automatic"
       >
         
-        {/* Setup Players Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Players</Text>
-          <Text style={styles.sectionSubtitle}>Enter names for everyone playing.</Text>
-          
-          <View style={styles.card}>
-            <View style={styles.stepperContainer}>
-              <TouchableOpacity 
-                style={[styles.stepperButton, playerCount <= game.minPlayers && styles.stepperButtonDisabled]}
-                onPress={decreasePlayers}
-                disabled={playerCount <= game.minPlayers}
-              >
-                <IconSymbol name="minus" size={20} color="white" />
-              </TouchableOpacity>
-              
-              <Text style={styles.stepperText}>{playerCount} Players</Text>
-              
-              <TouchableOpacity 
-                style={[styles.stepperButton, playerCount >= game.maxPlayers && styles.stepperButtonDisabled]}
-                onPress={increasePlayers}
-                disabled={playerCount >= game.maxPlayers}
-              >
-                <IconSymbol name="plus" size={20} color="white" />
-              </TouchableOpacity>
+        <SetupPlayersSection
+          playerCount={playerCount}
+          playerNames={playerNames}
+          minPlayers={game.minPlayers}
+          maxPlayers={game.maxPlayers}
+          onUpdateCount={(count) => {
+            setPlayerCount(count);
+            if (count > playerNames.length) {
+              setPlayerNames([...playerNames, ...Array(count - playerNames.length).fill('')]);
+            } else {
+              setPlayerNames(playerNames.slice(0, count));
+            }
+          }}
+          onUpdateName={updatePlayerName}
+        />
+        
+        {/* Rounds section for non-phase-2 games */}
+        {needsRounds && (
+          <SetupRoundsSection
+            roundCount={roundCount}
+            minRounds={1}
+            maxRounds={10}
+            onUpdateRounds={setRoundCount}
+          />
+        )}
+
+        {showDuplicateError && (
+          <Text style={st.errorLabel}>Two or more players have the same name.</Text>
+        )}
+
+        {/* ══════════ IMPOSTER: Game Style ══════════ */}
+        {id === 'imposter' && (
+          <View style={st.card}>
+            <View style={st.cardHeader}>
+              <IconSymbol name="theatermasks.fill" size={16} color="#AF52DE" />
+              <Text style={[st.cardTitle, { color: '#AF52DE' }]}>Game Style</Text>
             </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.namesContainer}>
-              {playerNames.map((name, index) => (
-                <View key={index} style={styles.nameInputWrapper}>
-                  <View style={styles.avatarPlaceholder}>
-                    <Text style={styles.avatarText}>{index + 1}</Text>
+            {([
+              { id: 'discussion' as const, title: 'Discussion Mode', subtitle: 'Talk together and find the Imposter', icon: 'bubble.left.and.bubble.right.fill', details: 'Free discussion · Timed conversation · Then voting', color: '#FF9500' },
+              { id: 'clue' as const, title: 'Clue Mode', subtitle: 'Give clues one by one', icon: 'magnifyingglass.circle.fill', details: 'Turn-based clues · No discussion · Then voting', color: '#AF52DE' },
+            ]).map(style => {
+              const sel = imposterStyle === style.id;
+              return (
+                <TouchableOpacity key={style.id} onPress={() => setImposterStyle(style.id)}
+                  style={[st.imposterCard, sel && { borderColor: style.color + '99', backgroundColor: style.color + '1A' }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: style.color + '33', alignItems: 'center', justifyContent: 'center' }}>
+                      <IconSymbol name={style.icon as any} size={18} color={style.color} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ color: '#fff', fontSize: 15, fontWeight: 'bold' }}>{style.title}</Text>
+                      <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>{style.subtitle}</Text>
+                    </View>
+                    {sel && <IconSymbol name="checkmark.circle.fill" size={20} color={style.color} />}
                   </View>
-                  <TextInput
-                    style={styles.nameInput}
-                    placeholder={`Player ${index + 1}`}
-                    placeholderTextColor="rgba(255,255,255,0.4)"
-                    value={name}
-                    onChangeText={(text) => updatePlayerName(index, text)}
-                    returnKeyType="done"
-                  />
-                </View>
-              ))}
-            </View>
+                  <Text style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 8 }}>{style.details}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
-          
-          {showDuplicateError && (
-            <Text style={styles.errorLabel}>Two or more players have the same name. Please use unique names.</Text>
-          )}
-        </View>
+        )}
 
-        {/* Setup Rounds Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Rounds</Text>
-          <Text style={styles.sectionSubtitle}>How long do you want to play?</Text>
-          
-          <View style={styles.card}>
-            <View style={styles.stepperContainer}>
-              <TouchableOpacity 
-                style={[styles.stepperButton, roundCount <= 1 && styles.stepperButtonDisabled]}
-                onPress={() => setRoundCount(prev => Math.max(1, prev - 1))}
-                disabled={roundCount <= 1}
-              >
-                <IconSymbol name="minus" size={20} color="white" />
-              </TouchableOpacity>
-              
-              <Text style={styles.stepperText}>{roundCount} {roundCount === 1 ? 'Round' : 'Rounds'}</Text>
-              
-              <TouchableOpacity 
-                style={[styles.stepperButton, roundCount >= 10 && styles.stepperButtonDisabled]}
-                onPress={() => setRoundCount(prev => Math.min(10, prev + 1))}
-                disabled={roundCount >= 10}
-              >
-                <IconSymbol name="plus" size={20} color="white" />
-              </TouchableOpacity>
+        {/* ══════════ MEMORY GRID: Board Size ══════════ */}
+        {id === 'memory_grid' && (
+          <View style={st.card}>
+            <View style={st.cardHeader}>
+              <IconSymbol name="square.grid.3x3.fill" size={16} color="#5AC8FA" />
+              <Text style={[st.cardTitle, { color: '#5AC8FA' }]}>Board Size</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {GRID_SIZES.map(sz => {
+                  const sel = mgGridSize === sz.id;
+                  return (
+                    <TouchableOpacity key={sz.id} onPress={() => setMgGridSize(sz.id)}
+                      style={[st.optionChip, sel && st.optionChipSelected, sel && { borderColor: 'rgba(90,200,250,0.5)', backgroundColor: 'rgba(90,200,250,0.2)' }]}>
+                      <Text style={[st.optionChipTitle, sel && { color: '#fff' }]}>{sz.title}</Text>
+                      <Text style={[st.optionChipSub, sel && { color: 'rgba(255,255,255,0.7)' }]}>{sz.subtitle}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
+        )}
+
+        {/* ══════════ MEMORY PATH: Game Mode ══════════ */}
+        {id === 'memory_path' && (
+          <>
+            <View style={st.card}>
+              <View style={st.cardHeader}>
+                <IconSymbol name="gamecontroller.fill" size={16} color="#00C7BE" />
+                <Text style={[st.cardTitle, { color: '#00C7BE' }]}>Game Mode</Text>
+              </View>
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+                {MP_MODES.map(gm => {
+                  const sel = mpGameMode === gm.id;
+                  return (
+                    <TouchableOpacity key={gm.id} onPress={() => setMpGameMode(gm.id)}
+                      style={[st.modeChip, sel && { borderColor: 'rgba(0,199,190,0.5)', backgroundColor: 'rgba(0,199,190,0.2)' }]}>
+                      <IconSymbol name={gm.icon as any} size={22} color={sel ? '#00C7BE' : 'rgba(255,255,255,0.4)'} />
+                      <Text style={[st.modeChipTx, sel && { color: '#fff' }]}>{gm.title}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Grid Size / Difficulty */}
+            <View style={st.card}>
+              <View style={st.cardHeader}>
+                <IconSymbol name="square.grid.3x3" size={16} color="#00C7BE" />
+                <Text style={[st.cardTitle, { color: '#00C7BE' }]}>Grid Size</Text>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  {MP_DIFFICULTIES.map(diff => {
+                    const sel = mpDifficulty === diff.id;
+                    return (
+                      <TouchableOpacity key={diff.id} onPress={() => setMpDifficulty(diff.id)}
+                        style={[st.optionChip, sel && { borderColor: diff.color + '80', backgroundColor: diff.color + '33' }]}>
+                        <Text style={[st.optionChipTitle, sel && { color: '#fff' }]}>{diff.gridSize}×{diff.gridSize}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </ScrollView>
+            </View>
+
+            {/* Path Length stepper */}
+            <View style={st.card}>
+              <View style={st.cardHeader}>
+                <IconSymbol name="map.fill" size={16} color="#00C7BE" />
+                <Text style={[st.cardTitle, { color: '#00C7BE' }]}>Path Length</Text>
+              </View>
+              <View style={st.stepperRow}>
+                <TouchableOpacity style={st.stepperCircle} disabled={mpSteps <= mpMinSteps}
+                  onPress={() => setMpSteps(s => Math.max(mpMinSteps, s - 1))}>
+                  <IconSymbol name="minus" size={14} color={mpSteps <= mpMinSteps ? 'rgba(255,255,255,0.2)' : '#fff'} />
+                </TouchableOpacity>
+                <View style={{ alignItems: 'center', flex: 1 }}>
+                  <Text style={st.stepperValue}>{mpSteps}</Text>
+                  <Text style={st.stepperLabel}>steps</Text>
+                </View>
+                <TouchableOpacity style={st.stepperCircle} disabled={mpSteps >= mpMaxSteps}
+                  onPress={() => setMpSteps(s => Math.min(mpMaxSteps, s + 1))}>
+                  <IconSymbol name="plus" size={14} color={mpSteps >= mpMaxSteps ? 'rgba(255,255,255,0.2)' : '#fff'} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        )}
+
+        {/* ══════════ TAP IN ORDER: Grid Size + Tile Count ══════════ */}
+        {id === 'tap_in_order' && (
+          <>
+            <View style={st.card}>
+              <View style={st.cardHeader}>
+                <IconSymbol name="square.grid.3x3.fill" size={16} color="#FF9500" />
+                <Text style={[st.cardTitle, { color: '#FF9500' }]}>Grid Size</Text>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  {TIO_GRID_SIZES.map(sz => {
+                    const sel = tioGridSize === sz;
+                    return (
+                      <TouchableOpacity key={sz} onPress={() => setTioGridSize(sz)}
+                        style={[st.optionChip, sel && { borderColor: 'rgba(255,149,0,0.5)', backgroundColor: 'rgba(255,149,0,0.2)' }]}>
+                        <Text style={[st.optionChipTitle, sel && { color: '#fff' }]}>{sz}×{sz}</Text>
+                        <Text style={[st.optionChipSub, sel && { color: 'rgba(255,255,255,0.7)' }]}>{sz*sz} cells</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </ScrollView>
+            </View>
+
+            <View style={st.card}>
+              <View style={st.cardHeader}>
+                <IconSymbol name="number" size={16} color="#FF9500" />
+                <Text style={[st.cardTitle, { color: '#FF9500' }]}>Numbers</Text>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  {(TIO_TILE_OPTIONS[tioGridSize] || [6]).map(cnt => {
+                    const sel = tioTileCount === cnt;
+                    return (
+                      <TouchableOpacity key={cnt} onPress={() => setTioTileCount(cnt)}
+                        style={[st.optionChip, sel && { borderColor: 'rgba(255,149,0,0.5)', backgroundColor: 'rgba(255,149,0,0.2)' }]}>
+                        <Text style={[st.optionChipTitle, sel && { color: '#fff', fontSize: 20 }]}>{cnt}</Text>
+                        <Text style={[st.optionChipSub, sel && { color: 'rgba(255,255,255,0.7)' }]}>numbers</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </ScrollView>
+            </View>
+          </>
+        )}
+
+        {/* ══════════ SPIN BOTTLE: Difficulty ══════════ */}
+        {id === 'spin_bottle' && (
+          <View style={st.card}>
+            <View style={st.cardHeader}>
+              <IconSymbol name="flame.fill" size={16} color="#FF2D55" />
+              <Text style={[st.cardTitle, { color: '#FF2D55' }]}>Vibe Level</Text>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+              {([{id:'mild',title:'Mild',sub:'Safe & friendly',icon:'heart.fill',color:'#34C759'},{id:'classic',title:'Classic',sub:'Balanced fun',icon:'star.fill',color:'#FF9500'},{id:'bold',title:'Bold',sub:'Spicy & risky',icon:'flame.fill',color:'#FF2D55'}] as const).map(d => {
+                const sel = sbDifficulty === d.id;
+                return (
+                  <TouchableOpacity key={d.id} onPress={() => setSbDifficulty(d.id)}
+                    style={[st.modeChip, sel && { borderColor: d.color + '80', backgroundColor: d.color + '33' }]}>
+                    <IconSymbol name={d.icon as any} size={20} color={sel ? d.color : 'rgba(255,255,255,0.4)'} />
+                    <Text style={[st.modeChipTx, sel && { color: '#fff' }]}>{d.title}</Text>
+                    <Text style={{color: sel ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)', fontSize: 10, marginTop: 2}}>{d.sub}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
-        </View>
+        )}
+
+        {/* ══════════ COLOR TRAP: Difficulty ══════════ */}
+        {id === 'color_trap' && (
+          <View style={st.card}>
+            <View style={st.cardHeader}>
+              <IconSymbol name="bolt.fill" size={16} color="#5AC8FA" />
+              <Text style={[st.cardTitle, { color: '#5AC8FA' }]}>Difficulty</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {([{id:'easy',title:'Easy',sub:'Slower tiles'},{id:'medium',title:'Medium',sub:'Standard'},{id:'hard',title:'Hard',sub:'Fast & furious'}] as const).map(d => {
+                  const sel = ctDifficulty === d.id;
+                  return (
+                    <TouchableOpacity key={d.id} onPress={() => setCtDifficulty(d.id)}
+                      style={[st.optionChip, sel && { borderColor: 'rgba(90,200,250,0.5)', backgroundColor: 'rgba(90,200,250,0.2)' }]}>
+                      <Text style={[st.optionChipTitle, sel && { color: '#fff' }]}>{d.title}</Text>
+                      <Text style={[st.optionChipSub, sel && { color: 'rgba(255,255,255,0.7)' }]}>{d.sub}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
+        )}
+
+        {/* ══════════ DRAW RUSH: Concept Mode ══════════ */}
+        {id === 'draw_rush' && (
+          <View style={st.card}>
+            <View style={st.cardHeader}>
+              <IconSymbol name={"pencil.and.scribble" as any} size={16} color="#007AFF" />
+              <Text style={[st.cardTitle, { color: '#007AFF' }]}>Concept Mode</Text>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+              {([{id:'preset',title:'Preset',sub:'Secret word given',icon:'text.book.closed.fill'},{id:'freeDraw',title:'Free Draw',sub:'Drawer picks idea',icon:'sparkles'}] as const).map(d => {
+                const sel = drConceptMode === d.id;
+                return (
+                  <TouchableOpacity key={d.id} onPress={() => setDrConceptMode(d.id)}
+                    style={[st.modeChip, sel && { borderColor: 'rgba(0,122,255,0.5)', backgroundColor: 'rgba(0,122,255,0.2)' }]}>
+                    <IconSymbol name={d.icon as any} size={20} color={sel ? '#007AFF' : 'rgba(255,255,255,0.4)'} />
+                    <Text style={[st.modeChipTx, sel && { color: '#fff' }]}>{d.title}</Text>
+                    <Text style={{color: sel ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)', fontSize: 10, marginTop: 2}}>{d.sub}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
 
       </ScrollView>
 
       {/* Bottom Start Button */}
-      <View style={[styles.bottomBar, { paddingBottom: insets.bottom > 0 ? insets.bottom : 20 }]}>
-        <TouchableOpacity style={styles.startButton} onPress={handleStart} activeOpacity={0.8}>
-          <Text style={styles.startButtonText}>Start Game</Text>
-        </TouchableOpacity>
+      <View style={[st.bottomBar, { paddingBottom: insets.bottom > 0 ? insets.bottom : 20 }]}>
+        <SetupStartButton subtitle={getSubtitle()} onPress={handleStart} />
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: 'white',
-    fontSize: 18,
-    fontFamily: 'Viral-Black',
-    marginBottom: 20,
-  },
-  backButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  headerTitle: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 100, // Space for bottom bar
-    gap: 24,
-  },
-  section: {
-    gap: 8,
-  },
-  sectionTitle: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  sectionSubtitle: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 13,
-    marginBottom: 4,
-  },
+const st = StyleSheet.create({
+  container: { flex: 1, backgroundColor: 'black' },
+  centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  errorText: { color: 'white', fontSize: 18, fontWeight: 'bold', marginBottom: 20 },
+  backBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8 },
+  backBtnTx: { color: 'white', fontWeight: 'bold' },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 120, gap: 14 },
+  errorLabel: { color: '#FF3B30', fontSize: 13, marginTop: 4 },
+
+  // SurfaceCard style matching iOS
   card: {
-    backgroundColor: 'rgba(28, 28, 30, 0.8)',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 20, padding: 16,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
-  stepperContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  cardTitle: { fontSize: 15, fontWeight: '600' },
+
+  // Option chips (horizontal scroll pickers) 
+  optionChip: {
+    alignItems: 'center', paddingHorizontal: 14, paddingVertical: 10,
+    borderRadius: 12, minWidth: 56,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
   },
-  stepperButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepperButtonDisabled: {
-    opacity: 0.3,
-  },
-  stepperText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    marginVertical: 16,
-  },
-  namesContainer: {
-    gap: 12,
-  },
-  nameInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    padding: 8,
-    borderRadius: 12,
-  },
-  avatarPlaceholder: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  nameInput: {
-    flex: 1,
-    color: 'white',
-    fontSize: 15,
-    paddingVertical: 6,
-  },
-  errorLabel: {
-    color: '#FF3B30',
-    fontSize: 13,
-    marginTop: 4,
-  },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
-  },
-  startButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 16,
+  optionChipSelected: {},
+  optionChipTitle: { color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 'bold' },
+  optionChipSub: { color: 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2 },
+
+  // Mode chips (wider, with icon)
+  modeChip: {
+    flex: 1, alignItems: 'center', gap: 6,
+    paddingVertical: 12, paddingHorizontal: 8,
     borderRadius: 14,
-    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
   },
-  startButtonText: {
-    color: 'white',
-    fontSize: 17,
-    fontWeight: 'bold',
+  modeChipTx: { color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 'bold' },
+
+  // Stepper (Path Length)
+  stepperRow: { flexDirection: 'row', alignItems: 'center', marginTop: 10, paddingVertical: 6 },
+  stepperCircle: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  stepperValue: { color: '#00C7BE', fontSize: 28, fontWeight: 'bold', fontVariant: ['tabular-nums'] },
+  stepperLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: '500' },
+
+  // Bottom bar
+  bottomBar: {
+    position: 'absolute', bottom: 0, left: 0, right: 0,
+    paddingHorizontal: 16, paddingTop: 16,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)',
+  },
+  imposterCard: {
+    marginTop: 10, padding: 14, borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
   },
 });

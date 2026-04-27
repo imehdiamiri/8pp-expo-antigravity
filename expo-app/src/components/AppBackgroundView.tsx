@@ -11,12 +11,11 @@ export const AppBackgroundView = () => {
     <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
       <View style={[StyleSheet.absoluteFillObject, { backgroundColor: Colors.black }]} />
       
-      {/* Simulated Mesh Gradient Nodes */}
-      <View style={[styles.blob, { backgroundColor: 'rgba(94, 92, 230, 0.68)', top: '0%', left: '50%', width: width * 0.8, height: width * 0.8 }]} />
-      <View style={[styles.blob, { backgroundColor: 'rgba(191, 90, 242, 0.42)', top: '50%', left: '0%', width: width * 0.7, height: width * 0.7 }]} />
-      <View style={[styles.blob, { backgroundColor: 'rgba(10, 132, 255, 0.28)', top: '45%', left: '45%', width: width * 0.6, height: width * 0.6 }]} />
-      <View style={[styles.blob, { backgroundColor: 'rgba(102, 212, 207, 0.18)', top: '50%', left: '100%', width: width * 0.5, height: width * 0.5 }]} />
-      <View style={[styles.blob, { backgroundColor: 'rgba(100, 210, 255, 0.12)', top: '100%', left: '100%', width: width * 0.8, height: width * 0.8 }]} />
+      {/* Simulated Mesh Gradient Nodes (Subtle) */}
+      <View style={[styles.blob, { backgroundColor: 'rgba(191, 90, 242, 0.12)', top: '50%', left: '0%', width: width * 0.7, height: width * 0.7 }]} />
+      <View style={[styles.blob, { backgroundColor: 'rgba(10, 132, 255, 0.1)', top: '35%', left: '45%', width: width * 0.6, height: width * 0.6 }]} />
+      <View style={[styles.blob, { backgroundColor: 'rgba(102, 212, 207, 0.08)', top: '50%', left: '100%', width: width * 0.5, height: width * 0.5 }]} />
+      <View style={[styles.blob, { backgroundColor: 'rgba(100, 210, 255, 0.05)', top: '100%', left: '100%', width: width * 0.8, height: width * 0.8 }]} />
 
       <BlurView intensity={100} style={StyleSheet.absoluteFillObject} tint="dark" />
 

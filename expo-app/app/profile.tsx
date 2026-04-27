@@ -304,8 +304,19 @@ export default function ProfileScreen() {
           headerBlurEffect: 'systemThinMaterialDark',
           headerTitleStyle: { color: Colors.white, fontWeight: '700' },
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.back()} style={{ marginRight: Platform.OS === 'ios' ? 0 : 16 }}>
-              <Text style={{ color: Colors.green, fontWeight: '600', fontSize: 16 }}>Done</Text>
+            <TouchableOpacity 
+              onPress={() => router.back()} 
+              style={{ 
+                marginRight: Platform.OS === 'ios' ? 0 : 16,
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                paddingHorizontal: 16,
+                paddingVertical: 6,
+                borderRadius: 999,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.12)'
+              }}
+            >
+              <Text style={{ color: Colors.blue, fontWeight: '600', fontSize: 15 }}>Done</Text>
             </TouchableOpacity>
           ),
           headerBackVisible: false,
