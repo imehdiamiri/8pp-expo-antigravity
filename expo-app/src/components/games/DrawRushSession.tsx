@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, TextInput, PanResponder, GestureResponderEvent } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions, TextInput, PanResponder, GestureResponderEvent } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 import Svg, { Path } from 'react-native-svg';
 
 interface Props { session: GameSession; }
@@ -155,7 +155,7 @@ export function DrawRushSession({ session }: Props) {
         <Text style={st.title}>Round {drawerIdx+1} of {players.length}</Text>
         <Text style={[st.sub,{fontSize:22,color:'#007AFF',fontWeight:'bold',marginTop:12}]}>{drawer.username} draws!</Text>
         <Text style={st.hint}>Everyone else will guess what's being drawn. 60s per turn.</Text>
-        <TouchableOpacity style={st.btn} onPress={() => setPhase('drawerReveal')}><Text style={st.btnTx}>Continue</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={() => setPhase('drawerReveal')}><Text style={st.btnTx}>Continue</Text></Pressable>
       </View></View>
     );
   }
@@ -170,7 +170,7 @@ export function DrawRushSession({ session }: Props) {
           <Text style={st.conceptTx}>{conceptMode === 'preset' ? concept : 'Draw anything!'}</Text>
         </View>
         <Text style={st.hint}>{conceptMode === 'preset' ? `Only ${drawer.username} should see this!` : `${drawer.username}, think of something and draw it!`}</Text>
-        <TouchableOpacity style={st.btn} onPress={handleStartDrawing}><Text style={st.btnTx}>Start Drawing</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={handleStartDrawing}><Text style={st.btnTx}>Start Drawing</Text></Pressable>
       </View></View>
     );
   }
@@ -194,15 +194,15 @@ export function DrawRushSession({ session }: Props) {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginTop:8,maxHeight:44,paddingHorizontal:16}}>
           <View style={{flexDirection:'row',gap:8,alignItems:'center'}}>
             {BRUSH_COLORS.map(c => (
-              <TouchableOpacity key={c.name} onPress={() => setBrushColor(c.hex)}
+              <Pressable key={c.name} onPress={() => setBrushColor(c.hex)}
                 style={[st.colorDot,{backgroundColor:c.hex},brushColor===c.hex&&st.colorDotSel]} />
             ))}
           </View>
         </ScrollView>
         <View style={{flexDirection:'row',gap:12,paddingHorizontal:16,marginTop:8}}>
-          <TouchableOpacity style={st.toolBtn} onPress={() => setStrokes(prev => prev.slice(0,-1))}><IconSymbol name="arrow.uturn.backward" size={18} color="#fff" /><Text style={st.toolTx}>Undo</Text></TouchableOpacity>
-          <TouchableOpacity style={st.toolBtn} onPress={() => setStrokes([])}><IconSymbol name="trash" size={18} color="#FF3B30" /><Text style={[st.toolTx,{color:'#FF3B30'}]}>Clear</Text></TouchableOpacity>
-          <TouchableOpacity style={[st.toolBtn,{flex:1,backgroundColor:'rgba(52,199,89,0.15)'}]} onPress={handleFinishEarly}><Text style={[st.toolTx,{color:'#34C759'}]}>Done Early</Text></TouchableOpacity>
+          <Pressable style={st.toolBtn} onPress={() => setStrokes(prev => prev.slice(0,-1))}><IconSymbol name="arrow.uturn.backward" size={18} color="#fff" /><Text style={st.toolTx}>Undo</Text></Pressable>
+          <Pressable style={st.toolBtn} onPress={() => setStrokes([])}><IconSymbol name="trash" size={18} color="#FF3B30" /><Text style={[st.toolTx,{color:'#FF3B30'}]}>Clear</Text></Pressable>
+          <Pressable style={[st.toolBtn,{flex:1,backgroundColor:'rgba(52,199,89,0.15)'}]} onPress={handleFinishEarly}><Text style={[st.toolTx,{color:'#34C759'}]}>Done Early</Text></Pressable>
         </View>
       </View>
     );
@@ -216,7 +216,7 @@ export function DrawRushSession({ session }: Props) {
         <Text style={st.title}>Time's Up!</Text>
         <Text style={st.sub}>Pass the phone to the guessers.</Text>
         <Text style={st.hint}>Each player will type their guess one at a time.</Text>
-        <TouchableOpacity style={st.btn} onPress={handleStartGuessing}><Text style={st.btnTx}>Start Guessing</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={handleStartGuessing}><Text style={st.btnTx}>Start Guessing</Text></Pressable>
       </View></View>
     );
   }
@@ -234,7 +234,7 @@ export function DrawRushSession({ session }: Props) {
             </Svg>
           </View>
           <TextInput style={st.guessInput} placeholder="Type your guess..." placeholderTextColor="rgba(255,255,255,0.3)" value={guessText} onChangeText={setGuessText} autoFocus returnKeyType="done" onSubmitEditing={handleSubmitGuess} />
-          <TouchableOpacity style={[st.btn,{marginTop:16}]} onPress={handleSubmitGuess} disabled={!guessText.trim()}><Text style={st.btnTx}>Submit</Text></TouchableOpacity>
+          <Pressable style={[st.btn,{marginTop:16}]} onPress={handleSubmitGuess} disabled={!guessText.trim()}><Text style={st.btnTx}>Submit</Text></Pressable>
         </View>
       </View>
     );
@@ -256,15 +256,15 @@ export function DrawRushSession({ session }: Props) {
               </View>
               {!a.isJudged ? (
                 <View style={{flexDirection:'row',gap:8}}>
-                  <TouchableOpacity style={[st.judgeBtn,{backgroundColor:'rgba(52,199,89,0.2)'}]} onPress={() => handleJudge(a.id,true)}><IconSymbol name="checkmark" size={18} color="#34C759" /></TouchableOpacity>
-                  <TouchableOpacity style={[st.judgeBtn,{backgroundColor:'rgba(255,59,48,0.2)'}]} onPress={() => handleJudge(a.id,false)}><IconSymbol name="xmark" size={18} color="#FF3B30" /></TouchableOpacity>
+                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(52,199,89,0.2)'}]} onPress={() => handleJudge(a.id,true)}><IconSymbol name="checkmark" size={18} color="#34C759" /></Pressable>
+                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(255,59,48,0.2)'}]} onPress={() => handleJudge(a.id,false)}><IconSymbol name="xmark" size={18} color="#FF3B30" /></Pressable>
                 </View>
               ) : (
                 <IconSymbol name={a.isCorrect?"checkmark.circle.fill":"xmark.circle.fill"} size={24} color={a.isCorrect?'#34C759':'#FF3B30'} />
               )}
             </View>
           ))}
-          <TouchableOpacity style={[st.btn,{marginTop:24},!allJudged&&{opacity:0.4}]} onPress={handleFinalizeJudge} disabled={!allJudged}><Text style={st.btnTx}>Continue</Text></TouchableOpacity>
+          <Pressable style={[st.btn,{marginTop:24},!allJudged&&{opacity:0.4}]} onPress={handleFinalizeJudge} disabled={!allJudged}><Text style={st.btnTx}>Continue</Text></Pressable>
         </ScrollView>
       </View>
     );
@@ -285,9 +285,9 @@ export function DrawRushSession({ session }: Props) {
               <Text style={st.rankScore}>{scores[p.id]||0}</Text>
             </View>
           ))}
-          <TouchableOpacity style={[st.btn,{marginTop:24}]} onPress={handleNextTurn}>
+          <Pressable style={[st.btn,{marginTop:24}]} onPress={handleNextTurn}>
             <Text style={st.btnTx}>{drawerIdx+1>=players.length?'Final Results':'Next Round'}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </View>
     );

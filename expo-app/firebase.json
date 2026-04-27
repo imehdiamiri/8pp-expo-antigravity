@@ -10,5 +10,8 @@
       "anonymous": true,
       "emailPassword": true
     }
+  },
+  "database": {
+    "rules": "firebase-rtdb-rules.json"
   }
 }

@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { Audio } from 'expo-av';
+import { View, Text, StyleSheet, Pressable, ScrollView, Platform } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+
+// Platform-safe audio import
+let Audio: any = null;
+if (Platform.OS !== 'web') {
+  try { Audio = require('expo-av').Audio; } catch {}
+}
 
 interface Props {
   session: GameSession;
@@ -116,40 +121,40 @@ export function ReverseSingingSession({ session }: Props) {
 
         <View style={styles.grid}>
           <View style={styles.gridRow}>
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.squareBtn, { backgroundColor: p1Recording ? '#8E1C16' : '#FF3B30' }]}
               onPress={() => p1Recording ? stopRecording(1) : startRecording(1)}
             >
               <IconSymbol name={p1Recording ? "stop.fill" : "record.circle.fill"} size={28} color="white" />
               <Text style={styles.btnText}>{p1Recording ? `${p1Duration}s / 60s` : "Record"}</Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.circleBtn, !p1Uri && styles.disabled]}
               onPress={() => playSound(p1Uri)}
               disabled={!p1Uri}
             >
               <IconSymbol name="play.fill" size={24} color="white" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <View style={styles.gridRow}>
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.squareBtn, { backgroundColor: '#007AFF' }, !p1Uri && styles.disabled]}
               onPress={() => playSound(p1Uri)} // Mock reverse
               disabled={!p1Uri}
             >
               <IconSymbol name="backward.fill" size={28} color="white" />
               <Text style={styles.btnText}>Play Reverse</Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.circleBtn, !p1Uri && styles.disabled]}
               onPress={() => playSound(p1Uri, 0.5)}
               disabled={!p1Uri}
             >
               <IconSymbol name="hare.fill" size={24} color="white" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -182,41 +187,41 @@ export function ReverseSingingSession({ session }: Props) {
 
         <View style={styles.grid}>
           <View style={styles.gridRow}>
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.squareBtn, { backgroundColor: p2Recording ? '#8E1C16' : '#FF3B30' }, activeStep !== 'playerTwo' && styles.disabled]}
               onPress={() => p2Recording ? stopRecording(2) : startRecording(2)}
               disabled={activeStep !== 'playerTwo'}
             >
               <IconSymbol name={p2Recording ? "stop.fill" : "record.circle.fill"} size={28} color="white" />
               <Text style={styles.btnText}>{p2Recording ? `${p2Duration}s / 60s` : "Record Mimic"}</Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.circleBtn, !p2Uri && styles.disabled]}
               onPress={() => playSound(p2Uri)}
               disabled={!p2Uri}
             >
               <IconSymbol name="play.fill" size={24} color="white" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <View style={styles.gridRow}>
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.squareBtn, { backgroundColor: '#34C759' }, !p2Uri && styles.disabled]}
               onPress={() => playSound(p2Uri)} // Mock reverse
               disabled={!p2Uri}
             >
               <IconSymbol name="sparkles" size={28} color="white" />
               <Text style={styles.btnText}>Result</Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.circleBtn, !p2Uri && styles.disabled]}
               onPress={() => alert('Share sheet would open here')}
               disabled={!p2Uri}
             >
               <IconSymbol name="square.and.arrow.up" size={24} color="white" />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -228,9 +233,9 @@ export function ReverseSingingSession({ session }: Props) {
             <Text style={styles.cardTitle}>History</Text>
             <Text style={styles.cardSubtitle}>Last 20 only</Text>
           </View>
-          <TouchableOpacity style={styles.openBtn}>
+          <Pressable style={styles.openBtn}>
             <Text style={styles.openBtnText}>Open</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {p2Uri ? (
@@ -239,15 +244,15 @@ export function ReverseSingingSession({ session }: Props) {
               <Text style={styles.historyDateText}>Just now</Text>
             </View>
             <View style={styles.historyActions}>
-              <TouchableOpacity style={[styles.historyCircleBtn, { backgroundColor: '#FF2D55' }]} onPress={() => playSound(p2Uri)}>
+              <Pressable style={[styles.historyCircleBtn, { backgroundColor: '#FF2D55' }]} onPress={() => playSound(p2Uri)}>
                 <IconSymbol name="mic.fill" size={16} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.historyCircleBtn, { backgroundColor: '#007AFF' }]} onPress={() => playSound(p2Uri)}>
+              </Pressable>
+              <Pressable style={[styles.historyCircleBtn, { backgroundColor: '#007AFF' }]} onPress={() => playSound(p2Uri)}>
                 <IconSymbol name="sparkles" size={16} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.historyCircleBtn} onPress={() => alert('Share')}>
+              </Pressable>
+              <Pressable style={styles.historyCircleBtn} onPress={() => alert('Share')}>
                 <IconSymbol name="ellipsis" size={16} color="white" />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         ) : (

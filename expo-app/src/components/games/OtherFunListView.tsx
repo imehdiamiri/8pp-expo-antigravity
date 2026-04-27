@@ -1,10 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { PartyGameTutorial, PartyGameTutorials } from '@/src/models/PartyGameTutorial';
-import Animated, { FadeInUp, FadeIn, FadeOut, Layout } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
-import { Platform } from 'react-native';
+
+// Platform-safe imports: reanimated + blur
+let Animated: any;
+let FadeInUp: any;
+let FadeIn: any;
+let FadeOut: any;
+let Layout: any;
+let BlurView: any;
+
+if (Platform.OS !== 'web') {
+  const Reanimated = require('react-native-reanimated');
+  Animated = Reanimated.default;
+  FadeInUp = Reanimated.FadeInUp;
+  FadeIn = Reanimated.FadeIn;
+  FadeOut = Reanimated.FadeOut;
+  Layout = Reanimated.Layout;
+  BlurView = require('expo-blur').BlurView;
+} else {
+  Animated = { View };
+  FadeInUp = undefined;
+  FadeIn = undefined;
+  FadeOut = undefined;
+  Layout = undefined;
+}
 
 export function OtherFunListView() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -54,8 +75,12 @@ function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial
 
   return (
     <Animated.View layout={Layout.springify()} style={[styles.card, isExpanded && { borderColor: tintColor + '66' }, { shadowColor: tintColor }]}>
-      <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
-      <TouchableOpacity activeOpacity={0.7} onPress={onToggle} style={styles.cardHeader}>
+      {Platform.OS !== 'web' && BlurView ? (
+        <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
+      ) : (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,20,30,0.85)' }]} />
+      )}
+      <Pressable activeOpacity={0.7} onPress={onToggle} style={styles.cardHeader}>
         <View style={[styles.iconContainer, { backgroundColor: tintColor + '33' }]}>
           <IconSymbol name={game.iconName as any} size={22} color={tintColor} weight="semibold" />
         </View>
@@ -73,7 +98,7 @@ function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial
             weight="semibold" 
           />
         </View>
-      </TouchableOpacity>
+      </Pressable>
 
       {isExpanded && (
         <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.expandedContent}>

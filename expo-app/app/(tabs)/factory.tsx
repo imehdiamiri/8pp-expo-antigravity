@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
@@ -41,6 +42,7 @@ const MOCK_IDEAS = [
 
 export default function FactoryScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [vibe, setVibe] = useState(GAME_VIBES[1]); // Default funny
   const [playerCount, setPlayerCount] = useState(4);
   const [prompt, setPrompt] = useState('');
@@ -69,7 +71,7 @@ export default function FactoryScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Factory</Text>
           <View style={{ flex: 1 }} />
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')}>
             <IconSymbol name="person.crop.circle" size={24} color="white" />
           </TouchableOpacity>
         </View>

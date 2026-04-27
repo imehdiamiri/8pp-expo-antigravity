@@ -4,7 +4,7 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   TextInput,
   ActivityIndicator,
   Dimensions,
@@ -191,11 +191,11 @@ export default function DrawRushMultiDeviceSession({
               : 'Get ready to guess!'}
           </Text>
           {isLocalPlayerDrawer ? (
-            <TouchableOpacity style={styles.actionBtn} onPress={startDrawing} activeOpacity={0.8}>
+            <Pressable style={styles.actionBtn} onPress={startDrawing} activeOpacity={0.8}>
               <LinearGradient colors={['#5AC8FA', '#34AADC']} style={styles.actionGradient}>
                 <Text style={styles.actionText}>Reveal Concept & Start</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           ) : (
             <View style={styles.waitingRow}>
               <ActivityIndicator color="rgba(255,255,255,0.4)" size="small" />
@@ -245,13 +245,13 @@ export default function DrawRushMultiDeviceSession({
                 placeholder="Your guess"
                 placeholderTextColor="rgba(255,255,255,0.3)"
               />
-              <TouchableOpacity
+              <Pressable
                 style={[styles.submitBtn, !guessText.trim() && styles.submitBtnDisabled]}
                 onPress={submitGuess}
                 disabled={!guessText.trim()}
               >
                 <Text style={styles.submitText}>Submit</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           )}
 
@@ -307,23 +307,23 @@ export default function DrawRushMultiDeviceSession({
                         <Text style={styles.judgeName}>{sub.playerName}</Text>
                         <Text style={styles.judgeAnswer}>{sub.text}</Text>
                       </View>
-                      <TouchableOpacity
+                      <Pressable
                         style={[styles.judgeBtn, sub.isCorrect === true && styles.judgeBtnCorrect]}
                         onPress={() => judgeAnswer(sub.id, true)}
                       >
                         <Text style={styles.judgeBtnText}>✓</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
+                      </Pressable>
+                      <Pressable
                         style={[styles.judgeBtn, sub.isCorrect === false && styles.judgeBtnWrong]}
                         onPress={() => judgeAnswer(sub.id, false)}
                       >
                         <Text style={styles.judgeBtnText}>✗</Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     </View>
                   ))
               )}
 
-              <TouchableOpacity
+              <Pressable
                 style={[styles.actionBtn, { marginTop: 20 }, (!allJudged && submissions.length > 0) && styles.actionBtnDisabled]}
                 onPress={finalizeJudging}
                 disabled={!allJudged && submissions.length > 0}
@@ -333,7 +333,7 @@ export default function DrawRushMultiDeviceSession({
                     {submissions.length === 0 || allJudged ? 'Show Results' : 'Judge all answers to continue'}
                   </Text>
                 </LinearGradient>
-              </TouchableOpacity>
+              </Pressable>
             </>
           ) : (
             <View style={styles.centered}>
@@ -382,13 +382,13 @@ export default function DrawRushMultiDeviceSession({
           </View>
 
           {isHost && (
-            <TouchableOpacity style={styles.actionBtn} onPress={nextTurn} activeOpacity={0.8}>
+            <Pressable style={styles.actionBtn} onPress={nextTurn} activeOpacity={0.8}>
               <LinearGradient colors={['#5AC8FA', '#34AADC']} style={styles.actionGradient}>
                 <Text style={styles.actionText}>
                   {currentDrawerIndex + 1 >= players.length ? 'Show Final Leaderboard' : 'Next Drawer'}
                 </Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </ScrollView>
       </View>
@@ -413,11 +413,11 @@ export default function DrawRushMultiDeviceSession({
           ))}
         </View>
 
-        <TouchableOpacity style={[styles.actionBtn, { marginTop: 20 }]} onPress={onExit} activeOpacity={0.8}>
+        <Pressable style={[styles.actionBtn, { marginTop: 20 }]} onPress={onExit} activeOpacity={0.8}>
           <LinearGradient colors={['#FF9500', '#FF6B00']} style={styles.actionGradient}>
             <Text style={styles.actionText}>Exit</Text>
           </LinearGradient>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

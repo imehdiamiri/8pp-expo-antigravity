@@ -8,6 +8,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Games, GameMode } from '@/src/models/AppModels';
 import { useGameStore } from '@/src/store/useGameStore';
 import { useSettingsStore } from '@/src/store/useSettingsStore';
+import { useFriendsStore } from '@/src/store/useFriendsStore';
 import { SetupPlayersSection, SetupRoundsSection, SetupStartButton } from '@/src/components/games/UnifiedSetupComponents';
 
 // ─── Game-specific option types ───
@@ -46,12 +47,20 @@ export default function GameSetupScreen() {
   const insets = useSafeAreaInsets();
   const { startSingleDeviceSession } = useGameStore();
   const { lastGameConfigs, lastPlayerNames, saveGameConfig } = useSettingsStore();
+  const { offlineFriends } = useFriendsStore();
   
   const gameKey = Object.keys(Games).find(key => Games[key].id === id);
   const game = gameKey ? Games[gameKey] : null;
 
+  // Default player names from offline friends
+  const getDefaultPlayerNames = (count: number): string[] => {
+    return Array.from({ length: count }, (_, i) => offlineFriends[i]?.name || '');
+  };
+
   const [playerCount, setPlayerCount] = useState(game ? Math.max(game.minPlayers, Math.min(2, game.maxPlayers)) : 2);
-  const [playerNames, setPlayerNames] = useState<string[]>(Array(playerCount).fill(''));
+  const [playerNames, setPlayerNames] = useState<string[]>(
+    () => getDefaultPlayerNames(game ? Math.max(game.minPlayers, Math.min(2, game.maxPlayers)) : 2)
+  );
   const [showDuplicateError, setShowDuplicateError] = useState(false);
   const [roundCount, setRoundCount] = useState(3);
 
@@ -150,6 +159,8 @@ export default function GameSetupScreen() {
   };
 
   const handleStart = () => {
+    // Default empty names to "Player N"
+    const finalNames = playerNames.map((n, i) => n.trim() || `Player ${i + 1}`);
     if (hasDuplicateNames()) { setShowDuplicateError(true); return; }
 
     // Build game-specific config
@@ -171,8 +182,8 @@ export default function GameSetupScreen() {
         config = { gameStyle: imposterStyle }; break;
     }
 
-    startSingleDeviceSession(game!, playerNames, needsRounds ? roundCount : 1, config);
-    saveGameConfig(id!, config, playerNames);
+    startSingleDeviceSession(game!, finalNames, needsRounds ? roundCount : 1, config);
+    saveGameConfig(id!, config, finalNames);
     router.push(`/game/${id}/session` as any);
   };
 
@@ -247,7 +258,11 @@ export default function GameSetupScreen() {
           onUpdateCount={(count) => {
             setPlayerCount(count);
             if (count > playerNames.length) {
-              setPlayerNames([...playerNames, ...Array(count - playerNames.length).fill('')]);
+              const newNames = Array.from({ length: count - playerNames.length }, (_, i) => {
+                const idx = playerNames.length + i;
+                return offlineFriends[idx]?.name || '';
+              });
+              setPlayerNames([...playerNames, ...newNames]);
             } else {
               setPlayerNames(playerNames.slice(0, count));
             }

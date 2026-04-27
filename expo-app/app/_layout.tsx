@@ -65,11 +65,13 @@ export default function RootLayout() {
     const inOnboarding = segments[0] === 'onboarding';
 
     // Ensure we route after the root layout has finished mounting
+    // On web, allow deep-linking to game, tools, paywall, etc. without requiring auth
+    const isProtectedRoute = segments[0] === '(tabs)' || segments.length === 0;
     const timer = setTimeout(() => {
       if (!hasCompletedOnboarding && !inOnboarding) {
         router.replace('/onboarding');
       } else if (hasCompletedOnboarding) {
-        if (!currentUser && !inAuthGroup) {
+        if (!currentUser && !inAuthGroup && isProtectedRoute) {
           router.replace('/auth');
         } else if (currentUser && (inAuthGroup || inOnboarding)) {
           router.replace('/(tabs)');

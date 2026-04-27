@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 
 interface Props {
   session: GameSession;
@@ -191,9 +191,9 @@ export function ImposterSession({ session }: Props) {
             {!isRoleRevealed ? (
               <View style={styles.centerItems}>
                 <IconSymbol name="eye.slash.fill" size={64} color="rgba(255,255,255,0.2)" />
-                <TouchableOpacity style={[styles.primaryBtn, { marginTop: 30 }]} onPress={handleRevealMyRole}>
+                <Pressable style={[styles.primaryBtn, { marginTop: 30 }]} onPress={handleRevealMyRole}>
                   <Text style={styles.primaryBtnText}>Reveal My Role</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             ) : (
               <View style={styles.centerItems}>
@@ -212,9 +212,9 @@ export function ImposterSession({ session }: Props) {
                     </View>
                   </>
                 )}
-                <TouchableOpacity style={[styles.primaryBtn, { marginTop: 30 }]} onPress={handleGotIt}>
+                <Pressable style={[styles.primaryBtn, { marginTop: 30 }]} onPress={handleGotIt}>
                   <Text style={styles.primaryBtnText}>Got it</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             )}
           </View>
@@ -227,9 +227,9 @@ export function ImposterSession({ session }: Props) {
           <Text style={styles.title}>Everyone has seen their role</Text>
           <Text style={styles.subtitle}>Get ready for 2 minutes of discussion!</Text>
           
-          <TouchableOpacity style={[styles.primaryBtn, { marginTop: 40, paddingHorizontal: 60 }]} onPress={handleStartDiscussion}>
+          <Pressable style={[styles.primaryBtn, { marginTop: 40, paddingHorizontal: 60 }]} onPress={handleStartDiscussion}>
             <Text style={styles.primaryBtnText}>Start Discussion</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       )}
 
@@ -260,9 +260,9 @@ export function ImposterSession({ session }: Props) {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.secondaryBtn} onPress={handleMoveToVoting}>
+          <Pressable style={styles.secondaryBtn} onPress={handleMoveToVoting}>
             <Text style={styles.secondaryBtnText}>Skip to Voting</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       )}
 
@@ -277,24 +277,24 @@ export function ImposterSession({ session }: Props) {
             
             <View style={{ marginTop: 20, gap: 10 }}>
               {session.players.filter(p => p.id !== currentPlayer.id).map((p, i) => (
-                <TouchableOpacity 
+                <Pressable 
                   key={p.id}
                   style={[styles.candidateBtn, selectedSuspect === p.id && styles.candidateBtnActive]}
                   onPress={() => setSelectedSuspect(p.id)}
                 >
                   <Text style={[styles.candidateText, { color: getPlayerColor(session.players.findIndex(x => x.id === p.id)) }]}>{p.username}</Text>
                   {selectedSuspect === p.id && <IconSymbol name="checkmark.circle.fill" size={20} color="#007AFF" />}
-                </TouchableOpacity>
+                </Pressable>
               ))}
             </View>
 
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.primaryBtn, { marginTop: 30 }, !selectedSuspect && { opacity: 0.5 }]} 
               onPress={handleSubmitVote}
               disabled={!selectedSuspect}
             >
               <Text style={styles.primaryBtnText}>Confirm Vote</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       )}
@@ -347,9 +347,9 @@ export function ImposterSession({ session }: Props) {
                   </View>
                 </View>
 
-                <TouchableOpacity style={styles.primaryBtn} onPress={nextPhase}>
+                <Pressable style={styles.primaryBtn} onPress={nextPhase}>
                   <Text style={styles.primaryBtnText}>Continue</Text>
-                </TouchableOpacity>
+                </Pressable>
               </>
             );
           })()}
@@ -370,9 +370,9 @@ export function ImposterSession({ session }: Props) {
             ))}
           </View>
 
-          <TouchableOpacity style={[styles.primaryBtn, { marginTop: 20 }]} onPress={nextPhase}>
+          <Pressable style={[styles.primaryBtn, { marginTop: 20 }]} onPress={nextPhase}>
             <Text style={styles.primaryBtnText}>{roundNumber >= totalRounds ? "Finish Game" : "Next Round"}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       )}
 

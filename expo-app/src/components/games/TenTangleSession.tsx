@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props { session: GameSession; }
@@ -150,7 +150,7 @@ export function TenTangleSession({ session }: Props) {
         <Text style={[st.title, { color: '#FF9500' }]}>{guesser.username}</Text>
         <Text style={st.sub}>You are the Guesser this round!</Text>
         <Text style={st.hint}>Everyone else will get a secret number. Watch them act and guess their numbers.</Text>
-        <TouchableOpacity style={st.btn} onPress={handleProceedToPass}><Text style={st.btnTx}>Continue</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={handleProceedToPass}><Text style={st.btnTx}>Continue</Text></Pressable>
       </View></View>
     );
   }
@@ -165,7 +165,7 @@ export function TenTangleSession({ session }: Props) {
         <Text style={[st.title, { color: '#5AC8FA', fontSize: 32 }]}>{p?.username}</Text>
         <Text style={st.sub}>Tap below to see your secret number</Text>
         <Text style={st.hint}>{guesser.username} should look away!</Text>
-        <TouchableOpacity style={st.btn} onPress={handleShowNumber}><Text style={st.btnTx}>Show My Number</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={handleShowNumber}><Text style={st.btnTx}>Show My Number</Text></Pressable>
       </View></View>
     );
   }
@@ -182,7 +182,7 @@ export function TenTangleSession({ session }: Props) {
         {lbl ? <Text style={[st.numLabel, { color: col }]}>{lbl}</Text> : null}
         <Text style={st.sub}>Remember this number, {p?.username}!</Text>
         <Text style={[st.hint, { marginTop: 20 }]}>1 = Disaster 😬 · {maxNumber} = Perfect 😍</Text>
-        <TouchableOpacity style={st.btn} onPress={handleGotIt}><Text style={st.btnTx}>Got it!</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={handleGotIt}><Text style={st.btnTx}>Got it!</Text></Pressable>
       </View></View>
     );
   }
@@ -197,7 +197,7 @@ export function TenTangleSession({ session }: Props) {
           <Text style={st.scenarioText}>{scenario}</Text>
         </View>
         <Text style={st.hint}>Each player acts out this scenario at their number's intensity level.</Text>
-        <TouchableOpacity style={st.btn} onPress={handleStartActing}><Text style={st.btnTx}>Start Acting!</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={handleStartActing}><Text style={st.btnTx}>Start Acting!</Text></Pressable>
       </View></View>
     );
   }
@@ -210,7 +210,7 @@ export function TenTangleSession({ session }: Props) {
         <Text style={st.title}>Acting Time!</Text>
         <View style={st.scenarioCard}><Text style={st.scenarioText}>{scenario}</Text></View>
         <Text style={st.sub}>{guesser.username} — watch everyone carefully!</Text>
-        <TouchableOpacity style={st.btn} onPress={handleStartGuessing}><Text style={st.btnTx}>{guesser.username}, Start Guessing</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={handleStartGuessing}><Text style={st.btnTx}>{guesser.username}, Start Guessing</Text></Pressable>
       </View></View>
     );
   }
@@ -230,19 +230,19 @@ export function TenTangleSession({ session }: Props) {
                   {Array.from({ length: maxNumber }, (_, i) => i + 1).map(n => {
                     const sel = guesses[p.id] === n;
                     return (
-                      <TouchableOpacity key={n} onPress={() => { Haptics.selectionAsync(); setGuesses(prev => ({ ...prev, [p.id]: n })); }}
+                      <Pressable key={n} onPress={() => { Haptics.selectionAsync(); setGuesses(prev => ({ ...prev, [p.id]: n })); }}
                         style={[st.numBtn, sel && { backgroundColor: '#FF9500', borderColor: '#FF9500' }]}>
                         <Text style={[st.numBtnTx, sel && { color: '#fff' }]}>{n}</Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     );
                   })}
                 </View>
               </ScrollView>
             </View>
           ))}
-          <TouchableOpacity style={[st.btn, !allGuessed && { opacity: 0.4 }]} onPress={handleSubmitGuesses} disabled={!allGuessed}>
+          <Pressable style={[st.btn, !allGuessed && { opacity: 0.4 }]} onPress={handleSubmitGuesses} disabled={!allGuessed}>
             <Text style={st.btnTx}>Submit Guesses</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </View>
     );
@@ -272,7 +272,7 @@ export function TenTangleSession({ session }: Props) {
             );
           })}
           <Text style={[st.sub, { textAlign: 'center', marginTop: 16 }]}>{guesser.username} got {correct}/{nonGuessers.length} correct!</Text>
-          <TouchableOpacity style={st.btn} onPress={handleShowScoreboard}><Text style={st.btnTx}>Scoreboard</Text></TouchableOpacity>
+          <Pressable style={st.btn} onPress={handleShowScoreboard}><Text style={st.btnTx}>Scoreboard</Text></Pressable>
         </ScrollView>
       </View>
     );
@@ -292,9 +292,9 @@ export function TenTangleSession({ session }: Props) {
               <Text style={st.scoreVal}>{scores[p.id] || 0}</Text>
             </View>
           ))}
-          <TouchableOpacity style={st.btn} onPress={handleNextRound}>
+          <Pressable style={st.btn} onPress={handleNextRound}>
             <Text style={st.btnTx}>{round >= totalRounds ? 'Final Results' : 'Next Round'}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </View>
     );

@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Dimensions, Animated, Easing } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { CurrentTurnPill, BeerBottleView } from '@/src/components/games/SharedGameComponents';
@@ -145,21 +145,21 @@ export function SpinBottleSession({ session }: Props) {
               start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={st.promptCardInner}>
               <Text style={st.promptTx}>{promptText}</Text>
               {rerolls > 0 && (
-                <TouchableOpacity style={st.rerollBtn} onPress={handleReroll}>
+                <Pressable style={st.rerollBtn} onPress={handleReroll}>
                   <IconSymbol name="arrow.clockwise" size={12} color="#fff" />
                   <Text style={st.rerollTx}>Reroll · {rerolls} left</Text>
-                </TouchableOpacity>
+                </Pressable>
               )}
             </LinearGradient>
           </View>
 
-          <TouchableOpacity onPress={handleDone}>
+          <Pressable onPress={handleDone}>
             <LinearGradient colors={['rgba(52,199,89,0.9)', 'rgba(52,199,89,0.6)']}
               start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={st.doneBtn}>
               <IconSymbol name="checkmark" size={16} color="#fff" />
               <Text style={st.doneBtnTx}>Done · Next Spin</Text>
             </LinearGradient>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     );
@@ -231,50 +231,50 @@ export function SpinBottleSession({ session }: Props) {
         </Animated.View>
 
         {/* Restart */}
-        <TouchableOpacity style={st.restartBtn} onPress={handleRestart}>
+        <Pressable style={st.restartBtn} onPress={handleRestart}>
           <IconSymbol name="arrow.counterclockwise" size={15} color="#fff" />
-        </TouchableOpacity>
+        </Pressable>
       </View>
       </View>
 
       {/* Action area */}
       <View style={st.actionArea}>
         {phase === 'idle' && (
-          <TouchableOpacity onPress={spin}>
+          <Pressable onPress={spin}>
             <LinearGradient colors={['rgba(255,59,48,0.9)', 'rgba(255,45,85,0.7)']}
               start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={st.spinBtn}>
               <IconSymbol name="arrow.trianglehead.2.clockwise.rotate.90" size={18} color="#fff" />
               <Text style={st.spinBtnTx}>Spin</Text>
             </LinearGradient>
-          </TouchableOpacity>
+          </Pressable>
         )}
         {phase === 'spinning' && (
           <Text style={st.spinningTx}>Spinning...</Text>
         )}
         {phase === 'landed' && (
-          <TouchableOpacity onPress={() => setPhase('choosing')}>
+          <Pressable onPress={() => setPhase('choosing')}>
             <LinearGradient colors={['rgba(0,122,255,0.9)', 'rgba(0,122,255,0.6)']}
               start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={st.spinBtn}>
               <Text style={st.spinBtnTx}>Continue</Text>
             </LinearGradient>
-          </TouchableOpacity>
+          </Pressable>
         )}
         {phase === 'choosing' && (
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            <TouchableOpacity style={{ flex: 1 }} onPress={() => handleChoose('truth')}>
+            <Pressable style={{ flex: 1 }} onPress={() => handleChoose('truth')}>
               <LinearGradient colors={['rgba(0,122,255,0.85)', 'rgba(0,122,255,0.55)']}
                 start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={st.choiceBtn}>
                 <IconSymbol name={"bubble.left.and.bubble.right.fill" as any} size={22} color="#fff" />
                 <Text style={st.choiceBtnTx}>Truth</Text>
               </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity style={{ flex: 1 }} onPress={() => handleChoose('dare')}>
+            </Pressable>
+            <Pressable style={{ flex: 1 }} onPress={() => handleChoose('dare')}>
               <LinearGradient colors={['rgba(255,59,48,0.85)', 'rgba(255,59,48,0.55)']}
                 start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={st.choiceBtn}>
                 <IconSymbol name="flame.fill" size={22} color="#fff" />
                 <Text style={st.choiceBtnTx}>Dare</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         )}
       </View>

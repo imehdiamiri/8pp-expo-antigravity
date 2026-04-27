@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, PanResponder, Dimensions, TouchableOpacity } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { View, Text, StyleSheet, Animated, PanResponder, Dimensions, Pressable, Platform } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { CardCategory, CardCategoryInfo, ALL_CARDS, PartyCard } from '@/src/models/CardModels';
+
+// Platform-safe BlurView
+let BlurView: any = null;
+if (Platform.OS !== 'web') {
+  try { BlurView = require('expo-blur').BlurView; } catch {}
+}
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
@@ -108,36 +113,48 @@ export function CardsDeckRenderer({ categoryId }: Props) {
     };
   };
 
+  const renderFilterContent = () => (
+    <>
+      <View style={styles.subtypesRow}>
+        <Pressable 
+          style={[styles.chip, !selectedSubtype && styles.chipActive]}
+          onPress={() => setSelectedSubtype(null)}
+        >
+          <Text style={[styles.chipText, !selectedSubtype && styles.chipTextActive]}>All</Text>
+        </Pressable>
+        {availableSubtypes.map(subtype => (
+          <Pressable 
+            key={subtype}
+            style={[styles.chip, selectedSubtype === subtype && styles.chipActive]}
+            onPress={() => setSelectedSubtype(selectedSubtype === subtype ? null : subtype)}
+          >
+            <Text style={[styles.chipText, selectedSubtype === subtype && styles.chipTextActive]}>{subtype}</Text>
+          </Pressable>
+        ))}
+      </View>
+      <View style={styles.togglesRow}>
+        <Pressable 
+          style={[styles.toggleButton, includeSpicy && styles.toggleButtonActive]}
+          onPress={() => setIncludeSpicy(!includeSpicy)}
+        >
+          <IconSymbol name="flame.fill" size={12} color={includeSpicy ? '#FF9500' : 'rgba(255,255,255,0.5)'} />
+          <Text style={[styles.toggleText, includeSpicy && { color: '#FF9500' }]}>Spicy</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
-      <BlurView intensity={30} tint="dark" style={styles.filtersBlur}>
-        <View style={styles.subtypesRow}>
-          <TouchableOpacity 
-            style={[styles.chip, !selectedSubtype && styles.chipActive]}
-            onPress={() => setSelectedSubtype(null)}
-          >
-            <Text style={[styles.chipText, !selectedSubtype && styles.chipTextActive]}>All</Text>
-          </TouchableOpacity>
-          {availableSubtypes.map(subtype => (
-            <TouchableOpacity 
-              key={subtype}
-              style={[styles.chip, selectedSubtype === subtype && styles.chipActive]}
-              onPress={() => setSelectedSubtype(selectedSubtype === subtype ? null : subtype)}
-            >
-              <Text style={[styles.chipText, selectedSubtype === subtype && styles.chipTextActive]}>{subtype}</Text>
-            </TouchableOpacity>
-          ))}
+      {BlurView ? (
+        <BlurView intensity={30} tint="dark" style={styles.filtersBlur}>
+          {renderFilterContent()}
+        </BlurView>
+      ) : (
+        <View style={[styles.filtersBlur, { backgroundColor: 'rgba(20,20,30,0.85)' }]}>
+          {renderFilterContent()}
         </View>
-        <View style={styles.togglesRow}>
-          <TouchableOpacity 
-            style={[styles.toggleButton, includeSpicy && styles.toggleButtonActive]}
-            onPress={() => setIncludeSpicy(!includeSpicy)}
-          >
-            <IconSymbol name="flame.fill" size={12} color={includeSpicy ? '#FF9500' : 'rgba(255,255,255,0.5)'} />
-            <Text style={[styles.toggleText, includeSpicy && { color: '#FF9500' }]}>Spicy</Text>
-          </TouchableOpacity>
-        </View>
-      </BlurView>
+      )}
     </View>
   );
 
@@ -187,18 +204,18 @@ export function CardsDeckRenderer({ categoryId }: Props) {
 
     return (
       <View style={styles.actionBar}>
-        <TouchableOpacity style={styles.actionButton} onPress={handleShuffle}>
+        <Pressable style={styles.actionButton} onPress={handleShuffle}>
           <IconSymbol name="shuffle" size={24} color="white" />
-        </TouchableOpacity>
+        </Pressable>
         
-        <TouchableOpacity style={styles.actionButton} onPress={handleSave}>
+        <Pressable style={styles.actionButton} onPress={handleSave}>
           <IconSymbol name={isSaved ? "bookmark.fill" : "bookmark"} size={24} color={isSaved ? category.accentColor : "white"} />
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity style={styles.nextButton} onPress={() => forceSwipe('left')}>
+        <Pressable style={styles.nextButton} onPress={() => forceSwipe('left')}>
           <Text style={styles.nextButtonText}>NEXT</Text>
           <IconSymbol name="chevron.right" size={20} color="black" />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   };

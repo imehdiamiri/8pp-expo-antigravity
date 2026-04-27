@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Animated } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
@@ -166,13 +166,13 @@ export function GuessTheSecondsSession({ session }: Props) {
           </Text>
 
           <View style={styles.selectorArea}>
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.stepperButton, !canEditTargetTime && styles.stepperDisabled]} 
               onPress={() => adjustTargetTime(-1)}
               disabled={!canEditTargetTime}
             >
               <IconSymbol name="minus" size={24} color={canEditTargetTime ? "white" : "rgba(255,255,255,0.3)"} />
-            </TouchableOpacity>
+            </Pressable>
 
             <View style={styles.timeDisplayBox}>
               <Text style={[styles.timeDisplay, isRunning && styles.timeDisplayRunning]}>
@@ -180,27 +180,27 @@ export function GuessTheSecondsSession({ session }: Props) {
               </Text>
             </View>
 
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.stepperButton, !canEditTargetTime && styles.stepperDisabled]} 
               onPress={() => adjustTargetTime(1)}
               disabled={!canEditTargetTime}
             >
               <IconSymbol name="plus" size={24} color={canEditTargetTime ? "white" : "rgba(255,255,255,0.3)"} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <View style={styles.controlButtons}>
             {!isRunning && (
-              <TouchableOpacity style={[styles.primaryButton, { backgroundColor: '#0A84FF' }]} onPress={startTurn}>
+              <Pressable style={[styles.primaryButton, { backgroundColor: '#0A84FF' }]} onPress={startTurn}>
                 <IconSymbol name="play.fill" size={20} color="white" />
                 <Text style={styles.primaryButtonText}>Start</Text>
-              </TouchableOpacity>
+              </Pressable>
             )}
             {isRunning && (
-              <TouchableOpacity style={[styles.primaryButton, { backgroundColor: '#FF453A' }]} onPress={stopTurn}>
+              <Pressable style={[styles.primaryButton, { backgroundColor: '#FF453A' }]} onPress={stopTurn}>
                 <IconSymbol name="stop.fill" size={20} color="white" />
                 <Text style={styles.primaryButtonText}>Stop</Text>
-              </TouchableOpacity>
+              </Pressable>
             )}
           </View>
         </View>

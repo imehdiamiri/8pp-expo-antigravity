@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Image } from 'expo-image';
 
@@ -43,12 +43,12 @@ export function GamePassPhoneView({
       </View>
       <View style={{ flex: 1 }} />
       
-      <TouchableOpacity 
+      <Pressable 
         style={[styles.actionButton, { backgroundColor: accentColor }]}
         onPress={onReady}
       >
         <Text style={styles.actionButtonText}>{buttonTitle}</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

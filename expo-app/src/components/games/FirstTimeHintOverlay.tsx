@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Modal, Animated, Dimensions } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 
 interface Props {
   storageKey: string;
@@ -51,7 +51,7 @@ export function FirstTimeHintOverlay({ storageKey, icon, title, tip, accent = '#
   return (
     <Modal transparent animationType="none" visible={visible}>
       <Animated.View style={[st.backdrop, { opacity: opacityAnim }]}>
-        <TouchableOpacity style={st.dismissArea} activeOpacity={1} onPress={dismiss} />
+        <Pressable style={st.dismissArea} activeOpacity={1} onPress={dismiss} />
         <Animated.View style={[st.card, { transform: [{ scale: scaleAnim }], opacity: opacityAnim }]}>
           {/* Icon */}
           <View style={[st.iconCircle, { backgroundColor: accent + '26' }]}>
@@ -63,9 +63,9 @@ export function FirstTimeHintOverlay({ storageKey, icon, title, tip, accent = '#
           <Text style={st.tip}>{tip}</Text>
 
           {/* Got it */}
-          <TouchableOpacity style={[st.btn, { backgroundColor: accent }]} onPress={dismiss}>
+          <Pressable style={[st.btn, { backgroundColor: accent }]} onPress={dismiss}>
             <Text style={st.btnTx}>Got it</Text>
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
       </Animated.View>
     </Modal>

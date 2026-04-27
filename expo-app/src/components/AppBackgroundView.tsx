@@ -1,14 +1,28 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { Colors } from '../theme/Colors';
+
+// Platform-safe BlurView import
+let BlurView: any = null;
+if (Platform.OS !== 'web') {
+  try { BlurView = require('expo-blur').BlurView; } catch {}
+}
 
 const { width, height } = Dimensions.get('window');
 
 export const AppBackgroundView = () => {
+  if (Platform.OS === 'web') {
+    return (
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a0f', zIndex: -999 }} pointerEvents="none">
+        <View style={[styles.blob, { backgroundColor: 'rgba(191, 90, 242, 0.1)', top: '20%', left: '10%', width: width * 0.4, height: width * 0.4 }]} />
+        <View style={[styles.blob, { backgroundColor: 'rgba(10, 132, 255, 0.1)', top: '60%', left: '80%', width: width * 0.5, height: width * 0.5 }]} />
+      </View>
+    );
+  }
+
   return (
-    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+    <View style={[StyleSheet.absoluteFillObject, { zIndex: -1 }]} pointerEvents="none">
       <View style={[StyleSheet.absoluteFillObject, { backgroundColor: Colors.black }]} />
       
       {/* Simulated Mesh Gradient Nodes (Subtle) */}

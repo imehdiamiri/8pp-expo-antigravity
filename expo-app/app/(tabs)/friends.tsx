@@ -1,46 +1,68 @@
-import { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Share } from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Share, Alert, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { BlurView } from 'expo-blur';
+import { useFriendsStore } from '@/src/store/useFriendsStore';
+import { useAuthStore } from '@/src/store/useAuthStore';
+import { showToast } from '@/src/components/ToastOverlay';
 
 export default function FriendsScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   
-  // Local state for Offline Friends
+  // ─── Offline Friends (persisted via store) ───
+  const { offlineFriends, addOfflineFriend, updateOfflineFriend, removeOfflineFriend,
+          onlineFriends, friendRequests: requests,
+          searchResults, isSearching, searchFriends,
+          sendFriendRequest, acceptRequest, declineRequest,
+          loadFriends, loadFriendRequests } = useFriendsStore();
+  const { currentUser } = useAuthStore();
+  const currentUserId = currentUser?.uid || null;
+
   const [draftFriendName, setDraftFriendName] = useState('');
-  const [offlineFriends, setOfflineFriends] = useState([
-    { id: '1', name: 'Player 1', isMe: true },
-    { id: '2', name: 'Player 2', isMe: false }
-  ]);
   const [editingOfflineFriendID, setEditingOfflineFriendID] = useState<string | null>(null);
   const [editingOfflineFriendName, setEditingOfflineFriendName] = useState('');
 
-  // Online Friends / Search
+  // Online search
   const [searchText, setSearchText] = useState('');
-  const [onlineFriends, setOnlineFriends] = useState([]);
-  const [requests, setRequests] = useState([]);
+
+  // Load online friends & requests when logged in
+  useEffect(() => {
+    if (currentUserId) {
+      loadFriends(currentUserId);
+      loadFriendRequests(currentUserId);
+    }
+  }, [currentUserId]);
 
   const handleAddOfflineFriend = () => {
-    if (!draftFriendName.trim()) return;
-    setOfflineFriends(prev => [
-      ...prev,
-      { id: Date.now().toString(), name: draftFriendName.trim(), isMe: false }
-    ]);
+    const trimmed = draftFriendName.trim();
+    if (!trimmed) return;
+    // Duplicate check
+    if (offlineFriends.some(f => f.name.toLowerCase() === trimmed.toLowerCase())) {
+      showToast.warning('This name already exists!');
+      return;
+    }
+    addOfflineFriend(trimmed);
     setDraftFriendName('');
   };
 
   const handleRemoveOfflineFriend = (id: string) => {
-    setOfflineFriends(prev => prev.filter(f => f.id !== id));
+    removeOfflineFriend(id);
   };
 
   const handleSaveEditOfflineFriend = () => {
-    if (!editingOfflineFriendName.trim() || !editingOfflineFriendID) return;
-    setOfflineFriends(prev => prev.map(f => 
-      f.id === editingOfflineFriendID ? { ...f, name: editingOfflineFriendName.trim() } : f
-    ));
+    const trimmed = editingOfflineFriendName.trim();
+    if (!trimmed || !editingOfflineFriendID) return;
+    // Duplicate check (excluding the current friend being edited)
+    if (offlineFriends.some(f => f.id !== editingOfflineFriendID && f.name.toLowerCase() === trimmed.toLowerCase())) {
+      showToast.warning('This name already exists!');
+      return;
+    }
+    updateOfflineFriend(editingOfflineFriendID, trimmed);
     setEditingOfflineFriendID(null);
     setEditingOfflineFriendName('');
   };
@@ -86,7 +108,7 @@ export default function FriendsScreen() {
               <Text style={styles.notificationText}>{requests.length}</Text>
             </View>
           )}
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')}>
             <IconSymbol name="person.crop.circle" size={24} color="white" />
           </TouchableOpacity>
         </View>
@@ -100,7 +122,7 @@ export default function FriendsScreen() {
             <Text style={styles.quickJoinTitle}>Join with Code</Text>
             <Text style={styles.quickJoinSubtitle}>Enter a room code to join instantly</Text>
           </View>
-          <TouchableOpacity style={styles.quickJoinButton}>
+          <TouchableOpacity style={styles.quickJoinButton} onPress={() => router.push('/lobby/join')}>
             <Text style={styles.quickJoinButtonText}>Enter Code</Text>
           </TouchableOpacity>
         </BlurView>
@@ -133,7 +155,7 @@ export default function FriendsScreen() {
               </View>
             ) : (
               <View style={styles.listContainer}>
-                {offlineFriends.map((friend, index) => (
+                {offlineFriends.map((friend: any, index: number) => (
                   <View key={friend.id}>
                     {editingOfflineFriendID === friend.id ? (
                       <View style={[styles.addFriendRow, { marginVertical: 8, marginBottom: 8 }]}>
@@ -153,16 +175,17 @@ export default function FriendsScreen() {
                       <View style={styles.friendRow}>
                         {compactAvatar(friend.name, false, 26)}
                         <Text style={styles.friendName} numberOfLines={1}>{friend.name}</Text>
-                        
-                        {friend.isMe && (
+                        {index === 0 && (
                           <View style={styles.meBadge}>
                             <Text style={styles.meBadgeText}>me</Text>
                           </View>
                         )}
                         
+
+                        
                         <View style={{ flex: 1 }} />
                         
-                        {!friend.isMe && (
+                        {index > 0 && (
                           <View style={styles.friendActions}>
                             <TouchableOpacity onPress={() => {
                               setEditingOfflineFriendID(friend.id);
@@ -201,13 +224,83 @@ export default function FriendsScreen() {
               autoCapitalize="none"
               keyboardType="email-address"
               value={searchText}
-              onChangeText={setSearchText}
+              onChangeText={(text) => {
+                setSearchText(text);
+                if (currentUserId && text.trim().length > 1) {
+                  searchFriends(text.trim(), currentUserId);
+                }
+              }}
+              returnKeyType="search"
             />
             
             {searchText.trim().length > 0 && (
               <View style={styles.searchResultsSection}>
                 <Text style={styles.subHeadingText}>Results</Text>
-                <Text style={styles.noMatchesText}>Log in to search</Text>
+                {!currentUserId ? (
+                  <TouchableOpacity onPress={() => router.push('/auth')}>
+                    <Text style={[styles.noMatchesText, { color: '#0A84FF' }]}>Log in to search friends</Text>
+                  </TouchableOpacity>
+                ) : isSearching ? (
+                  <Text style={styles.noMatchesText}>Searching...</Text>
+                ) : searchResults.length === 0 ? (
+                  <Text style={styles.noMatchesText}>No users found</Text>
+                ) : (
+                  searchResults.map((result) => (
+                    <View key={result.id} style={[styles.friendRow, { paddingVertical: 6 }]}>
+                      {compactAvatar(result.username, false, 26)}
+                      <Text style={styles.friendName} numberOfLines={1}>{result.username}</Text>
+                      <View style={{ flex: 1 }} />
+                      {result.relationshipState === 'friends' ? (
+                        <Text style={{ color: '#34C759', fontSize: 11, fontWeight: '600' }}>Friends ✓</Text>
+                      ) : result.relationshipState === 'pendingOutgoing' ? (
+                        <Text style={{ color: '#FF9500', fontSize: 11, fontWeight: '600' }}>Pending</Text>
+                      ) : result.relationshipState === 'pendingIncoming' ? (
+                        <TouchableOpacity 
+                          style={[styles.invitePillButton, { backgroundColor: '#34C759' }]}
+                          onPress={() => {
+                            const req = requests.find(r => r.fromUserId === result.id);
+                            if (req && currentUserId) acceptRequest(req.id, currentUserId);
+                          }}
+                        >
+                          <Text style={styles.invitePillButtonText}>Accept</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity 
+                          style={styles.invitePillButton}
+                          onPress={() => currentUserId && sendFriendRequest(currentUserId, result.id)}
+                        >
+                          <Text style={styles.invitePillButtonText}>Add</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  ))
+                )}
+              </View>
+            )}
+
+            {/* Friend Requests */}
+            {requests.length > 0 && (
+              <View style={[styles.searchResultsSection, { marginTop: 8 }]}>
+                <Text style={styles.subHeadingText}>Friend Requests ({requests.length})</Text>
+                {requests.map((req) => (
+                  <View key={req.id} style={[styles.friendRow, { paddingVertical: 6 }]}>
+                    {compactAvatar(req.fromUsername, false, 26)}
+                    <Text style={styles.friendName} numberOfLines={1}>{req.fromUsername}</Text>
+                    <View style={{ flex: 1 }} />
+                    <TouchableOpacity 
+                      style={[styles.invitePillButton, { backgroundColor: '#34C759', marginRight: 6 }]}
+                      onPress={() => currentUserId && acceptRequest(req.id, currentUserId)}
+                    >
+                      <Text style={styles.invitePillButtonText}>Accept</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={[styles.invitePillButton, { backgroundColor: 'rgba(255,59,48,0.2)' }]}
+                      onPress={() => declineRequest(req.id)}
+                    >
+                      <Text style={[styles.invitePillButtonText, { color: '#FF3B30' }]}>Decline</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
               </View>
             )}
 
@@ -227,7 +320,7 @@ export default function FriendsScreen() {
               </View>
             ) : (
               <View style={styles.listContainer}>
-                {onlineFriends.map((friend: any, index) => (
+                {onlineFriends.map((friend: any, index: number) => (
                   <View key={friend.id}>
                     <View style={styles.friendRow}>
                       {compactAvatar(friend.name, friend.isOnline, 26)}
@@ -252,7 +345,7 @@ export default function FriendsScreen() {
               <Text style={styles.publicRoomsTitle}>Public Rooms</Text>
               <Text style={styles.publicRoomsSubtitle}>Open multiplayer rooms you can join.</Text>
             </View>
-            <TouchableOpacity style={styles.loginButton}>
+            <TouchableOpacity style={styles.loginButton} onPress={() => router.push('/auth')}>
               <IconSymbol name="person.crop.circle" size={12} color="#0A84FF" />
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>

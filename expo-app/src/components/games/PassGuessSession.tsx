@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { BlurView } from 'expo-blur';
-import * as Haptics from 'expo-haptics';
+
+import * as Haptics from '@/src/utils/safeHaptics';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
@@ -188,9 +188,9 @@ export function PassGuessSession({ session }: Props) {
           {privacyAction === 'answer' ? "They will write their answer privately." : "They will guess who wrote an answer."}
         </Text>
         
-        <TouchableOpacity style={[styles.primaryBtn, { backgroundColor: color, marginTop: 40 }]} onPress={handlePrivacyReady}>
+        <Pressable style={[styles.primaryBtn, { backgroundColor: color, marginTop: 40 }]} onPress={handlePrivacyReady}>
           <Text style={styles.primaryBtnText}>I'm Ready</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   }
@@ -208,24 +208,24 @@ export function PassGuessSession({ session }: Props) {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Choose a Question</Text>
             <View style={styles.tabsRow}>
-              <TouchableOpacity style={[styles.tab, !useCustom && styles.tabActive]} onPress={() => setUseCustom(false)}>
+              <Pressable style={[styles.tab, !useCustom && styles.tabActive]} onPress={() => setUseCustom(false)}>
                 <Text style={styles.tabText}>Predefined</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.tab, useCustom && styles.tabActive]} onPress={() => setUseCustom(true)}>
+              </Pressable>
+              <Pressable style={[styles.tab, useCustom && styles.tabActive]} onPress={() => setUseCustom(true)}>
                 <Text style={styles.tabText}>Custom</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
 
             {!useCustom ? (
               <View style={styles.questionsList}>
                 {PREDEFINED_QUESTIONS.map((q, i) => (
-                  <TouchableOpacity 
+                  <Pressable 
                     key={i} 
                     style={[styles.questionBtn, question === q && styles.questionBtnActive]}
                     onPress={() => setQuestion(q)}
                   >
                     <Text style={styles.questionText}>{q}</Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 ))}
               </View>
             ) : (
@@ -240,13 +240,13 @@ export function PassGuessSession({ session }: Props) {
             )}
           </View>
 
-          <TouchableOpacity 
+          <Pressable 
             style={[styles.primaryBtn, (useCustom && !customQuestion.trim()) && { opacity: 0.5 }]} 
             onPress={handleStartRound}
             disabled={useCustom && !customQuestion.trim()}
           >
             <Text style={styles.primaryBtnText}>Start Round</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       )}
 
@@ -284,13 +284,13 @@ export function PassGuessSession({ session }: Props) {
             />
             <Text style={styles.charCount}>{currentAnswer.length}/120</Text>
 
-            <TouchableOpacity 
+            <Pressable 
               style={[styles.primaryBtn, !currentAnswer.trim() && { opacity: 0.5 }]} 
               onPress={handleSubmitAnswer}
               disabled={!currentAnswer.trim()}
             >
               <Text style={styles.primaryBtnText}>Done & Pass</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       )}
@@ -327,23 +327,23 @@ export function PassGuessSession({ session }: Props) {
 
                   <View style={styles.candidatesList}>
                     {session.players.map((p, i) => (
-                      <TouchableOpacity 
+                      <Pressable 
                         key={p.id}
                         style={[styles.candidateBtn, selectedGuess === p.id && styles.candidateBtnActive]}
                         onPress={() => setSelectedGuess(p.id)}
                       >
                         <Text style={[styles.candidateText, { color: getPlayerColor(i) }]}>{p.username}</Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     ))}
                   </View>
 
-                  <TouchableOpacity 
+                  <Pressable 
                     style={[styles.primaryBtn, !selectedGuess && { opacity: 0.5 }]} 
                     onPress={handleSubmitGuess}
                     disabled={!selectedGuess}
                   >
                     <Text style={styles.primaryBtnText}>Submit Vote</Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               </>
             );
@@ -372,9 +372,9 @@ export function PassGuessSession({ session }: Props) {
             );
           })}
 
-          <TouchableOpacity style={[styles.primaryBtn, { marginTop: 20 }]} onPress={nextPhase}>
+          <Pressable style={[styles.primaryBtn, { marginTop: 20 }]} onPress={nextPhase}>
             <Text style={styles.primaryBtnText}>See Leaderboard</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       )}
 
@@ -393,9 +393,9 @@ export function PassGuessSession({ session }: Props) {
             ))}
           </View>
 
-          <TouchableOpacity style={[styles.primaryBtn, { marginTop: 20 }]} onPress={nextPhase}>
+          <Pressable style={[styles.primaryBtn, { marginTop: 20 }]} onPress={nextPhase}>
             <Text style={styles.primaryBtnText}>{roundNumber >= totalRounds ? "Finish Game" : "Next Round"}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       )}
 

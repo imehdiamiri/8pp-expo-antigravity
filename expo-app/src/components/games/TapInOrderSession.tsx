@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props { session: GameSession; }
@@ -189,7 +189,7 @@ export function TapInOrderSession({ session }: Props) {
             <View style={st.bubble}><Text style={st.bv}>{TILE_COUNT}</Text><Text style={st.bl}>Tiles</Text></View>
             {players.length > 1 && <View style={st.bubble}><Text style={st.bv}>{playerIndex+1}/{players.length}</Text><Text style={st.bl}>Player</Text></View>}
           </View>
-          <TouchableOpacity style={st.btn} onPress={handleStart}><Text style={st.btnTx}>Start</Text></TouchableOpacity>
+          <Pressable style={st.btn} onPress={handleStart}><Text style={st.btnTx}>Start</Text></Pressable>
         </View>
       </View>
     );
@@ -220,9 +220,9 @@ export function TapInOrderSession({ session }: Props) {
           <IconSymbol name="hand.raised.fill" size={56} color="#FF9500" />
           <Text style={st.title}>Pass the Phone</Text>
           <Text style={st.sub}>Give to {players[playerIndex + 1]?.username}</Text>
-          <TouchableOpacity style={[st.btn, { marginTop: 40 }]} onPress={() => { setPlayerIndex(i => i+1); setPhase('ready'); }}>
+          <Pressable style={[st.btn, { marginTop: 40 }]} onPress={() => { setPlayerIndex(i => i+1); setPhase('ready'); }}>
             <Text style={st.btnTx}>I'm Ready</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     );
@@ -309,7 +309,7 @@ export function TapInOrderSession({ session }: Props) {
             if (isWrong) borderColor = 'rgba(255,59,48,1)';
 
             return (
-              <TouchableOpacity key={idx} onPress={() => handleTap(idx)} activeOpacity={0.7}
+              <Pressable key={idx} onPress={() => handleTap(idx)} activeOpacity={0.7}
                 disabled={isPreview || isTapped}
                 style={{ width: tileSz, height: tileSz }}>
                 <LinearGradient colors={colors} start={{x:0,y:0}} end={{x:1,y:1}}
@@ -324,17 +324,17 @@ export function TapInOrderSession({ session }: Props) {
                     <IconSymbol name="xmark" size={18} color="rgba(255,255,255,0.8)" />
                   )}
                 </LinearGradient>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
 
         {/* Give Up button */}
         {phase === 'playing' && (
-          <TouchableOpacity style={st.giveUp} onPress={handleGiveUp}>
+          <Pressable style={st.giveUp} onPress={handleGiveUp}>
             <IconSymbol name="flag.fill" size={14} color="#FF3B30" />
             <Text style={st.giveUpTx}>Give Up</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
     );
@@ -368,9 +368,9 @@ export function TapInOrderSession({ session }: Props) {
             </View>
           );
         })}
-        <TouchableOpacity style={[st.btn, { marginTop: 24 }]} onPress={() => { setPlayerIndex(0); setResults([]); setPhase('ready'); }}>
+        <Pressable style={[st.btn, { marginTop: 24 }]} onPress={() => { setPlayerIndex(0); setResults([]); setPhase('ready'); }}>
           <Text style={st.btnTx}>Play Again</Text>
-        </TouchableOpacity>
+        </Pressable>
       </ScrollView>
     </View>
   );

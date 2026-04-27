@@ -1,4 +1,4 @@
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 import { useSettingsStore } from '@/src/store/useSettingsStore';
 
 /**

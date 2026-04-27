@@ -32,7 +32,7 @@ export default function ToolsScreen() {
           <TouchableOpacity style={styles.bookmarkButton} onPress={() => setShowSaved(true)}>
             <IconSymbol name={showSaved ? 'bookmark.fill' : 'bookmark'} size={18} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')}>
             <IconSymbol name="person.crop.circle" size={24} color="white" />
           </TouchableOpacity>
         </View>

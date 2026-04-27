@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
@@ -60,15 +60,20 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
-export function MemoryGridSession({ session }: Props) {
-  const [phase, setPhase] = useState<Phase>('ready');
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+import { useGameSync } from '@/src/hooks/useGameSync';
 
-  const [tiles, setTiles] = useState<MemoryTile[]>([]);
-  const [firstFlippedIndex, setFirstFlippedIndex] = useState<number | null>(null);
-  const [isResolving, setIsResolving] = useState(false);
-  const [matchedPairs, setMatchedPairs] = useState(0);
-  const [moveCount, setMoveCount] = useState(0);
+export function MemoryGridSession({ session }: Props) {
+  const [boardState, setBoardState] = useState({
+    phase: 'ready' as Phase,
+    currentPlayerIndex: 0,
+    tiles: [] as MemoryTile[],
+    firstFlippedIndex: null as number | null,
+    isResolving: false,
+    matchedPairs: 0,
+    moveCount: 0
+  });
+
+  const { phase, currentPlayerIndex, tiles, firstFlippedIndex, isResolving, matchedPairs, moveCount } = boardState;
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [playerTimes, setPlayerTimes] = useState<PlayerTime[]>([]);
@@ -129,19 +134,51 @@ export function MemoryGridSession({ session }: Props) {
     return shuffleArray(board);
   }, []);
 
-  const handleStart = () => {
+  const { syncState, sendAction, isHost } = useGameSync(
+    session.mode,
+    boardState,
+    setBoardState,
+    (type, data) => {
+      if (type === 'flip') {
+        processTileFlip(data.index);
+      } else if (type === 'start') {
+        handleStart(true);
+      }
+    }
+  );
+
+  const handleStart = (fromSync = false) => {
+    if (!isHost && !fromSync) return; // Only host can start
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const board = generateBoard();
-    setTiles(board);
-    setFirstFlippedIndex(null);
-    setIsResolving(false);
-    setMatchedPairs(0);
-    setMoveCount(0);
+    
+    syncState({
+      phase: 'playing',
+      currentPlayerIndex: boardState.currentPlayerIndex,
+      tiles: board,
+      firstFlippedIndex: null,
+      isResolving: false,
+      matchedPairs: 0,
+      moveCount: 0
+    });
+    
     setElapsedSeconds(0);
-    setPhase('playing');
   };
 
   const handleFlipTile = (index: number) => {
+    if (!tiles[index] || isResolving) return;
+    if (tiles[index].isFlipped || tiles[index].isMatched) return;
+
+    if (!isHost) {
+      // Send the flip action to the host instead of processing it locally
+      sendAction('flip', { index });
+      return;
+    }
+
+    processTileFlip(index);
+  };
+
+  const processTileFlip = (index: number) => {
     if (!tiles[index] || isResolving) return;
     if (tiles[index].isFlipped || tiles[index].isMatched) return;
 
@@ -149,47 +186,58 @@ export function MemoryGridSession({ session }: Props) {
 
     const newTiles = [...tiles];
     newTiles[index] = { ...newTiles[index], isFlipped: true };
-    setTiles(newTiles);
+    
+    syncState({ ...boardState, tiles: newTiles });
 
     if (firstFlippedIndex !== null) {
-      // Second tile flipped - this counts as one "move" (pair attempt)
       const newMoveCount = moveCount + 1;
-      setMoveCount(newMoveCount);
-
+      
       if (newTiles[firstFlippedIndex].pairId === newTiles[index].pairId) {
         // Match!
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         const matched = [...newTiles];
         matched[firstFlippedIndex] = { ...matched[firstFlippedIndex], isMatched: true };
         matched[index] = { ...matched[index], isMatched: true };
-        setTiles(matched);
+        
         const newMatchedPairs = matchedPairs + 1;
-        setMatchedPairs(newMatchedPairs);
-        setFirstFlippedIndex(null);
+        syncState({ 
+          ...boardState, 
+          tiles: matched, 
+          matchedPairs: newMatchedPairs, 
+          moveCount: newMoveCount,
+          firstFlippedIndex: null 
+        });
 
         if (newMatchedPairs >= PAIR_COUNT) {
           handlePlayerComplete();
         }
       } else {
-        // Mismatch: 800ms delay then flip back (exactly iOS)
-        setIsResolving(true);
+        // Mismatch
         const capturedFirst = firstFlippedIndex;
         const capturedSecond = index;
-        setFirstFlippedIndex(null);
+        
+        syncState({
+          ...boardState,
+          tiles: newTiles,
+          moveCount: newMoveCount,
+          isResolving: true,
+          firstFlippedIndex: null
+        });
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         setTimeout(() => {
-          setTiles(prev => {
-            const t = [...prev];
+          setBoardState(prev => {
+            const t = [...prev.tiles];
             t[capturedFirst] = { ...t[capturedFirst], isFlipped: false };
             t[capturedSecond] = { ...t[capturedSecond], isFlipped: false };
-            return t;
+            const nextState = { ...prev, tiles: t, isResolving: false };
+            if (isHost) syncState(nextState);
+            return nextState;
           });
-          setIsResolving(false);
         }, 800);
       }
     } else {
-      setFirstFlippedIndex(index);
+      syncState({ ...boardState, tiles: newTiles, firstFlippedIndex: index });
     }
   };
 
@@ -205,22 +253,20 @@ export function MemoryGridSession({ session }: Props) {
 
     const nextIndex = currentPlayerIndex + 1;
     if (nextIndex >= players.length) {
-      setPhase('results');
+      if (isHost) syncState({ ...boardState, phase: 'results' });
     } else {
-      setPhase('playerComplete');
+      if (isHost) syncState({ ...boardState, phase: 'playerComplete' });
     }
   };
 
   const handleNextPlayer = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setCurrentPlayerIndex(prev => prev + 1);
-    setPhase('ready');
+    if (isHost) syncState({ ...boardState, currentPlayerIndex: currentPlayerIndex + 1, phase: 'ready' });
   };
 
   const handlePlayAgain = () => {
-    setCurrentPlayerIndex(0);
     setPlayerTimes([]);
-    setPhase('ready');
+    if (isHost) syncState({ ...boardState, currentPlayerIndex: 0, phase: 'ready' });
   };
 
   const tileColor = (colorIndex: number) => TILE_COLORS[colorIndex % TILE_COLORS.length];
@@ -245,7 +291,7 @@ export function MemoryGridSession({ session }: Props) {
           {players.length > 1 ? (
             <View style={styles.readyTextGroup}>
               <View style={styles.turnPill}>
-                <Text style={styles.turnPillText}>Now · {currentPlayer.username}</Text>
+                <Text style={styles.turnPillText}>Now · {players[boardState.currentPlayerIndex]?.username}</Text>
               </View>
               <Text style={styles.readySubtitle}>Your turn! Get ready to memorize.</Text>
             </View>
@@ -273,9 +319,9 @@ export function MemoryGridSession({ session }: Props) {
             )}
           </View>
 
-          <TouchableOpacity style={styles.primaryBtn} onPress={handleStart}>
+          <Pressable style={styles.primaryBtn} onPress={handleStart}>
             <Text style={styles.primaryBtnText}>Start</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </View>
     );
@@ -328,7 +374,7 @@ export function MemoryGridSession({ session }: Props) {
               const isShowingFront = tile.isFlipped || tile.isMatched;
               const color = tileColor(tile.colorIndex);
               return (
-                <TouchableOpacity
+                <Pressable
                   key={tile.id}
                   style={[
                     styles.tileWrapper,
@@ -368,7 +414,7 @@ export function MemoryGridSession({ session }: Props) {
                       <IconSymbol name="questionmark" size={24} color="rgba(90,200,250,0.75)" />
                     </LinearGradient>
                   )}
-                </TouchableOpacity>
+                </Pressable>
               );
             })}
           </View>
@@ -391,11 +437,11 @@ export function MemoryGridSession({ session }: Props) {
             {lastResult ? `${formatTime(lastResult.elapsedSeconds)} · ${lastResult.moveCount} moves` : ''}
           </Text>
 
-          <TouchableOpacity style={[styles.primaryBtn, { marginTop: 40 }]} onPress={handleNextPlayer}>
+          <Pressable style={[styles.primaryBtn, { marginTop: 40 }]} onPress={handleNextPlayer}>
             <Text style={styles.primaryBtnText}>
               {currentPlayerIndex + 1 < players.length ? "Next Player" : "See Results"}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     );
@@ -446,9 +492,9 @@ export function MemoryGridSession({ session }: Props) {
           })}
         </View>
 
-        <TouchableOpacity style={styles.primaryBtn} onPress={handlePlayAgain}>
+        <Pressable style={styles.primaryBtn} onPress={handlePlayAgain}>
           <Text style={styles.primaryBtnText}>Play Again</Text>
-        </TouchableOpacity>
+        </Pressable>
       </ScrollView>
     </View>
   );

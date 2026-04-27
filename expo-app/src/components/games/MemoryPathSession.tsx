@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Animated, Dimensions } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props { session: GameSession; }
@@ -264,7 +264,7 @@ export function MemoryPathSession({ session }: Props) {
             <View style={s.bubble}><Text style={s.bv}>{GRID}×{GRID}</Text><Text style={s.bl}>Grid</Text></View>
             {players.length > 1 && <View style={s.bubble}><Text style={s.bv}>{playerIndex+1}/{players.length}</Text><Text style={s.bl}>Player</Text></View>}
           </View>
-          <TouchableOpacity style={s.btn} onPress={handleStart}><Text style={s.btnTx}>Start</Text></TouchableOpacity>
+          <Pressable style={s.btn} onPress={handleStart}><Text style={s.btnTx}>Start</Text></Pressable>
         </View>
       </View>
     );
@@ -311,7 +311,7 @@ export function MemoryPathSession({ session }: Props) {
                 const colors = getTileColors(state, isW);
                 const border = getTileBorder(state, isW);
                 return (
-                  <TouchableOpacity key={c} onPress={() => handleTap(r, c)} activeOpacity={0.8}
+                  <Pressable key={c} onPress={() => handleTap(r, c)} activeOpacity={0.8}
                     disabled={state === 'correct' || state === 'start'}
                     style={{ width: tileSz, height: tileSz }}>
                     <LinearGradient colors={colors} start={{x:0,y:0}} end={{x:1,y:1}}
@@ -320,7 +320,7 @@ export function MemoryPathSession({ session }: Props) {
                       {state === 'end' && <Text style={[s.tileLbl, { color: '#5AC8FA' }]}>End</Text>}
                       {state === 'correct' && <IconSymbol name="checkmark" size={16} color="rgba(255,255,255,0.6)" />}
                     </LinearGradient>
-                  </TouchableOpacity>
+                  </Pressable>
                 );
               })}
             </View>
@@ -337,9 +337,9 @@ export function MemoryPathSession({ session }: Props) {
           <IconSymbol name="checkmark.circle.fill" size={56} color="#34C759" />
           <Text style={s.title}>Path Cleared!</Text>
           <Text style={s.sub}>{player.username} — {formatTime(elapsed)}</Text>
-          <TouchableOpacity style={[s.btn, { marginTop: 40 }]} onPress={() => { setPlayerIndex(i => i+1); setPhase('ready'); }}>
+          <Pressable style={[s.btn, { marginTop: 40 }]} onPress={() => { setPlayerIndex(i => i+1); setPhase('ready'); }}>
             <Text style={s.btnTx}>{playerIndex+1 < players.length ? 'Next Player' : 'See Results'}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     );
@@ -374,9 +374,9 @@ export function MemoryPathSession({ session }: Props) {
             </View>
           );
         })}
-        <TouchableOpacity style={[s.btn, { marginTop: 24 }]} onPress={() => { setPlayerIndex(0); setResults([]); setPhase('ready'); }}>
+        <Pressable style={[s.btn, { marginTop: 24 }]} onPress={() => { setPlayerIndex(0); setResults([]); setPhase('ready'); }}>
           <Text style={s.btnTx}>Play Again</Text>
-        </TouchableOpacity>
+        </Pressable>
       </ScrollView>
     </View>
   );

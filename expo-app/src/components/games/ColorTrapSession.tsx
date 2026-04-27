@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions, Animated } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/src/utils/safeHaptics';
 
 interface Props { session: GameSession; }
 type Phase = 'ready' | 'playing' | 'playerComplete' | 'results';
@@ -191,16 +191,16 @@ export function ColorTrapSession({ session }: Props) {
             const sel = difficulty === d;
             const col = d === 'easy' ? '#34C759' : d === 'medium' ? '#FF9500' : '#FF3B30';
             return (
-              <TouchableOpacity key={d} onPress={() => setDifficulty(d)}
+              <Pressable key={d} onPress={() => setDifficulty(d)}
                 style={[st.diffChip, sel && { borderColor: col + '80', backgroundColor: col + '33' }]}>
                 <Text style={[st.diffTx, sel && { color: '#fff' }]}>{DIFFICULTIES[d].label}</Text>
                 <Text style={[st.diffSub, sel && { color: 'rgba(255,255,255,0.7)' }]}>{DIFFICULTIES[d].totalDuration}s</Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
 
-        <TouchableOpacity style={st.btn} onPress={startGame}><Text style={st.btnTx}>Start</Text></TouchableOpacity>
+        <Pressable style={st.btn} onPress={startGame}><Text style={st.btnTx}>Start</Text></Pressable>
       </View></View>
     );
   }
@@ -243,7 +243,7 @@ export function ColorTrapSession({ session }: Props) {
             const x = 24 + tile.columnIndex * colWidth + (colWidth - tileSize * tile.size) / 2;
             const isForbidden = tile.colorIndex === forbiddenIdx;
             return (
-              <TouchableOpacity
+              <Pressable
                 key={tile.id}
                 onPress={() => handleTap(tile.id)}
                 activeOpacity={0.6}
@@ -271,9 +271,9 @@ export function ColorTrapSession({ session }: Props) {
           color={last?.eliminated ? '#FF3B30' : '#34C759'} />
         <Text style={st.title}>{last?.eliminated ? 'Eliminated!' : 'Time\'s Up!'}</Text>
         <Text style={st.sub}>{player.username} — Score: {last?.score}</Text>
-        <TouchableOpacity style={[st.btn, { marginTop: 40 }]} onPress={() => { setPlayerIdx(i => i+1); setPhase('ready'); }}>
+        <Pressable style={[st.btn, { marginTop: 40 }]} onPress={() => { setPlayerIdx(i => i+1); setPhase('ready'); }}>
           <Text style={st.btnTx}>Next Player</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View></View>
     );
   }

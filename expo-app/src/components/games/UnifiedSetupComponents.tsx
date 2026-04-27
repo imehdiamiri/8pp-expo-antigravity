@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, ScrollView } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { GamePlayerColor } from './SharedGameComponents';
 import { GameType } from '@/src/models/AppModels';
@@ -30,23 +30,23 @@ export function SetupPlayersSection({
         </View>
         
         <View style={styles.stepperContainer}>
-          <TouchableOpacity 
+          <Pressable 
             style={[styles.stepperButton, { backgroundColor: 'rgba(52, 199, 89, 0.12)' }]}
             onPress={() => onUpdateCount(Math.max(minPlayers, playerCount - 1))}
             disabled={playerCount <= minPlayers}
           >
             <IconSymbol name="minus" size={14} color="#34C759" />
-          </TouchableOpacity>
+          </Pressable>
           
           <Text style={[styles.stepperValue, { color: '#34C759' }]}>{playerCount}</Text>
           
-          <TouchableOpacity 
+          <Pressable 
             style={[styles.stepperButton, { backgroundColor: 'rgba(52, 199, 89, 0.12)' }]}
             onPress={() => onUpdateCount(Math.min(maxPlayers, playerCount + 1))}
             disabled={playerCount >= maxPlayers}
           >
             <IconSymbol name="plus" size={14} color="#34C759" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 
@@ -94,23 +94,23 @@ export function SetupRoundsSection({
         </View>
         
         <View style={styles.stepperContainer}>
-          <TouchableOpacity 
+          <Pressable 
             style={[styles.stepperButton, { backgroundColor: 'rgba(255, 149, 0, 0.12)' }]}
             onPress={() => onUpdateRounds(Math.max(minRounds, roundCount - 1))}
             disabled={roundCount <= minRounds}
           >
             <IconSymbol name="minus" size={14} color="#FF9500" />
-          </TouchableOpacity>
+          </Pressable>
           
           <Text style={[styles.stepperValue, { color: '#FF9500' }]}>{roundCount}</Text>
           
-          <TouchableOpacity 
+          <Pressable 
             style={[styles.stepperButton, { backgroundColor: 'rgba(255, 149, 0, 0.12)' }]}
             onPress={() => onUpdateRounds(Math.min(maxRounds, roundCount + 1))}
             disabled={roundCount >= maxRounds}
           >
             <IconSymbol name="plus" size={14} color="#FF9500" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </View>
@@ -135,7 +135,7 @@ export function SetupStartButton({
   onPress
 }: SetupStartButtonProps) {
   return (
-    <TouchableOpacity 
+    <Pressable 
       style={[styles.startButton, { backgroundColor: tint, opacity: disabled ? 0.5 : 1 }]}
       onPress={onPress}
       disabled={disabled}
@@ -145,7 +145,7 @@ export function SetupStartButton({
         <Text style={styles.startButtonText}>{title}</Text>
         {subtitle && <Text style={styles.startButtonSubtitle}>{subtitle}</Text>}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

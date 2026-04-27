@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { BlurView } from 'expo-blur';
+
+// Platform-safe BlurView
+let BlurView: any = null;
+if (Platform.OS !== 'web') {
+  try { BlurView = require('expo-blur').BlurView; } catch {}
+}
 
 export type PartyToolType = 'dice' | 'bottle' | 'hourglass' | 'coin' | 'teams';
 
@@ -37,6 +42,21 @@ export function PartyToolsSection({ showsHeader = true }: PartyToolsSectionProps
     router.push(`/(tools)/${tool}` as any);
   };
 
+  const renderCardInner = (tool: PartyTool) => (
+    <>
+      <View style={styles.iconContainer}>
+        <LinearGradient
+          colors={[`${tool.tint}59`, `${tool.tint}1A`]}
+          style={StyleSheet.absoluteFill}
+        />
+        <View style={[styles.iconRing, { borderColor: `${tool.tint}59` }]} />
+        <IconSymbol name={tool.icon} size={22} color="white" weight="bold" />
+      </View>
+      <Text style={styles.title} numberOfLines={1}>{tool.title}</Text>
+      <Text style={styles.subtitle} numberOfLines={1}>{tool.subtitle}</Text>
+    </>
+  );
+
   return (
     <View style={styles.container}>
       {showsHeader && (
@@ -48,25 +68,21 @@ export function PartyToolsSection({ showsHeader = true }: PartyToolsSectionProps
 
       <View style={styles.grid}>
         {PARTY_TOOLS.map((tool) => (
-          <TouchableOpacity 
+          <Pressable 
             key={tool.id} 
             style={[{ width: columnWidth }, styles.cardContainer]} 
-            activeOpacity={0.7}
             onPress={() => handlePress(tool.id)}
           >
-            <BlurView intensity={30} tint="dark" style={styles.card}>
-              <View style={styles.iconContainer}>
-                <LinearGradient
-                  colors={[`${tool.tint}59`, `${tool.tint}1A`]} // equivalent to opacity 0.35 and 0.1
-                  style={StyleSheet.absoluteFill}
-                />
-                <View style={[styles.iconRing, { borderColor: `${tool.tint}59` }]} />
-                <IconSymbol name={tool.icon} size={22} color="white" weight="bold" />
+            {BlurView ? (
+              <BlurView intensity={30} tint="dark" style={styles.card}>
+                {renderCardInner(tool)}
+              </BlurView>
+            ) : (
+              <View style={[styles.card, { backgroundColor: 'rgba(30,30,45,0.85)' }]}>
+                {renderCardInner(tool)}
               </View>
-              <Text style={styles.title} numberOfLines={1}>{tool.title}</Text>
-              <Text style={styles.subtitle} numberOfLines={1}>{tool.subtitle}</Text>
-            </BlurView>
-          </TouchableOpacity>
+            )}
+          </Pressable>
         ))}
       </View>
     </View>
