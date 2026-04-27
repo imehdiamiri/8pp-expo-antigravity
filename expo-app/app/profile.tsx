@@ -303,7 +303,7 @@ export default function ProfileScreen() {
           title: "Profile",
           headerTransparent: true,
           headerBlurEffect: 'systemThinMaterialDark',
-          headerTitleStyle: { color: Colors.white, fontWeight: '700' },
+          headerTitleStyle: { fontFamily: 'Viral-Black', fontSize: 20, color: Colors.white },
           headerRight: () => (
             <TouchableOpacity 
               onPress={() => safeBack()} 
@@ -398,9 +398,9 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.whiteOverlay8,
   },
   headerTitle: {
+    fontFamily: 'Viral-Black',
     color: Colors.white,
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
   },
   headerDoneBtn: {
     position: 'absolute',

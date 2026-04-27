@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   headerButton: { width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
-  headerTitle: { fontSize: 17, fontWeight: '600', color: 'white' },
+  headerTitle: { fontFamily: 'Viral-Black', fontSize: 20, color: 'white' },
   scrollContent: { padding: 16, paddingBottom: 40, gap: 16 },
   centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
   errorText: { fontSize: 18, color: 'white', marginBottom: 20 },

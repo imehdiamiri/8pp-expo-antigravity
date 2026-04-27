@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   leaveText: { fontSize: 15, fontWeight: '500', color: '#FF3B30' },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontFamily: 'Viral-Black', fontSize: 20, color: '#fff' },
   roomCard: {
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: 18,

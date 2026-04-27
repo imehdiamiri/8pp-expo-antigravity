@@ -221,6 +221,7 @@ export default function GameSetupScreen() {
           headerTransparent: true,
           headerBlurEffect: 'dark',
           headerTintColor: 'white',
+          headerTitleStyle: { fontFamily: 'Viral-Black', fontSize: 20 },
           headerBackVisible: false,
           headerLeft: () => (
             <TouchableOpacity 

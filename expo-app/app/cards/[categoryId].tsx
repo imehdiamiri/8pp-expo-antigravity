@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontFamily: 'Viral-Black',
-    fontSize: 22,
+    fontSize: 20,
     color: 'white',
   },
 });

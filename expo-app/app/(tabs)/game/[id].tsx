@@ -260,9 +260,9 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   headerTitleCustom: {
+    fontFamily: 'Viral-Black',
     color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 20,
     flex: 1,
     textAlign: 'center',
   },
@@ -280,9 +280,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   headerTitle: {
+    fontFamily: 'Viral-Black',
     color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 20,
   },
   scrollContent: {
     paddingHorizontal: 16,

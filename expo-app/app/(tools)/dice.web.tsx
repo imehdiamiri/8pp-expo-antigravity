@@ -63,8 +63,8 @@ export default function WebDiceScreen() {
       </View>
 
       <View style={styles.diceArea}>
-        <View style={styles.diceGrid}>
-          {values.map((v, i) => <Die key={i} value={v} size={120} />)}
+        <View style={[styles.diceGrid, diceCount === 4 && { width: 300 }]}>
+          {values.map((v, i) => <Die key={i} value={v} size={diceCount === 1 ? 260 : (diceCount === 2 ? 180 : 140)} />)}
         </View>
         <Text style={styles.totalText}>Total: {total}</Text>
       </View>

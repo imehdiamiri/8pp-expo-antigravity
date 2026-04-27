@@ -49,5 +49,5 @@ const s = StyleSheet.create({
   },
   exitBtn: { padding: 10, backgroundColor: 'rgba(255,59,48,0.15)', borderRadius: 10, cursor: 'pointer' },
   exitText: { color: '#FF3B30', fontSize: 14, fontWeight: '600' },
-  headerTitle: { color: 'white', fontSize: 18, fontWeight: '700' },
+  headerTitle: { fontFamily: 'Viral-Black', color: 'white', fontSize: 20 },
 });

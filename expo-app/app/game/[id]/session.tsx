@@ -91,9 +91,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   headerTitle: {
+    fontFamily: 'Viral-Black',
     color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 20,
   },
 });
 

@@ -95,9 +95,11 @@ export default function CoinFlipToolScreen() {
   const r1 = useSharedValue(0);
   const r2 = useSharedValue(0);
 
+  const [resultsAreHeads, setResultsAreHeads] = useState<boolean[]>([true, true]);
+
   const coinStates = [
-    { rotation: r1, resultIsHeads: true },
-    { rotation: r2, resultIsHeads: true },
+    { rotation: r1, resultIsHeads: resultsAreHeads[0] },
+    { rotation: r2, resultIsHeads: resultsAreHeads[1] },
   ];
 
   const resetStats = () => {
@@ -156,11 +158,11 @@ export default function CoinFlipToolScreen() {
           easing: Easing.bezier(0.2, 0.9, 0.3, 1.0),
         });
         
-        // Update local state value for label rendering
-        coinStates[i].resultIsHeads = outcomes[i];
+        // The local state value is updated via setResultsAreHeads later
       }
 
       setTimeout(() => {
+        setResultsAreHeads(outcomes);
         setHasResult(true);
         setIsFlipping(false);
         let newHeads = headsCount;

@@ -10,7 +10,7 @@ export default function ToolsLayout() {
         headerShown: true,
         headerStyle: { backgroundColor: '#1A1A1A' },
         headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '700', fontSize: 17 },
+        headerTitleStyle: { fontFamily: 'Viral-Black', fontSize: 20 },
         contentStyle: { backgroundColor: '#111' },
         headerRight: () => (
           <TouchableOpacity 

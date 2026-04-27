@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   headerButton: { width: 80, height: 44, justifyContent: 'center' },
   headerButtonRight: { width: 80, height: 44, justifyContent: 'center', alignItems: 'flex-end' },
-  headerTitle: { fontSize: 17, fontWeight: '600', color: 'white' },
+  headerTitle: { fontFamily: 'Viral-Black', fontSize: 20, color: 'white' },
   leaveText: { color: '#FF3B30', fontSize: 15, fontWeight: '500' },
   scrollContent: { padding: 16, paddingBottom: 40, gap: 16 },
   

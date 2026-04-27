@@ -31,7 +31,7 @@ export const Colors = {
 
 export const Typography = {
   viralTitle: {
-    fontFamily: 'System', // Will map to San Francisco on iOS
-    fontWeight: '900' as const, // .black
+    fontFamily: 'Viral-Black',
+    fontSize: 20,
   },
 };

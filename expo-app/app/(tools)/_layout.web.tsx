@@ -9,7 +9,7 @@ export default function WebToolsLayout() {
         headerShown: true,
         headerStyle: { backgroundColor: '#0d0d15' },
         headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '700', fontSize: 17 },
+        headerTitleStyle: { fontFamily: 'Viral-Black', fontSize: 20 },
         contentStyle: { backgroundColor: '#0a0a12' },
         headerRight: () => (
           <Link href="/(tabs)/tools" style={{ paddingHorizontal: 16, paddingVertical: 6, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.08)', textDecorationLine: 'none' }}>

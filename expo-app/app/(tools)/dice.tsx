@@ -121,7 +121,7 @@ export default function DiceToolScreen() {
   const total = values.reduce((a, b) => a + b, 0);
 
   const columns = count > 2 ? 2 : count;
-  const side = count === 1 ? 150 : (count === 2 ? 120 : 100);
+  const side = count === 1 ? 220 : (count === 2 ? 140 : 120);
 
   const mainAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -156,7 +156,7 @@ export default function DiceToolScreen() {
       </View>
 
       <View style={styles.middleArea}>
-        <Animated.View style={mainAnimatedStyle}>
+        <Animated.View style={[mainAnimatedStyle, count === 4 && { width: 260 }]}>
           {values.map((v, i) => (
             <Die2DView key={i} index={i} value={v} size={side} shake={shakeAnim} />
           ))}
