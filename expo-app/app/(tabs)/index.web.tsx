@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'expo-router';
@@ -107,7 +108,7 @@ export default function WebGamesScreen() {
   return (
     <View style={styles.webContainer}>
       {/* Dark background */}
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
 
       {/* Desktop Sidebar */}
       <View style={styles.sidebar}>

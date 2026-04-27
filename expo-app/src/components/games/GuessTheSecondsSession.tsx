@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Animated } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -98,10 +99,10 @@ export function GuessTheSecondsSession({ session }: Props) {
   const latestTurn = results[results.length - 1];
 
   const getAccuracyBand = (diff: number) => {
-    if (diff === 0) return { title: 'Perfect!', color: '#34C759', icon: 'target' as const };
-    if (diff < 1) return { title: 'Close', color: '#0A84FF', icon: 'scope' as const };
-    if (diff <= 2) return { title: 'Okay', color: '#FFD60A', icon: 'scope' as const };
-    return { title: 'Far', color: '#FF453A', icon: 'scope' as const };
+    if (diff === 0) return { title: 'Perfect!', color: Colors.green, icon: 'target' as const };
+    if (diff < 1) return { title: 'Close', color: Colors.blue, icon: 'scope' as const };
+    if (diff <= 2) return { title: 'Okay', color: Colors.yellow, icon: 'scope' as const };
+    return { title: 'Far', color: Colors.red, icon: 'scope' as const };
   };
 
   return (
@@ -119,7 +120,7 @@ export function GuessTheSecondsSession({ session }: Props) {
             </View>
           )}
           <View style={{flex: 1}}/>
-          <Text style={[styles.statusText, { color: isRunning ? '#0A84FF' : isFinished ? '#34C759' : 'rgba(255,255,255,0.5)' }]}>
+          <Text style={[styles.statusText, { color: isRunning ? Colors.blue : isFinished ? Colors.green : 'rgba(255,255,255,0.5)' }]}>
             {isFinished ? 'Finished' : isRunning ? 'Running' : 'Ready'}
           </Text>
         </View>
@@ -191,13 +192,13 @@ export function GuessTheSecondsSession({ session }: Props) {
 
           <View style={styles.controlButtons}>
             {!isRunning && (
-              <Pressable style={[styles.primaryButton, { backgroundColor: '#0A84FF' }]} onPress={startTurn}>
+              <Pressable style={[styles.primaryButton, { backgroundColor: Colors.blue }]} onPress={startTurn}>
                 <IconSymbol name="play.fill" size={20} color="white" />
                 <Text style={styles.primaryButtonText}>Start</Text>
               </Pressable>
             )}
             {isRunning && (
-              <Pressable style={[styles.primaryButton, { backgroundColor: '#FF453A' }]} onPress={stopTurn}>
+              <Pressable style={[styles.primaryButton, { backgroundColor: Colors.red }]} onPress={stopTurn}>
                 <IconSymbol name="stop.fill" size={20} color="white" />
                 <Text style={styles.primaryButtonText}>Stop</Text>
               </Pressable>
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   nowPlayingText: {
-    color: '#34C759',
+    color: Colors.green,
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -420,7 +421,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   winnerBadgeText: {
-    color: '#FFD60A',
+    color: Colors.yellow,
   },
   rankName: {
     color: 'white',
@@ -438,6 +439,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   winnerTotal: {
-    color: '#34C759',
+    color: Colors.green,
   }
 });

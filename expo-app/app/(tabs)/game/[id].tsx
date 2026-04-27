@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
@@ -148,7 +149,7 @@ export default function GameDetailScreen() {
               activeOpacity={0.8}
             >
               <LinearGradient
-                colors={['#FF9500', '#FF2D55']}
+                colors={[Colors.orange, '#FF2D55']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={StyleSheet.absoluteFillObject}

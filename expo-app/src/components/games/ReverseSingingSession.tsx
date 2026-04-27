@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Platform } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -122,7 +123,7 @@ export function ReverseSingingSession({ session }: Props) {
         <View style={styles.grid}>
           <View style={styles.gridRow}>
             <Pressable 
-              style={[styles.squareBtn, { backgroundColor: p1Recording ? '#8E1C16' : '#FF3B30' }]}
+              style={[styles.squareBtn, { backgroundColor: p1Recording ? '#8E1C16' : Colors.red }]}
               onPress={() => p1Recording ? stopRecording(1) : startRecording(1)}
             >
               <IconSymbol name={p1Recording ? "stop.fill" : "record.circle.fill"} size={28} color="white" />
@@ -188,7 +189,7 @@ export function ReverseSingingSession({ session }: Props) {
         <View style={styles.grid}>
           <View style={styles.gridRow}>
             <Pressable 
-              style={[styles.squareBtn, { backgroundColor: p2Recording ? '#8E1C16' : '#FF3B30' }, activeStep !== 'playerTwo' && styles.disabled]}
+              style={[styles.squareBtn, { backgroundColor: p2Recording ? '#8E1C16' : Colors.red }, activeStep !== 'playerTwo' && styles.disabled]}
               onPress={() => p2Recording ? stopRecording(2) : startRecording(2)}
               disabled={activeStep !== 'playerTwo'}
             >
@@ -207,7 +208,7 @@ export function ReverseSingingSession({ session }: Props) {
 
           <View style={styles.gridRow}>
             <Pressable 
-              style={[styles.squareBtn, { backgroundColor: '#34C759' }, !p2Uri && styles.disabled]}
+              style={[styles.squareBtn, { backgroundColor: Colors.green }, !p2Uri && styles.disabled]}
               onPress={() => playSound(p2Uri)} // Mock reverse
               disabled={!p2Uri}
             >
@@ -338,7 +339,7 @@ const styles = StyleSheet.create({
   },
   waveformBar: {
     width: 3,
-    backgroundColor: '#34C759',
+    backgroundColor: Colors.green,
     borderRadius: 2,
   },
   durationText: {

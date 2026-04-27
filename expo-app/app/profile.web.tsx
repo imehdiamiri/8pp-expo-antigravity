@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Link, useRouter } from 'expo-router';
@@ -13,7 +14,7 @@ export default function WebProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       
       <View style={styles.topNav}>
         <Link href="/" style={styles.backBtn}>
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   username: { color: 'white', fontSize: 22, fontWeight: '800' },
   email: { color: 'rgba(255,255,255,0.5)', fontSize: 15 },
   guestBadge: { backgroundColor: 'rgba(255,149,0,0.15)', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4, marginTop: 8 },
-  guestBadgeText: { color: '#FF9500', fontSize: 12, fontWeight: '700' },
+  guestBadgeText: { color: Colors.orange, fontSize: 12, fontWeight: '700' },
   twoCol: { flexDirection: 'row', gap: 48, marginBottom: 48 },
   col: { flex: 1 },
   sectionTitle: { color: 'white', fontSize: 20, fontWeight: '700', marginBottom: 16 },
@@ -135,5 +136,5 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,59,48,0.3)', borderRadius: 14,
     paddingVertical: 14, paddingHorizontal: 48, cursor: 'pointer',
   },
-  signOutText: { color: '#FF3B30', fontSize: 16, fontWeight: '600' },
+  signOutText: { color: Colors.red, fontSize: 16, fontWeight: '600' },
 });

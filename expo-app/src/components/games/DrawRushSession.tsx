@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions, TextInput, PanResponder, GestureResponderEvent } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -10,7 +11,7 @@ type Phase = 'turnIntro' | 'drawerReveal' | 'drawing' | 'passForGuesses' | 'gues
 
 const DRAW_DURATION = 60;
 const CONCEPTS = ["Pizza","Elephant","Guitar","Rainbow","Rocket","Banana","Volcano","Sunflower","Penguin","Ice Cream","Dragon","Castle","Camera","Robot","Sandwich","Lighthouse","Octopus","Tornado","Cactus","Basketball","Skateboard","Helicopter","Pirate","Ninja","Mermaid","Alien","Sunglasses","Donut","Umbrella","Clock","Spider","Keyboard","Dinosaur","Astronaut","Snowman","Cupcake","Butterfly","Mountain","Windmill","Telescope","Hamburger","Jellyfish","Lightning","Giraffe","Campfire","Bicycle","Kite","Scarecrow","Anchor","Compass","Treasure Chest","Magic Wand","Crown","Trophy","Pencil","Waterfall","Dragonfly","Cowboy","Wizard","Tiger","Submarine","Eiffel Tower","Pyramid","Popcorn","Watermelon","Backpack","Mushroom","Owl","Vampire","Zombie","Ghost","UFO","Island","Lemon","Strawberry","Toaster","Trumpet","Piano","Drum"];
-const BRUSH_COLORS: {name:string;hex:string}[] = [{name:'white',hex:'#fff'},{name:'red',hex:'#FF3B30'},{name:'orange',hex:'#FF9500'},{name:'yellow',hex:'#FFCC00'},{name:'green',hex:'#34C759'},{name:'blue',hex:'#007AFF'},{name:'purple',hex:'#AF52DE'},{name:'pink',hex:'#FF2D55'},{name:'black',hex:'#000'}];
+const BRUSH_COLORS: {name:string;hex:string}[] = [{name:'white',hex:'#fff'},{name:'red',hex:Colors.red},{name:'orange',hex:Colors.orange},{name:'yellow',hex:Colors.yellow},{name:'green',hex:Colors.green},{name:'blue',hex:'#007AFF'},{name:'purple',hex:'#AF52DE'},{name:'pink',hex:'#FF2D55'},{name:'black',hex:'#000'}];
 
 interface Stroke { color: string; width: number; points: {x:number;y:number}[]; }
 interface Answer { id: string; playerId: string; playerName: string; text: string; isCorrect: boolean; isJudged: boolean; }
@@ -164,7 +165,7 @@ export function DrawRushSession({ session }: Props) {
   if (phase === 'drawerReveal') {
     return (
       <View style={st.container}><View style={st.center}>
-        <IconSymbol name="eye.slash.fill" size={40} color="#FF9500" />
+        <IconSymbol name="eye.slash.fill" size={40} color=Colors.orange />
         <Text style={st.title}>{conceptMode === 'preset' ? 'Your Word' : 'Free Draw'}</Text>
         <View style={st.conceptCard}>
           <Text style={st.conceptTx}>{conceptMode === 'preset' ? concept : 'Draw anything!'}</Text>
@@ -181,8 +182,8 @@ export function DrawRushSession({ session }: Props) {
       <View style={st.container}>
         <View style={st.drawHeader}>
           <Text style={st.drawTitle}>{drawer.username} is drawing</Text>
-          <View style={st.timerPill}><IconSymbol name="timer" size={14} color={timeLeft<=10?'#FF3B30':'#5AC8FA'} />
-            <Text style={[st.timerTx,timeLeft<=10&&{color:'#FF3B30'}]}>{timeLeft}s</Text>
+          <View style={st.timerPill}><IconSymbol name="timer" size={14} color={timeLeft<=10?Colors.red:'#5AC8FA'} />
+            <Text style={[st.timerTx,timeLeft<=10&&{color:Colors.red}]}>{timeLeft}s</Text>
           </View>
         </View>
         <View style={[st.canvas,{width:canvasSize,height:canvasSize}]} {...panResponder.panHandlers}>
@@ -201,8 +202,8 @@ export function DrawRushSession({ session }: Props) {
         </ScrollView>
         <View style={{flexDirection:'row',gap:12,paddingHorizontal:16,marginTop:8}}>
           <Pressable style={st.toolBtn} onPress={() => setStrokes(prev => prev.slice(0,-1))}><IconSymbol name="arrow.uturn.backward" size={18} color="#fff" /><Text style={st.toolTx}>Undo</Text></Pressable>
-          <Pressable style={st.toolBtn} onPress={() => setStrokes([])}><IconSymbol name="trash" size={18} color="#FF3B30" /><Text style={[st.toolTx,{color:'#FF3B30'}]}>Clear</Text></Pressable>
-          <Pressable style={[st.toolBtn,{flex:1,backgroundColor:'rgba(52,199,89,0.15)'}]} onPress={handleFinishEarly}><Text style={[st.toolTx,{color:'#34C759'}]}>Done Early</Text></Pressable>
+          <Pressable style={st.toolBtn} onPress={() => setStrokes([])}><IconSymbol name="trash" size={18} color=Colors.red /><Text style={[st.toolTx,{color:Colors.red}]}>Clear</Text></Pressable>
+          <Pressable style={[st.toolBtn,{flex:1,backgroundColor:'rgba(52,199,89,0.15)'}]} onPress={handleFinishEarly}><Text style={[st.toolTx,{color:Colors.green}]}>Done Early</Text></Pressable>
         </View>
       </View>
     );
@@ -212,7 +213,7 @@ export function DrawRushSession({ session }: Props) {
   if (phase === 'passForGuesses') {
     return (
       <View style={st.container}><View style={st.center}>
-        <IconSymbol name="hand.raised.fill" size={52} color="#FF9500" />
+        <IconSymbol name="hand.raised.fill" size={52} color=Colors.orange />
         <Text style={st.title}>Time's Up!</Text>
         <Text style={st.sub}>Pass the phone to the guessers.</Text>
         <Text style={st.hint}>Each player will type their guess one at a time.</Text>
@@ -246,7 +247,7 @@ export function DrawRushSession({ session }: Props) {
       <View style={st.container}>
         <ScrollView contentContainerStyle={{padding:16,paddingBottom:40}}>
           <Text style={[st.title,{textAlign:'center'}]}>{drawer.username}, Judge the Answers</Text>
-          <Text style={[st.sub,{textAlign:'center',marginBottom:4}]}>The word was: <Text style={{color:'#FFCC00',fontWeight:'bold'}}>{concept}</Text></Text>
+          <Text style={[st.sub,{textAlign:'center',marginBottom:4}]}>The word was: <Text style={{color:Colors.yellow,fontWeight:'bold'}}>{concept}</Text></Text>
           <Text style={[st.sub,{textAlign:'center',marginBottom:20}]}>Mark each guess as correct or wrong</Text>
           {answers.map(a => (
             <View key={a.id} style={[st.judgeRow,a.isJudged&&(a.isCorrect?st.judgeOk:st.judgeWrong)]}>
@@ -256,11 +257,11 @@ export function DrawRushSession({ session }: Props) {
               </View>
               {!a.isJudged ? (
                 <View style={{flexDirection:'row',gap:8}}>
-                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(52,199,89,0.2)'}]} onPress={() => handleJudge(a.id,true)}><IconSymbol name="checkmark" size={18} color="#34C759" /></Pressable>
-                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(255,59,48,0.2)'}]} onPress={() => handleJudge(a.id,false)}><IconSymbol name="xmark" size={18} color="#FF3B30" /></Pressable>
+                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(52,199,89,0.2)'}]} onPress={() => handleJudge(a.id,true)}><IconSymbol name="checkmark" size={18} color=Colors.green /></Pressable>
+                  <Pressable style={[st.judgeBtn,{backgroundColor:'rgba(255,59,48,0.2)'}]} onPress={() => handleJudge(a.id,false)}><IconSymbol name="xmark" size={18} color=Colors.red /></Pressable>
                 </View>
               ) : (
-                <IconSymbol name={a.isCorrect?"checkmark.circle.fill":"xmark.circle.fill"} size={24} color={a.isCorrect?'#34C759':'#FF3B30'} />
+                <IconSymbol name={a.isCorrect?"checkmark.circle.fill":"xmark.circle.fill"} size={24} color={a.isCorrect?Colors.green:Colors.red} />
               )}
             </View>
           ))}
@@ -298,7 +299,7 @@ export function DrawRushSession({ session }: Props) {
     <View style={st.container}>
       <ScrollView contentContainerStyle={{padding:16,paddingBottom:40}}>
         <View style={{alignItems:'center',gap:8,marginVertical:20}}>
-          <IconSymbol name="trophy.fill" size={44} color="#FFCC00" />
+          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
           <Text style={st.title}>Final Results</Text>
         </View>
         {sorted.map((p,i) => (
@@ -323,7 +324,7 @@ const st = StyleSheet.create({
   btn:{backgroundColor:'#007AFF',paddingVertical:16,borderRadius:16,width:'100%',alignItems:'center',marginTop:32},
   btnTx:{color:'#fff',fontSize: 17,fontWeight:'bold'},
   conceptCard:{backgroundColor:'rgba(255,204,0,0.12)',borderRadius:20,padding:28,marginTop:20,borderWidth:1,borderColor:'rgba(255,204,0,0.3)',width:'100%',alignItems:'center'},
-  conceptTx:{color:'#FFCC00',fontSize: 34,fontWeight:'800'},
+  conceptTx:{color:Colors.yellow,fontSize: 34,fontWeight:'800'},
   drawHeader:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingHorizontal:16,paddingTop:8,paddingBottom:8},
   drawTitle:{color:'#fff',fontSize:17,fontWeight:'bold'},
   timerPill:{flexDirection:'row',alignItems:'center',gap:6,backgroundColor:'rgba(255,255,255,0.08)',paddingHorizontal:14,paddingVertical:8,borderRadius:20},
@@ -344,5 +345,5 @@ const st = StyleSheet.create({
   rankFirst:{backgroundColor:'rgba(255,204,0,0.06)',borderColor:'rgba(255,204,0,0.2)'},
   rankNum:{fontSize:20,width:40,textAlign:'center',color:'rgba(255,255,255,0.5)'},
   rankName:{color:'#fff',fontSize:16,fontWeight:'600',flex:1},
-  rankScore:{color:'#FF9500',fontSize: 17,fontWeight:'bold'},
+  rankScore:{color:Colors.orange,fontSize: 17,fontWeight:'bold'},
 });

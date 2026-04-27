@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 /**
  * Game-specific first-time hints — shown once per game on first play.
  * Matches iOS firstTimeHint() usage across all game views.
@@ -13,7 +14,7 @@ export const GAME_HINTS: Record<string, { icon: string; title: string; tip: stri
     icon: 'timer',
     title: 'Guess the Seconds',
     tip: 'A random number of seconds will appear. Close your eyes and tap when you think that many seconds have passed!',
-    accent: '#FF9500',
+    accent: Colors.orange,
   },
   imposter: {
     icon: 'theatermasks.fill',
@@ -43,19 +44,19 @@ export const GAME_HINTS: Record<string, { icon: string; title: string; tip: stri
     icon: 'hand.tap.fill',
     title: 'Tap In Order',
     tip: 'Numbers will appear on the grid briefly. Memorize their positions, then tap them in order from 1 upwards!',
-    accent: '#FF9500',
+    accent: Colors.orange,
   },
   ten_tangle: {
     icon: 'number.circle.fill',
     title: 'How Ten Tangle Works',
     tip: 'Each player gets a secret number (1–10). The guesser watches everyone act out a scenario and tries to guess each number!',
-    accent: '#FFCC00',
+    accent: Colors.yellow,
   },
   color_trap: {
     icon: 'paintpalette.fill',
     title: 'Color Trap Rules',
     tip: 'Colored tiles fall down — tap all of them EXCEPT the forbidden color! 3 mistakes and you\'re eliminated.',
-    accent: '#FF3B30',
+    accent: Colors.red,
   },
   spin_bottle: {
     icon: 'arrow.trianglehead.2.counterclockwise.rotate.90',

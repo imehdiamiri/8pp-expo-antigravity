@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions, Animated } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -8,7 +9,7 @@ interface Props { session: GameSession; }
 type Phase = 'ready' | 'playing' | 'playerComplete' | 'results';
 
 // Matches iOS ColorTrapViewModel.palette
-const PALETTE = ['#FF3B30', '#007AFF', '#34C759', '#FFCC00', '#AF52DE'];
+const PALETTE = [Colors.red, '#007AFF', Colors.green, Colors.yellow, '#AF52DE'];
 const PALETTE_NAMES = ['Red', 'Blue', 'Green', 'Yellow', 'Purple'];
 const MAX_FAILS = 3;
 const COLUMNS = 4;
@@ -179,7 +180,7 @@ export function ColorTrapSession({ session }: Props) {
     return (
       <View style={st.container}><View style={st.center}>
         <View style={[st.iconBox, { backgroundColor: 'rgba(255,59,48,0.14)' }]}>
-          <IconSymbol name="paintpalette.fill" size={52} color="#FF3B30" />
+          <IconSymbol name="paintpalette.fill" size={52} color=Colors.red />
         </View>
         <Text style={st.title}>Color Trap</Text>
         <Text style={st.sub}>Tap every tile EXCEPT the forbidden color!</Text>
@@ -189,7 +190,7 @@ export function ColorTrapSession({ session }: Props) {
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 24 }}>
           {(Object.keys(DIFFICULTIES) as Difficulty[]).map(d => {
             const sel = difficulty === d;
-            const col = d === 'easy' ? '#34C759' : d === 'medium' ? '#FF9500' : '#FF3B30';
+            const col = d === 'easy' ? Colors.green : d === 'medium' ? Colors.orange : Colors.red;
             return (
               <Pressable key={d} onPress={() => setDifficulty(d)}
                 style={[st.diffChip, sel && { borderColor: col + '80', backgroundColor: col + '33' }]}>
@@ -219,7 +220,7 @@ export function ColorTrapSession({ session }: Props) {
           </View>
           <View style={{ flexDirection: 'row', gap: 4 }}>
             {[0, 1, 2].map(i => (
-              <IconSymbol key={i} name="heart.fill" size={20} color={i < failsLeft ? '#FF3B30' : 'rgba(255,255,255,0.15)'} />
+              <IconSymbol key={i} name="heart.fill" size={20} color={i < failsLeft ? Colors.red : 'rgba(255,255,255,0.15)'} />
             ))}
           </View>
         </View>
@@ -268,7 +269,7 @@ export function ColorTrapSession({ session }: Props) {
     return (
       <View style={st.container}><View style={st.center}>
         <IconSymbol name={last?.eliminated ? 'xmark.circle.fill' : 'checkmark.circle.fill'} size={56}
-          color={last?.eliminated ? '#FF3B30' : '#34C759'} />
+          color={last?.eliminated ? Colors.red : Colors.green} />
         <Text style={st.title}>{last?.eliminated ? 'Eliminated!' : 'Time\'s Up!'}</Text>
         <Text style={st.sub}>{player.username} — Score: {last?.score}</Text>
         <Pressable style={[st.btn, { marginTop: 40 }]} onPress={() => { setPlayerIdx(i => i+1); setPhase('ready'); }}>
@@ -284,7 +285,7 @@ export function ColorTrapSession({ session }: Props) {
     <View style={st.container}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         <View style={{ alignItems: 'center', gap: 8, marginVertical: 20 }}>
-          <IconSymbol name="trophy.fill" size={44} color="#FFCC00" />
+          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
           <Text style={st.title}>{players.length > 1 ? 'Final Rankings' : 'Complete!'}</Text>
         </View>
         {sorted.map((r, i) => {
@@ -292,13 +293,13 @@ export function ColorTrapSession({ session }: Props) {
           return (
             <View key={r.playerId} style={[st.rankRow, i === 0 && st.rankFirst]}>
               <View style={[st.rankCircle, i === 0 && { backgroundColor: 'rgba(255,204,0,0.2)' }]}>
-                <Text style={[st.rankNum, i === 0 && { color: '#FFCC00' }]}>{i+1}</Text>
+                <Text style={[st.rankNum, i === 0 && { color: Colors.yellow }]}>{i+1}</Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={st.rankName}>{p?.username}</Text>
                 <Text style={st.rankDet}>{r.hits} hits · {r.fails} fails · {r.survivalTime.toFixed(1)}s{r.eliminated ? ' · Eliminated' : ''}</Text>
               </View>
-              <Text style={{ color: '#FF9500', fontSize: 17, fontWeight: 'bold' }}>{r.score}</Text>
+              <Text style={{ color: Colors.orange, fontSize: 17, fontWeight: 'bold' }}>{r.score}</Text>
             </View>
           );
         })}
@@ -314,7 +315,7 @@ const st = StyleSheet.create({
   title: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
   sub: { color: 'rgba(255,255,255,0.5)', fontSize: 15, marginTop: 8, textAlign: 'center' },
   pill: { backgroundColor: 'rgba(52,199,89,0.15)', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, marginTop: 12, borderWidth: 1, borderColor: 'rgba(52,199,89,0.3)' },
-  pillTx: { color: '#34C759', fontSize: 13, fontWeight: '700' },
+  pillTx: { color: Colors.green, fontSize: 13, fontWeight: '700' },
   btn: { backgroundColor: '#007AFF', paddingVertical: 16, borderRadius: 16, width: '100%', alignItems: 'center', marginTop: 32 },
   btnTx: { color: '#fff', fontSize: 17, fontWeight: 'bold' },
   diffChip: { alignItems: 'center', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },

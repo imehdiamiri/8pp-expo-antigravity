@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter, Link } from 'expo-router';
@@ -26,7 +27,7 @@ export default function WebGameSessionScreen() {
 
   return (
     <View style={s.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       <View style={s.header}>
         <TouchableOpacity style={s.exitBtn} onPress={handleExit}>
           <Text style={s.exitText}>✕ Leave Game</Text>
@@ -48,6 +49,6 @@ const s = StyleSheet.create({
     padding: 16, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.06)', zIndex: 2,
   },
   exitBtn: { padding: 10, backgroundColor: 'rgba(255,59,48,0.15)', borderRadius: 10, cursor: 'pointer' },
-  exitText: { color: '#FF3B30', fontSize: 13, fontWeight: '600' },
+  exitText: { color: Colors.red, fontSize: 13, fontWeight: '600' },
   headerTitle: { fontFamily: 'Viral-Black', color: 'white', fontSize: 20 },
 });

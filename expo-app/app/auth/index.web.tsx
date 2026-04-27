@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -27,7 +28,7 @@ export default function WebAuthScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       
       <View style={styles.card}>
         <Text style={{ fontSize: 48, textAlign: 'center', marginBottom: 16 }}>🎮</Text>
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 14, color: 'white', fontSize: 16, padding: 14, marginBottom: 12, outlineStyle: 'none',
   },
-  errorText: { color: '#FF3B30', fontSize: 13, textAlign: 'center', marginBottom: 8 },
+  errorText: { color: Colors.red, fontSize: 13, textAlign: 'center', marginBottom: 8 },
   primaryBtn: {
     backgroundColor: '#007AFF', borderRadius: 14, paddingVertical: 14,
     alignItems: 'center', marginBottom: 10, cursor: 'pointer',

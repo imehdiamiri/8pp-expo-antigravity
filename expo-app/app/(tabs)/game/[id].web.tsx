@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, Link, useRouter } from 'expo-router';
@@ -15,7 +16,7 @@ export default function WebGameDetailScreen() {
   if (!game || !gameDef) {
     return (
       <View style={styles.webContainer}>
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', zIndex: 2 }}>
           <Text style={{ color: 'white', fontSize: 22 }}>Game not found</Text>
           <Link href="/" style={{ marginTop: 16, padding: 12, backgroundColor: 'white', borderRadius: 8 }}>
@@ -47,7 +48,7 @@ export default function WebGameDetailScreen() {
   return (
     <View style={styles.webContainer}>
       {/* Dark background */}
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       
       {/* Top Navigation */}
       <View style={styles.topNav}>

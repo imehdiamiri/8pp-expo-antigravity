@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -5,8 +6,8 @@ import { Image } from 'expo-image';
 
 export const GamePlayerColor = {
   palette: [
-    '#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FF2D55', 
-    '#32ADE6', '#00C7BE', '#FFCC00', '#FF3B30', '#5856D6', 
+    '#007AFF', Colors.green, Colors.orange, '#AF52DE', '#FF2D55', 
+    Colors.cyan, '#00C7BE', Colors.yellow, Colors.red, '#5856D6', 
     '#30B0C7', '#A2845E'
   ],
   color: (index: number) => {
@@ -25,7 +26,7 @@ interface GamePassPhoneViewProps {
 export function GamePassPhoneView({
   playerName,
   subtitle = "Make sure no one else is looking!",
-  accentColor = "#FFCC00",
+  accentColor = Colors.yellow,
   buttonTitle = "I'm Ready",
   onReady
 }: GamePassPhoneViewProps) {
@@ -38,7 +39,7 @@ export function GamePassPhoneView({
         </View>
 
         <Text style={styles.passPhoneTitle}>Pass the phone to</Text>
-        <CurrentTurnPill playerName={playerName} accent="#34C759" scale={1.2} />
+        <CurrentTurnPill playerName={playerName} accent=Colors.green scale={1.2} />
         <Text style={styles.passPhoneSubtitle}>{subtitle}</Text>
       </View>
       <View style={{ flex: 1 }} />
@@ -56,7 +57,7 @@ export function GamePassPhoneView({
 export function CurrentTurnPill({ 
   playerName, 
   prefix, 
-  accent = "#34C759",
+  accent = Colors.green,
   scale = 1.0 
 }: { 
   playerName: string, 
@@ -76,7 +77,7 @@ export function CurrentTurnPill({
 export function GamePlayerAvatar({ name, color = 'rgba(255,255,255,0.08)', size = 34 }: { name: string, color?: string, size?: number }) {
   return (
     <View style={[styles.avatar, { width: size, height: size, backgroundColor: color }]}>
-      <Text style={[styles.avatarText, { fontSize: size * 0.38, color: '#FFFFFF' }]}>
+      <Text style={[styles.avatarText, { fontSize: size * 0.38, color: Colors.white }]}>
         {name.charAt(0).toUpperCase()}
       </Text>
     </View>

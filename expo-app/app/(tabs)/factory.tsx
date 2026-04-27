@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,13 +14,13 @@ import Animated from 'react-native-reanimated';
 // Game Vibes definitions
 const GAME_VIBES = [
   { id: 'couple', title: 'Couple', icon: 'heart.fill', color: '#FF2D55' },
-  { id: 'funny', title: 'Funny', icon: 'face.smiling.fill', color: '#FFCC00' },
+  { id: 'funny', title: 'Funny', icon: 'face.smiling.fill', color: Colors.yellow },
   { id: 'memory', title: 'Memory', icon: 'brain.head.profile', color: '#5AC8FA' },
-  { id: 'action', title: 'Action', icon: 'figure.run', color: '#FF9500' },
+  { id: 'action', title: 'Action', icon: 'figure.run', color: Colors.orange },
   { id: 'cards', title: 'Cards', icon: 'suit.club.fill', color: '#007AFF' },
   { id: 'trivia', title: 'Trivia', icon: 'questionmark.circle.fill', color: '#00C7BE' },
   { id: 'roleplay', title: 'Roleplay', icon: 'theatermasks.fill', color: '#AF52DE' },
-  { id: 'challenge', title: 'Challenge', icon: 'flame.fill', color: '#FF3B30' },
+  { id: 'challenge', title: 'Challenge', icon: 'flame.fill', color: Colors.red },
 ];
 
 // Mock ideas
@@ -145,7 +146,7 @@ export default function FactoryScreen() {
           {/* Players Card */}
           <BlurView tint="dark" intensity={30} style={[styles.surfaceCard, { overflow: 'hidden' }]}>
             <View style={styles.playersRow}>
-              <IconSymbol name="person.2.fill" size={18} color="#34C759" />
+              <IconSymbol name="person.2.fill" size={18} color=Colors.green />
               <Text style={styles.playersLabel}>Players</Text>
               <View style={{ flex: 1 }} />
               
@@ -154,7 +155,7 @@ export default function FactoryScreen() {
                 onPress={() => setPlayerCount(Math.max(minPlayers, playerCount - 1))}
                 disabled={playerCount <= minPlayers}
               >
-                <IconSymbol name="minus" size={14} color="#34C759" />
+                <IconSymbol name="minus" size={14} color=Colors.green />
               </TouchableOpacity>
               
               <Text style={styles.playerCount}>{playerCount}</Text>
@@ -164,7 +165,7 @@ export default function FactoryScreen() {
                 onPress={() => setPlayerCount(Math.min(maxPlayers, playerCount + 1))}
                 disabled={playerCount >= maxPlayers}
               >
-                <IconSymbol name="plus" size={14} color="#34C759" />
+                <IconSymbol name="plus" size={14} color=Colors.green />
               </TouchableOpacity>
             </View>
           </BlurView>
@@ -192,7 +193,7 @@ export default function FactoryScreen() {
         {/* Generate Button */}
         <TouchableOpacity style={styles.generateButtonWrapper} onPress={handleGenerate} disabled={isGenerating}>
           <LinearGradient
-            colors={['#AF52DE', '#0A84FF']}
+            colors={['#AF52DE', Colors.blue]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.generateButton}
@@ -241,7 +242,7 @@ export default function FactoryScreen() {
                     <View style={{ padding: 14 }}>
                       <View style={styles.ideaHeaderRow}>
                         <View style={styles.ideaIcon}>
-                          <IconSymbol name="sparkle" size={18} color="#FFCC00" />
+                          <IconSymbol name="sparkle" size={18} color=Colors.yellow />
                         </View>
                         <View style={styles.ideaTexts}>
                           <Text style={styles.ideaTitle}>{idea.title}</Text>
@@ -450,7 +451,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   playersLabel: {
-    color: '#34C759',
+    color: Colors.green,
     fontSize: 15,
     fontWeight: '600',
   },
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   playerCount: {
-    color: '#34C759',
+    color: Colors.green,
     fontSize: 20,
     fontWeight: 'bold',
     minWidth: 28,
@@ -628,7 +629,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stepBadgeText: {
-    color: '#0A84FF',
+    color: Colors.blue,
     fontSize: 11,
     fontWeight: 'bold',
   },

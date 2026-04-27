@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -55,12 +56,12 @@ function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial
   // Map our tint strings to actual colors
   const getTintColor = (tint: string) => {
     const colors: Record<string, string> = {
-      orange: '#FF9500',
+      orange: Colors.orange,
       pink: '#FF2D55',
-      yellow: '#FFCC00',
-      red: '#FF3B30',
-      cyan: '#32ADE6',
-      green: '#34C759',
+      yellow: Colors.yellow,
+      red: Colors.red,
+      cyan: Colors.cyan,
+      green: Colors.green,
       purple: '#AF52DE',
       indigo: '#5856D6',
       teal: '#30B0C7',
@@ -124,8 +125,8 @@ function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial
               <View style={styles.divider} />
               <View style={styles.section}>
                 <View style={styles.sectionTitleRow}>
-                  <IconSymbol name="exclamationmark.triangle.fill" size={14} color="#FF9500" />
-                  <Text style={[styles.sectionTitle, { color: '#FF9500' }]}>Rules</Text>
+                  <IconSymbol name="exclamationmark.triangle.fill" size={14} color=Colors.orange />
+                  <Text style={[styles.sectionTitle, { color: Colors.orange }]}>Rules</Text>
                 </View>
                 <View style={styles.rulesContainer}>
                   {game.rules.map((rule, index) => (

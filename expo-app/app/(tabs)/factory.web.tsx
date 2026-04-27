@@ -1,16 +1,17 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const GAME_VIBES = [
   { id: 'couple', title: 'Couple', emoji: '💕', color: '#FF2D55' },
-  { id: 'funny', title: 'Funny', emoji: '😂', color: '#FFCC00' },
+  { id: 'funny', title: 'Funny', emoji: '😂', color: Colors.yellow },
   { id: 'memory', title: 'Memory', emoji: '🧠', color: '#5AC8FA' },
-  { id: 'action', title: 'Action', emoji: '🏃', color: '#FF9500' },
+  { id: 'action', title: 'Action', emoji: '🏃', color: Colors.orange },
   { id: 'cards', title: 'Cards', emoji: '🃏', color: '#007AFF' },
   { id: 'trivia', title: 'Trivia', emoji: '❓', color: '#00C7BE' },
   { id: 'roleplay', title: 'Roleplay', emoji: '🎭', color: '#AF52DE' },
-  { id: 'challenge', title: 'Challenge', emoji: '🔥', color: '#FF3B30' },
+  { id: 'challenge', title: 'Challenge', emoji: '🔥', color: Colors.red },
 ];
 
 const MOCK_IDEAS = [
@@ -45,7 +46,7 @@ export default function WebFactoryScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       <ScrollView style={{ flex: 1, zIndex: 1 }} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.pageTitle}>AI Game Factory</Text>
         <Text style={styles.pageSubtitle}>Generate custom game ideas with AI</Text>

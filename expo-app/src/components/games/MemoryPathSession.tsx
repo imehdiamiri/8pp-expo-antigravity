@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Animated, Dimensions } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -316,7 +317,7 @@ export function MemoryPathSession({ session }: Props) {
                     style={{ width: tileSz, height: tileSz }}>
                     <LinearGradient colors={colors} start={{x:0,y:0}} end={{x:1,y:1}}
                       style={[s.tile, { borderColor: border }]}>
-                      {state === 'start' && <Text style={[s.tileLbl, { color: '#34C759' }]}>Start</Text>}
+                      {state === 'start' && <Text style={[s.tileLbl, { color: Colors.green }]}>Start</Text>}
                       {state === 'end' && <Text style={[s.tileLbl, { color: '#5AC8FA' }]}>End</Text>}
                       {state === 'correct' && <IconSymbol name="checkmark" size={16} color="rgba(255,255,255,0.6)" />}
                     </LinearGradient>
@@ -334,7 +335,7 @@ export function MemoryPathSession({ session }: Props) {
     return (
       <View style={s.container}>
         <View style={s.center}>
-          <IconSymbol name="checkmark.circle.fill" size={56} color="#34C759" />
+          <IconSymbol name="checkmark.circle.fill" size={56} color=Colors.green />
           <Text style={s.title}>Path Cleared!</Text>
           <Text style={s.sub}>{player.username} — {formatTime(elapsed)}</Text>
           <Pressable style={[s.btn, { marginTop: 40 }]} onPress={() => { setPlayerIndex(i => i+1); setPhase('ready'); }}>
@@ -356,7 +357,7 @@ export function MemoryPathSession({ session }: Props) {
     <View style={s.container}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         <View style={{ alignItems: 'center', gap: 8, marginVertical: 20 }}>
-          <IconSymbol name="trophy.fill" size={44} color="#FFCC00" />
+          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
           <Text style={s.title}>Final Rankings</Text>
         </View>
         {sorted.map((r, i) => {
@@ -364,13 +365,13 @@ export function MemoryPathSession({ session }: Props) {
           return (
             <View key={r.playerId} style={[s.rankRow, i === 0 && s.rankFirst]}>
               <View style={[s.rankCircle, i === 0 && { backgroundColor: 'rgba(255,204,0,0.2)' }]}>
-                <Text style={[s.rankNum, i === 0 && { color: '#FFCC00' }]}>{i+1}</Text>
+                <Text style={[s.rankNum, i === 0 && { color: Colors.yellow }]}>{i+1}</Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={s.rankName}>{p?.username}</Text>
                 <Text style={s.rankDet}>{r.finished ? `${(r.timeMs/1000).toFixed(1)}s · ${r.attempts} tries` : `${r.progress} steps`}</Text>
               </View>
-              {i === 0 && <IconSymbol name="crown.fill" size={16} color="#FFCC00" />}
+              {i === 0 && <IconSymbol name="crown.fill" size={16} color=Colors.yellow />}
             </View>
           );
         })}
@@ -389,7 +390,7 @@ const s = StyleSheet.create({
   title: { color: '#fff', fontSize: 22, fontWeight: 'bold', marginTop: 16 },
   sub: { color: 'rgba(255,255,255,0.5)', fontSize: 15, marginTop: 8 },
   pill: { backgroundColor: 'rgba(52,199,89,0.15)', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, marginTop: 12, borderWidth: 1, borderColor: 'rgba(52,199,89,0.3)' },
-  pillTx: { color: '#34C759', fontSize: 13, fontWeight: '700' },
+  pillTx: { color: Colors.green, fontSize: 13, fontWeight: '700' },
   bubbleRow: { flexDirection: 'row', gap: 16, marginTop: 24 },
   bubble: { alignItems: 'center', paddingVertical: 10, paddingHorizontal: 14, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 14 },
   bv: { color: '#fff', fontSize: 16, fontWeight: 'bold' },

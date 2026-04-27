@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import { useState, useMemo, useCallback } from 'react';
 import {
   StyleSheet,
@@ -39,7 +40,7 @@ interface TeamState {
 }
 
 const TEAM_COLORS = {
-  a: { primary: '#FF9500', bg: 'rgba(255,149,0,0.12)', icon: 'flame.fill', label: 'Team A' },
+  a: { primary: Colors.orange, bg: 'rgba(255,149,0,0.12)', icon: 'flame.fill', label: 'Team A' },
   b: { primary: '#5AC8FA', bg: 'rgba(90,200,250,0.12)', icon: 'bolt.fill', label: 'Team B' },
 };
 
@@ -207,7 +208,7 @@ export default function TeamSetupScreen() {
               <View key={player.id} style={styles.playerRow}>
                 <View style={[styles.avatar, { backgroundColor: 'rgba(255,255,255,0.08)' }]}>
                   <Text style={styles.avatarText}>{player.displayName.charAt(0).toUpperCase()}</Text>
-                  <View style={[styles.statusDot, { backgroundColor: player.isConnected ? '#34C759' : '#8E8E93' }]} />
+                  <View style={[styles.statusDot, { backgroundColor: player.isConnected ? Colors.green : '#8E8E93' }]} />
                 </View>
                 <Text style={styles.playerName}>{player.displayName}</Text>
                 <View style={{ flex: 1 }} />
@@ -217,8 +218,8 @@ export default function TeamSetupScreen() {
                       style={[styles.assignBtn, { backgroundColor: 'rgba(255,149,0,0.12)' }]}
                       onPress={() => assignPlayer(player.id, 'team_a')}
                     >
-                      <IconSymbol name="flame.fill" size={9} color="#FF9500" />
-                      <Text style={[styles.assignBtnText, { color: '#FF9500' }]}>A</Text>
+                      <IconSymbol name="flame.fill" size={9} color=Colors.orange />
+                      <Text style={[styles.assignBtnText, { color: Colors.orange }]}>A</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.assignBtn, { backgroundColor: 'rgba(90,200,250,0.12)', marginLeft: 6 }]}
@@ -295,7 +296,7 @@ export default function TeamSetupScreen() {
                 <Text style={[styles.avatarText, { color: config.primary }]}>
                   {player.displayName.charAt(0).toUpperCase()}
                 </Text>
-                <View style={[styles.statusDot, { backgroundColor: player.isConnected ? '#34C759' : '#8E8E93' }]} />
+                <View style={[styles.statusDot, { backgroundColor: player.isConnected ? Colors.green : '#8E8E93' }]} />
               </View>
               <Text style={styles.playerName}>{player.displayName}</Text>
               <View style={{ flex: 1 }} />
@@ -336,7 +337,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 14,
   },
-  leaveText: { fontSize: 15, fontWeight: '500', color: '#FF3B30' },
+  leaveText: { fontSize: 15, fontWeight: '500', color: Colors.red },
   headerTitle: { fontFamily: 'Viral-Black', fontSize: 20, color: '#fff' },
   roomCard: {
     backgroundColor: 'rgba(255,255,255,0.04)',
@@ -487,5 +488,5 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   startText: { fontSize: 16, fontWeight: '700', color: '#fff' },
-  warningText: { fontSize: 12, color: '#FF9500', textAlign: 'center' },
+  warningText: { fontSize: 12, color: Colors.orange, textAlign: 'center' },
 });

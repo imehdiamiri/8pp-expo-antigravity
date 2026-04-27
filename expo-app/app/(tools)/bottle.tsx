@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useCallback } from 'react';
 import {
   View,
@@ -165,7 +166,7 @@ export default function BottleToolScreen() {
                 ]}
               >
                 {isSelected ? (
-                  <CurrentTurnPill playerName={name} accent="#34C759" />
+                  <CurrentTurnPill playerName={name} accent=Colors.green />
                 ) : (
                   <Text style={styles.nameText} numberOfLines={1}>{name}</Text>
                 )}
@@ -265,8 +266,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   chipSelected: {
-    backgroundColor: '#34C759',
-    borderColor: '#34C759',
+    backgroundColor: Colors.green,
+    borderColor: Colors.green,
   },
   chipText: {
     color: 'rgba(255,255,255,0.85)',

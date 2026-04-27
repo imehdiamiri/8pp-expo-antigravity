@@ -47,7 +47,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
           if (route.name === 'friends') iconName = 'person.2.fill';
           if (route.name === 'factory') iconName = 'wand.and.stars';
 
-          const color = isFocused ? '#0A84FF' : 'rgba(255, 255, 255, 0.5)';
+          const color = isFocused ? Colors.blue : 'rgba(255, 255, 255, 0.5)';
 
           return (
             <TouchableOpacity
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   activeLabel: {
-    color: '#0A84FF',
+    color: Colors.blue,
     fontWeight: 'bold',
   },
 });

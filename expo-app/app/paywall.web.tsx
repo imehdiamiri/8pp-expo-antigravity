@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Link, useRouter } from 'expo-router';
@@ -24,7 +25,7 @@ export default function WebPaywallScreen() {
 
   return (
     <View style={s.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       
       <View style={s.topNav}>
         <Link href="/profile" style={s.backLink}><Text style={s.backText}>← Back to Profile</Text></Link>
@@ -37,10 +38,10 @@ export default function WebPaywallScreen() {
 
         <View style={s.tabRow}>
           <TouchableOpacity onPress={() => setTab('premium')} style={[s.tab, tab === 'premium' && s.tabActive]}>
-            <Text style={[s.tabText, tab === 'premium' && { color: '#FFCC00' }]}>⭐ Premium</Text>
+            <Text style={[s.tabText, tab === 'premium' && { color: Colors.yellow }]}>⭐ Premium</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setTab('stars')} style={[s.tab, tab === 'stars' && s.tabActive]}>
-            <Text style={[s.tabText, tab === 'stars' && { color: '#FFCC00' }]}>💎 Star Packs</Text>
+            <Text style={[s.tabText, tab === 'stars' && { color: Colors.yellow }]}>💎 Star Packs</Text>
           </TouchableOpacity>
         </View>
 
@@ -63,7 +64,7 @@ export default function WebPaywallScreen() {
             <View style={[s.planCard, { borderColor: 'rgba(255,204,0,0.4)', backgroundColor: 'rgba(255,204,0,0.08)' }]}>
               <View style={s.bestBadge}><Text style={s.bestBadgeText}>BEST VALUE</Text></View>
               <Text style={s.planTitle}>Lifetime Premium</Text>
-              <Text style={[s.planPrice, { color: '#FFCC00' }]}>$19.99</Text>
+              <Text style={[s.planPrice, { color: Colors.yellow }]}>$19.99</Text>
               <Text style={s.planSub}>One-time purchase • Forever access</Text>
             </View>
           </>
@@ -96,7 +97,7 @@ const s = StyleSheet.create({
   subtitle: { color: 'rgba(255,255,255,0.5)', fontSize: 16, marginBottom: 32, textAlign: 'center' },
   tabRow: { flexDirection: 'row', gap: 12, marginBottom: 32 },
   tab: { paddingVertical: 10, paddingHorizontal: 24, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.06)', cursor: 'pointer' },
-  tabActive: { backgroundColor: 'rgba(255,204,0,0.15)', borderWidth: 1, borderColor: '#FFCC00' },
+  tabActive: { backgroundColor: 'rgba(255,204,0,0.15)', borderWidth: 1, borderColor: Colors.yellow },
   tabText: { color: 'rgba(255,255,255,0.6)', fontSize: 15, fontWeight: '600' },
   featuresGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, justifyContent: 'center', marginBottom: 32, width: '100%' },
   featureCard: { width: 220, padding: 20, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', alignItems: 'center', gap: 8 },
@@ -106,7 +107,7 @@ const s = StyleSheet.create({
   planTitle: { color: 'white', fontSize: 20, fontWeight: '700' },
   planPrice: { color: 'white', fontSize: 34, fontWeight: '800' },
   planSub: { color: 'rgba(255,255,255,0.5)', fontSize: 13 },
-  bestBadge: { backgroundColor: '#FFCC00', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 3, marginBottom: 4 },
+  bestBadge: { backgroundColor: Colors.yellow, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 3, marginBottom: 4 },
   bestBadgeText: { color: '#000', fontSize: 11, fontWeight: '800' },
   starsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, justifyContent: 'center', width: '100%' },
   starCard: { width: 180, padding: 24, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', alignItems: 'center', gap: 8, cursor: 'pointer' },

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import { useState } from 'react';
 import {
   StyleSheet,
@@ -54,7 +55,7 @@ const STAR_PACK_PRICES: Record<number, { price: string; savePercent?: number }> 
 
 function getAccent(selection: PurchaseSelection): string {
   if (selection.kind === 'subscription') return TIER_CONFIG[selection.tier].accentColor;
-  return '#FF9500';
+  return Colors.orange;
 }
 
 function getIcon(selection: PurchaseSelection): string {
@@ -91,23 +92,23 @@ function getBenefits(selection: PurchaseSelection): Benefit[] {
   if (selection.kind === 'subscription') {
     const tier = TIER_CONFIG[selection.tier];
     const items: Benefit[] = [
-      { icon: 'star.fill', color: '#FF9500', text: `+${tier.starsPerPeriod} Stars ${selection.tier === 'lifetime' ? 'once' : 'per period'}` },
+      { icon: 'star.fill', color: Colors.orange, text: `+${tier.starsPerPeriod} Stars ${selection.tier === 'lifetime' ? 'once' : 'per period'}` },
       { icon: 'gamecontroller.fill', color: '#007AFF', text: 'All 4 Premium games unlocked' },
-      { icon: 'sparkles', color: '#FFCC00', text: 'AI cards cost just 1 Star instead of 5' },
+      { icon: 'sparkles', color: Colors.yellow, text: 'AI cards cost just 1 Star instead of 5' },
     ];
-    if (selection.tier === 'yearly') items.push({ icon: 'tag.fill', color: '#34C759', text: 'Best value — save vs monthly' });
+    if (selection.tier === 'yearly') items.push({ icon: 'tag.fill', color: Colors.green, text: 'Best value — save vs monthly' });
     if (selection.tier === 'lifetime') items.push({ icon: 'infinity', color: '#FF2D55', text: 'Pay once, keep forever' });
     items.push({ icon: 'sparkles', color: '#AF52DE', text: 'Support ongoing development' });
     return items;
   }
 
   const items: Benefit[] = [
-    { icon: 'star.fill', color: '#FF9500', text: `+${selection.stars} Stars added to your wallet` },
-    { icon: 'sparkles', color: '#FFCC00', text: 'Spend Stars on AI-generated cards' },
+    { icon: 'star.fill', color: Colors.orange, text: `+${selection.stars} Stars added to your wallet` },
+    { icon: 'sparkles', color: Colors.yellow, text: 'Spend Stars on AI-generated cards' },
     { icon: 'bolt.fill', color: '#007AFF', text: 'Instant delivery after purchase' },
   ];
   const save = STAR_PACK_PRICES[selection.stars]?.savePercent;
-  if (save) items.push({ icon: 'tag.fill', color: '#34C759', text: `Save ${save}% vs the starter pack` });
+  if (save) items.push({ icon: 'tag.fill', color: Colors.green, text: `Save ${save}% vs the starter pack` });
   return items;
 }
 

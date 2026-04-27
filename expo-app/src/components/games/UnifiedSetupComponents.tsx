@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput, ScrollView } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -25,8 +26,8 @@ export function SetupPlayersSection({
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <View style={styles.titleContainer}>
-          <IconSymbol name="person.2.fill" size={16} color="#34C759" />
-          <Text style={[styles.title, { color: '#34C759' }]}>Players</Text>
+          <IconSymbol name="person.2.fill" size={16} color=Colors.green />
+          <Text style={[styles.title, { color: Colors.green }]}>Players</Text>
         </View>
         
         <View style={styles.stepperContainer}>
@@ -35,17 +36,17 @@ export function SetupPlayersSection({
             onPress={() => onUpdateCount(Math.max(minPlayers, playerCount - 1))}
             disabled={playerCount <= minPlayers}
           >
-            <IconSymbol name="minus" size={14} color="#34C759" />
+            <IconSymbol name="minus" size={14} color=Colors.green />
           </Pressable>
           
-          <Text style={[styles.stepperValue, { color: '#34C759' }]}>{playerCount}</Text>
+          <Text style={[styles.stepperValue, { color: Colors.green }]}>{playerCount}</Text>
           
           <Pressable 
             style={[styles.stepperButton, { backgroundColor: 'rgba(52, 199, 89, 0.12)', opacity: playerCount >= maxPlayers ? 0.3 : 1 }]}
             onPress={() => onUpdateCount(Math.min(maxPlayers, playerCount + 1))}
             disabled={playerCount >= maxPlayers}
           >
-            <IconSymbol name="plus" size={14} color="#34C759" />
+            <IconSymbol name="plus" size={14} color=Colors.green />
           </Pressable>
         </View>
       </View>
@@ -89,8 +90,8 @@ export function SetupRoundsSection({
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <View style={styles.titleContainer}>
-          <IconSymbol name="repeat" size={16} color="#FF9500" />
-          <Text style={[styles.title, { color: '#FF9500' }]}>Rounds</Text>
+          <IconSymbol name="repeat" size={16} color=Colors.orange />
+          <Text style={[styles.title, { color: Colors.orange }]}>Rounds</Text>
         </View>
         
         <View style={styles.stepperContainer}>
@@ -99,17 +100,17 @@ export function SetupRoundsSection({
             onPress={() => onUpdateRounds(Math.max(minRounds, roundCount - 1))}
             disabled={roundCount <= minRounds}
           >
-            <IconSymbol name="minus" size={14} color="#FF9500" />
+            <IconSymbol name="minus" size={14} color=Colors.orange />
           </Pressable>
           
-          <Text style={[styles.stepperValue, { color: '#FF9500' }]}>{roundCount}</Text>
+          <Text style={[styles.stepperValue, { color: Colors.orange }]}>{roundCount}</Text>
           
           <Pressable 
             style={[styles.stepperButton, { backgroundColor: 'rgba(255, 149, 0, 0.12)' }]}
             onPress={() => onUpdateRounds(Math.min(maxRounds, roundCount + 1))}
             disabled={roundCount >= maxRounds}
           >
-            <IconSymbol name="plus" size={14} color="#FF9500" />
+            <IconSymbol name="plus" size={14} color=Colors.orange />
           </Pressable>
         </View>
       </View>

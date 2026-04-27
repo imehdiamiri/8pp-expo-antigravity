@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -67,13 +68,13 @@ const styles = StyleSheet.create({
   coinArea: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 32 },
   coin: {
     width: 200, height: 200, borderRadius: 100,
-    backgroundColor: 'rgba(255,204,0,0.2)', borderWidth: 3, borderColor: '#FFCC00',
+    backgroundColor: 'rgba(255,204,0,0.2)', borderWidth: 3, borderColor: Colors.yellow,
     justifyContent: 'center', alignItems: 'center', cursor: 'pointer',
     transition: 'transform 0.3s ease',
   },
   coinFlipping: { opacity: 0.5 },
   coinEmoji: { fontSize: 64 },
-  coinText: { color: '#FFCC00', fontSize: 13, fontWeight: '800', letterSpacing: 2, marginTop: 8 },
+  coinText: { color: Colors.yellow, fontSize: 13, fontWeight: '800', letterSpacing: 2, marginTop: 8 },
   resultText: { color: 'white', fontSize: 28, fontWeight: '800' },
   statsRow: { flexDirection: 'row', gap: 20, marginBottom: 24 },
   statCard: {
@@ -83,6 +84,6 @@ const styles = StyleSheet.create({
   statEmoji: { fontSize: 22 },
   statValue: { color: 'white', fontSize: 34, fontWeight: '800' },
   statLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: '600' },
-  flipBtn: { backgroundColor: '#FFCC00', borderRadius: 16, paddingVertical: 18, alignItems: 'center', cursor: 'pointer' },
+  flipBtn: { backgroundColor: Colors.yellow, borderRadius: 16, paddingVertical: 18, alignItems: 'center', cursor: 'pointer' },
   flipBtnText: { color: '#000', fontSize: 17, fontWeight: '700' },
 });

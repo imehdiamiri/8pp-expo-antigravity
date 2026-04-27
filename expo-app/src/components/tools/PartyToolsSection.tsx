@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, useWindowDimensions, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,11 +23,11 @@ export interface PartyTool {
 }
 
 export const PARTY_TOOLS: PartyTool[] = [
-  { id: 'dice', title: 'Dice', subtitle: 'Roll 1–4 dice', icon: 'die.face.5.fill', tint: '#FF9500' }, // orange
+  { id: 'dice', title: 'Dice', subtitle: 'Roll 1–4 dice', icon: 'die.face.5.fill', tint: Colors.orange }, // orange
   { id: 'bottle', title: 'Bottle', subtitle: 'Spin to pick', icon: 'waterbottle.fill', tint: '#FF2D55' }, // pink
-  { id: 'hourglass', title: 'Hourglass', subtitle: 'Set a timer', icon: 'hourglass', tint: '#32ADE6' }, // cyan
-  { id: 'coin', title: 'Coin Flip', subtitle: 'Heads or tails', icon: 'circle.circle.fill', tint: '#FFCC00' }, // yellow
-  { id: 'teams', title: 'Team Splitter', subtitle: 'Split into teams', icon: 'person.2.badge.gearshape.fill', tint: '#34C759' }, // green
+  { id: 'hourglass', title: 'Hourglass', subtitle: 'Set a timer', icon: 'hourglass', tint: Colors.cyan }, // cyan
+  { id: 'coin', title: 'Coin Flip', subtitle: 'Heads or tails', icon: 'circle.circle.fill', tint: Colors.yellow }, // yellow
+  { id: 'teams', title: 'Team Splitter', subtitle: 'Split into teams', icon: 'person.2.badge.gearshape.fill', tint: Colors.green }, // green
 ];
 
 interface PartyToolsSectionProps {

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 
@@ -24,7 +25,7 @@ export default function WebFriendsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       <ScrollView style={{ flex: 1, zIndex: 1 }} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.pageTitle}>Friends</Text>
         <Text style={styles.pageSubtitle}>Manage your player list for local and online games</Text>
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(255,59,48,0.15)',
     justifyContent: 'center', alignItems: 'center', cursor: 'pointer',
   },
-  removeBtnText: { color: '#FF3B30', fontSize: 12, fontWeight: '700' },
+  removeBtnText: { color: Colors.red, fontSize: 12, fontWeight: '700' },
   emptyState: { alignItems: 'center', padding: 40, gap: 12 },
   emptyTitle: { color: 'rgba(255,255,255,0.6)', fontSize: 17, fontWeight: '600' },
   emptySub: { color: 'rgba(255,255,255,0.4)', fontSize: 13, textAlign: 'center' },

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -178,12 +179,12 @@ export function TapInOrderSession({ session }: Props) {
       <View style={st.container}>
         <View style={st.center}>
           <View style={[st.iconBox, { backgroundColor: 'rgba(255,149,0,0.14)' }]}>
-            <IconSymbol name="brain.head.profile" size={52} color="#FF9500" />
+            <IconSymbol name="brain.head.profile" size={52} color=Colors.orange />
           </View>
           <Text style={st.title}>Tap in Order</Text>
           <Text style={st.sub}>Memorize the numbers, then tap 1→{TILE_COUNT}</Text>
           {players.length > 1 && <View style={st.pill}><Text style={st.pillTx}>Now · {player.username}</Text></View>}
-          <View style={st.label}><IconSymbol name="checkmark.seal.fill" size={12} color="#34C759" /><Text style={st.labelTx}>Fewest mistakes wins</Text></View>
+          <View style={st.label}><IconSymbol name="checkmark.seal.fill" size={12} color=Colors.green /><Text style={st.labelTx}>Fewest mistakes wins</Text></View>
           <View style={st.bubbleRow}>
             <View style={st.bubble}><Text style={st.bv}>{GRID_SIZE}×{GRID_SIZE}</Text><Text style={st.bl}>Grid</Text></View>
             <View style={st.bubble}><Text style={st.bv}>{TILE_COUNT}</Text><Text style={st.bl}>Tiles</Text></View>
@@ -197,7 +198,7 @@ export function TapInOrderSession({ session }: Props) {
 
   // ──── OUTCOME OVERLAY ────
   if (phase === 'outcome') {
-    const accent = gaveUp ? '#FF9500' : '#34C759';
+    const accent = gaveUp ? Colors.orange : Colors.green;
     const icon = gaveUp ? 'flag.fill' : 'checkmark.seal.fill';
     const label = gaveUp ? 'Gave Up' : 'Done!';
     return (
@@ -217,7 +218,7 @@ export function TapInOrderSession({ session }: Props) {
     return (
       <View style={st.container}>
         <View style={st.center}>
-          <IconSymbol name="hand.raised.fill" size={56} color="#FF9500" />
+          <IconSymbol name="hand.raised.fill" size={56} color=Colors.orange />
           <Text style={st.title}>Pass the Phone</Text>
           <Text style={st.sub}>Give to {players[playerIndex + 1]?.username}</Text>
           <Pressable style={[st.btn, { marginTop: 40 }]} onPress={() => { setPlayerIndex(i => i+1); setPhase('ready'); }}>
@@ -249,22 +250,22 @@ export function TapInOrderSession({ session }: Props) {
         <View style={st.statsRow}>
           <View style={[st.statCard, { backgroundColor: 'rgba(255,59,48,0.1)' }]}>
             <View style={st.statCardInner}>
-              <IconSymbol name="xmark.circle.fill" size={12} color="#FF3B30" />
-              <Text style={[st.statVal, { color: '#FF3B30' }]}>{missTaps}</Text>
+              <IconSymbol name="xmark.circle.fill" size={12} color=Colors.red />
+              <Text style={[st.statVal, { color: Colors.red }]}>{missTaps}</Text>
             </View>
             <Text style={st.statLbl}>Mistakes</Text>
           </View>
           <View style={[st.statCard, { backgroundColor: 'rgba(52,199,89,0.1)' }]}>
             <View style={st.statCardInner}>
-              <IconSymbol name="checkmark.seal.fill" size={12} color="#34C759" />
-              <Text style={[st.statVal, { color: '#34C759' }]}>{correctCount}/{totalTargets}</Text>
+              <IconSymbol name="checkmark.seal.fill" size={12} color=Colors.green />
+              <Text style={[st.statVal, { color: Colors.green }]}>{correctCount}/{totalTargets}</Text>
             </View>
             <Text style={st.statLbl}>Correct</Text>
           </View>
           <View style={[st.statCard, { backgroundColor: 'rgba(255,149,0,0.1)' }]}>
             <View style={st.statCardInner}>
-              <IconSymbol name={isPreview ? 'eye.fill' : 'timer'} size={12} color="#FF9500" />
-              <Text style={[st.statVal, { color: '#FF9500' }]}>
+              <IconSymbol name={isPreview ? 'eye.fill' : 'timer'} size={12} color=Colors.orange />
+              <Text style={[st.statVal, { color: Colors.orange }]}>
                 {isPreview ? previewLeft.toFixed(1) : formatTime(elapsed)}
               </Text>
             </View>
@@ -275,7 +276,7 @@ export function TapInOrderSession({ session }: Props) {
         {/* Progress bar */}
         <View style={st.progWrap}>
           <View style={st.progBg}>
-            <LinearGradient colors={['#FF9500','#FF2D55']} start={{x:0,y:0}} end={{x:1,y:0}}
+            <LinearGradient colors={[Colors.orange,'#FF2D55']} start={{x:0,y:0}} end={{x:1,y:0}}
               style={[st.progFill, { width: `${Math.max(previewProgress * 100, 1)}%` as any }]} />
           </View>
         </View>
@@ -332,7 +333,7 @@ export function TapInOrderSession({ session }: Props) {
         {/* Give Up button */}
         {phase === 'playing' && (
           <Pressable style={st.giveUp} onPress={handleGiveUp}>
-            <IconSymbol name="flag.fill" size={14} color="#FF3B30" />
+            <IconSymbol name="flag.fill" size={14} color=Colors.red />
             <Text style={st.giveUpTx}>Give Up</Text>
           </Pressable>
         )}
@@ -350,7 +351,7 @@ export function TapInOrderSession({ session }: Props) {
     <View style={st.container}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         <View style={{ alignItems: 'center', gap: 8, marginVertical: 20 }}>
-          <IconSymbol name="trophy.fill" size={44} color="#FFCC00" />
+          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
           <Text style={st.title}>{players.length > 1 ? 'Final Rankings' : 'Complete!'}</Text>
         </View>
         {sorted.map((r, i) => {
@@ -358,13 +359,13 @@ export function TapInOrderSession({ session }: Props) {
           return (
             <View key={r.playerId} style={[st.rankRow, i === 0 && st.rankFirst]}>
               <View style={[st.rankCircle, i === 0 && { backgroundColor: 'rgba(255,204,0,0.2)' }]}>
-                <Text style={[st.rankNum, i === 0 && { color: '#FFCC00' }]}>{i+1}</Text>
+                <Text style={[st.rankNum, i === 0 && { color: Colors.yellow }]}>{i+1}</Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={st.rankName}>{p?.username}</Text>
                 <Text style={st.rankDet}>{r.correctCount}/{r.totalTargets} correct · {r.missTaps} miss · {(r.timeMs/1000).toFixed(1)}s</Text>
               </View>
-              {i === 0 && r.didFinish && <IconSymbol name="crown.fill" size={16} color="#FFCC00" />}
+              {i === 0 && r.didFinish && <IconSymbol name="crown.fill" size={16} color=Colors.yellow />}
             </View>
           );
         })}
@@ -383,9 +384,9 @@ const st = StyleSheet.create({
   title: { color: '#fff', fontSize: 22, fontWeight: 'bold', marginTop: 16 },
   sub: { color: 'rgba(255,255,255,0.5)', fontSize: 15, marginTop: 8, textAlign: 'center' },
   pill: { backgroundColor: 'rgba(52,199,89,0.15)', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, marginTop: 12, borderWidth: 1, borderColor: 'rgba(52,199,89,0.3)' },
-  pillTx: { color: '#34C759', fontSize: 13, fontWeight: '700' },
+  pillTx: { color: Colors.green, fontSize: 13, fontWeight: '700' },
   label: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12 },
-  labelTx: { color: '#34C759', fontSize: 12, fontWeight: '600' },
+  labelTx: { color: Colors.green, fontSize: 12, fontWeight: '600' },
   bubbleRow: { flexDirection: 'row', gap: 16, marginTop: 24 },
   bubble: { alignItems: 'center', paddingVertical: 10, paddingHorizontal: 14, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 14 },
   bv: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
@@ -407,7 +408,7 @@ const st = StyleSheet.create({
   tile: { flex: 1, borderRadius: 12, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
   tileNum: { fontSize: 22, fontWeight: '800' },
   giveUp: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 20, paddingVertical: 12, marginHorizontal: 16, borderRadius: 16, backgroundColor: 'rgba(255,59,48,0.15)', borderWidth: 1, borderColor: 'rgba(255,59,48,0.3)' },
-  giveUpTx: { color: '#FF3B30', fontSize: 15, fontWeight: '600' },
+  giveUpTx: { color: Colors.red, fontSize: 15, fontWeight: '600' },
   overlayCard: { padding: 32, borderRadius: 24, alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.8)', borderWidth: 2 },
   rankRow: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 12, backgroundColor: 'rgba(255,255,255,0.035)', borderRadius: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)', marginBottom: 10 },
   rankFirst: { backgroundColor: 'rgba(255,204,0,0.06)', borderColor: 'rgba(255,204,0,0.2)' },

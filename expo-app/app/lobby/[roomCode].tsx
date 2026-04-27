@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -162,7 +163,7 @@ export default function LobbyScreen() {
                 
                 {player.isHost && (
                   <View style={styles.hostBadge}>
-                    <IconSymbol name="star.fill" size={10} color="#FFD60A" />
+                    <IconSymbol name="star.fill" size={10} color=Colors.yellow />
                     <Text style={styles.hostBadgeText}>HOST</Text>
                   </View>
                 )}
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
   headerButton: { width: 80, height: 44, justifyContent: 'center' },
   headerButtonRight: { width: 80, height: 44, justifyContent: 'center', alignItems: 'flex-end' },
   headerTitle: { fontFamily: 'Viral-Black', fontSize: 20, color: 'white' },
-  leaveText: { color: '#FF3B30', fontSize: 15, fontWeight: '500' },
+  leaveText: { color: Colors.red, fontSize: 15, fontWeight: '500' },
   scrollContent: { padding: 16, paddingBottom: 40, gap: 16 },
   
   roomCard: {
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
   gameTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#34C759',
+    color: Colors.green,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#34C759',
+    backgroundColor: Colors.green,
     paddingVertical: 16,
     borderRadius: 16,
     marginTop: 16,
@@ -293,7 +294,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   errorText: {
-    color: '#FF3B30',
+    color: Colors.red,
     fontSize: 13,
     textAlign: 'center',
     marginTop: 12,
@@ -356,7 +357,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   hostBadgeText: {
-    color: '#FFD60A',
+    color: Colors.yellow,
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.5,
@@ -368,7 +369,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   kickText: {
-    color: '#FF3B30',
+    color: Colors.red,
     fontSize: 12,
     fontWeight: '600',
   },

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter, Link } from 'expo-router';
@@ -25,7 +26,7 @@ export default function WebCreateLobbyScreen() {
 
   if (!game) return (
     <View style={s.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', zIndex: 1 }}>
         <Text style={{ color: 'white', fontSize: 20 }}>Game not found</Text>
         <Link href="/" style={{ color: '#5AC8FA', marginTop: 16, textDecorationLine: 'none' }}>← Back to Home</Link>
@@ -35,7 +36,7 @@ export default function WebCreateLobbyScreen() {
 
   return (
     <View style={s.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       
       <View style={s.topNav}>
         <Link href={`/game/${id}` as any} style={s.backLink}><Text style={s.backText}>← Back</Text></Link>
@@ -72,10 +73,10 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
   title: { color: 'white', fontSize: 28, fontWeight: '800', textAlign: 'center', marginBottom: 4 },
-  subtitle: { color: '#34C759', fontSize: 17, fontWeight: '600', textAlign: 'center', marginBottom: 8 },
+  subtitle: { color: Colors.green, fontSize: 17, fontWeight: '600', textAlign: 'center', marginBottom: 8 },
   hint: { color: 'rgba(255,255,255,0.5)', fontSize: 13, textAlign: 'center', marginBottom: 32 },
   label: { color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: '600', marginBottom: 8 },
   input: { backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', borderRadius: 14, color: 'white', fontSize: 17, padding: 16, textAlign: 'center', marginBottom: 20, outlineStyle: 'none' },
-  createBtn: { backgroundColor: '#34C759', borderRadius: 14, paddingVertical: 16, alignItems: 'center', cursor: 'pointer' },
+  createBtn: { backgroundColor: Colors.green, borderRadius: 14, paddingVertical: 16, alignItems: 'center', cursor: 'pointer' },
   createBtnText: { color: 'white', fontSize: 17, fontWeight: '700' },
 });

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useRef } from 'react';
 import { 
   View, 
@@ -13,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
-const TEAM_COLORS = ['#FF9F0A', '#32ADE6', '#FF2D55', '#34C759', '#AF52DE', '#FFCC00'];
+const TEAM_COLORS = [Colors.orange, Colors.cyan, '#FF2D55', Colors.green, '#AF52DE', Colors.yellow];
 const TEAM_ICONS = ['flame.fill', 'bolt.fill', 'heart.fill', 'leaf.fill', 'star.fill', 'sparkles'];
 
 const playDiceRoll = () => {
@@ -225,7 +226,7 @@ export default function TeamSplitterToolScreen() {
         ]}
       >
         <LinearGradient
-          colors={['#34C759', '#30B0C7']}
+          colors={[Colors.green, '#30B0C7']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.splitButton}
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
   addButton: {
     width: 44,
     height: 44,
-    backgroundColor: '#34C759',
+    backgroundColor: Colors.green,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -418,7 +419,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     marginTop: 10,
     borderRadius: 999,
-    shadowColor: '#34C759',
+    shadowColor: Colors.green,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 14,

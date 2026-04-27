@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -19,9 +20,9 @@ const TOAST_ICONS: Record<ToastStyle, string> = {
 };
 
 const TOAST_COLORS: Record<ToastStyle, string> = {
-  error: '#FF3B30',
-  success: '#34C759',
-  warning: '#FF9500',
+  error: Colors.red,
+  success: Colors.green,
+  warning: Colors.orange,
   info: '#007AFF',
 };
 

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
@@ -22,9 +23,9 @@ const GRID_SIZES: { id: MemoryGridSize; title: string; subtitle: string; pairs: 
 ];
 
 const MP_DIFFICULTIES = [
-  { id: 'easy', gridSize: 5, color: '#34C759' },
-  { id: 'medium', gridSize: 6, color: '#FF9500' },
-  { id: 'hard', gridSize: 7, color: '#FF3B30' },
+  { id: 'easy', gridSize: 5, color: Colors.green },
+  { id: 'medium', gridSize: 6, color: Colors.orange },
+  { id: 'hard', gridSize: 7, color: Colors.red },
   { id: 'expert', gridSize: 8, color: '#AF52DE' },
 ];
 
@@ -289,7 +290,7 @@ export default function GameSetupScreen() {
               <Text style={[st.cardTitle, { color: '#AF52DE' }]}>Game Style</Text>
             </View>
             {([
-              { id: 'discussion' as const, title: 'Discussion Mode', subtitle: 'Talk together and find the Imposter', icon: 'bubble.left.and.bubble.right.fill', details: 'Free discussion · Timed conversation · Then voting', color: '#FF9500' },
+              { id: 'discussion' as const, title: 'Discussion Mode', subtitle: 'Talk together and find the Imposter', icon: 'bubble.left.and.bubble.right.fill', details: 'Free discussion · Timed conversation · Then voting', color: Colors.orange },
               { id: 'clue' as const, title: 'Clue Mode', subtitle: 'Give clues one by one', icon: 'magnifyingglass.circle.fill', details: 'Turn-based clues · No discussion · Then voting', color: '#AF52DE' },
             ]).map(style => {
               const sel = imposterStyle === style.id;
@@ -409,8 +410,8 @@ export default function GameSetupScreen() {
           <>
             <View style={st.card}>
               <View style={st.cardHeader}>
-                <IconSymbol name="square.grid.3x3.fill" size={16} color="#FF9500" />
-                <Text style={[st.cardTitle, { color: '#FF9500' }]}>Grid Size</Text>
+                <IconSymbol name="square.grid.3x3.fill" size={16} color=Colors.orange />
+                <Text style={[st.cardTitle, { color: Colors.orange }]}>Grid Size</Text>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -430,8 +431,8 @@ export default function GameSetupScreen() {
 
             <View style={st.card}>
               <View style={st.cardHeader}>
-                <IconSymbol name="number" size={16} color="#FF9500" />
-                <Text style={[st.cardTitle, { color: '#FF9500' }]}>Numbers</Text>
+                <IconSymbol name="number" size={16} color=Colors.orange />
+                <Text style={[st.cardTitle, { color: Colors.orange }]}>Numbers</Text>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -459,7 +460,7 @@ export default function GameSetupScreen() {
               <Text style={[st.cardTitle, { color: '#FF2D55' }]}>Vibe Level</Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
-              {([{id:'mild',title:'Mild',sub:'Safe & friendly',icon:'heart.fill',color:'#34C759'},{id:'classic',title:'Classic',sub:'Balanced fun',icon:'star.fill',color:'#FF9500'},{id:'bold',title:'Bold',sub:'Spicy & risky',icon:'flame.fill',color:'#FF2D55'}] as const).map(d => {
+              {([{id:'mild',title:'Mild',sub:'Safe & friendly',icon:'heart.fill',color:Colors.green},{id:'classic',title:'Classic',sub:'Balanced fun',icon:'star.fill',color:Colors.orange},{id:'bold',title:'Bold',sub:'Spicy & risky',icon:'flame.fill',color:'#FF2D55'}] as const).map(d => {
                 const sel = sbDifficulty === d.id;
                 return (
                   <TouchableOpacity key={d.id} onPress={() => setSbDifficulty(d.id)}
@@ -538,7 +539,7 @@ const st = StyleSheet.create({
   backBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8 },
   backBtnTx: { color: 'white', fontWeight: 'bold' },
   scrollContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 120, gap: 14 },
-  errorLabel: { color: '#FF3B30', fontSize: 13, marginTop: 4 },
+  errorLabel: { color: Colors.red, fontSize: 13, marginTop: 4 },
 
   // SurfaceCard style matching iOS
   card: {

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -19,7 +20,7 @@ const WORDS = [
 ];
 
 const COLORS = [
-  '#FF2D55', '#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FFCC00', '#5AC8FA', '#5856D6'
+  '#FF2D55', '#007AFF', Colors.green, Colors.orange, '#AF52DE', Colors.yellow, '#5AC8FA', '#5856D6'
 ];
 
 function getPlayerColor(index: number) {
@@ -205,7 +206,7 @@ export function ImposterSession({ session }: Props) {
                   </>
                 ) : (
                   <>
-                    <IconSymbol name="checkmark.shield.fill" size={64} color="#34C759" />
+                    <IconSymbol name="checkmark.shield.fill" size={64} color=Colors.green />
                     <Text style={styles.roleSubtitle}>The secret word is:</Text>
                     <View style={styles.wordBadge}>
                       <Text style={styles.wordText}>{secretWord}</Text>
@@ -315,8 +316,8 @@ export function ImposterSession({ session }: Props) {
               <>
                 <View style={styles.card}>
                   <View style={styles.centerItems}>
-                    <IconSymbol name={imposterCaught ? "checkmark.circle.fill" : "xmark.circle.fill"} size={64} color={imposterCaught ? "#34C759" : "#FF2D55"} />
-                    <Text style={[styles.title, { color: imposterCaught ? "#34C759" : "#FF2D55" }]}>
+                    <IconSymbol name={imposterCaught ? "checkmark.circle.fill" : "xmark.circle.fill"} size={64} color={imposterCaught ? Colors.green : "#FF2D55"} />
+                    <Text style={[styles.title, { color: imposterCaught ? Colors.green : "#FF2D55" }]}>
                       {imposterCaught ? "Imposter Caught!" : "Imposter Wins!"}
                     </Text>
 
@@ -363,7 +364,7 @@ export function ImposterSession({ session }: Props) {
           <View style={styles.card}>
             {session.players.slice().sort((a,b) => scores[b.id] - scores[a.id]).map((p, i) => (
               <View key={p.id} style={styles.leaderboardRow}>
-                <Text style={[styles.rank, i === 0 && { color: '#FFCC00' }]}>#{i + 1}</Text>
+                <Text style={[styles.rank, i === 0 && { color: Colors.yellow }]}>#{i + 1}</Text>
                 <Text style={[styles.leaderboardName, { color: getPlayerColor(session.players.findIndex(x => x.id === p.id)) }]}>{p.username}</Text>
                 <Text style={styles.scoreText}>{scores[p.id]} pts</Text>
               </View>
@@ -378,13 +379,13 @@ export function ImposterSession({ session }: Props) {
 
       {phase === 'finished' && (
         <ScrollView contentContainerStyle={[styles.scrollContent, { alignItems: 'center' }]}>
-          <IconSymbol name="trophy.fill" size={64} color="#FFCC00" style={{ marginTop: 40 }} />
+          <IconSymbol name="trophy.fill" size={64} color=Colors.yellow style={{ marginTop: 40 }} />
           <Text style={[styles.title, { marginTop: 20 }]}>Final Results</Text>
 
           <View style={[styles.card, { width: '100%', marginTop: 20 }]}>
             {session.players.slice().sort((a,b) => scores[b.id] - scores[a.id]).map((p, i) => (
               <View key={p.id} style={styles.leaderboardRow}>
-                <Text style={[styles.rank, i === 0 && { color: '#FFCC00' }]}>#{i + 1}</Text>
+                <Text style={[styles.rank, i === 0 && { color: Colors.yellow }]}>#{i + 1}</Text>
                 <Text style={[styles.leaderboardName, { color: getPlayerColor(session.players.findIndex(x => x.id === p.id)) }]}>{p.username}</Text>
                 <Text style={styles.scoreText}>{scores[p.id]} pts</Text>
               </View>

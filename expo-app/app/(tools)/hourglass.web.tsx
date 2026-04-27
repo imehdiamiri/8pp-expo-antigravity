@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -59,7 +60,7 @@ export default function WebHourglassScreen() {
         <View style={styles.timerCircle}>
           <svg width="280" height="280" viewBox="0 0 280 280">
             <circle cx="140" cy="140" r="130" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
-            <circle cx="140" cy="140" r="130" fill="none" stroke={isDone ? '#FF3B30' : '#32ADE6'} strokeWidth="8"
+            <circle cx="140" cy="140" r="130" fill="none" stroke={isDone ? Colors.red : Colors.cyan} strokeWidth="8"
               strokeDasharray={`${2 * Math.PI * 130}`}
               strokeDashoffset={`${2 * Math.PI * 130 * (1 - progress)}`}
               strokeLinecap="round"
@@ -68,7 +69,7 @@ export default function WebHourglassScreen() {
             />
           </svg>
           <View style={styles.timerTextContainer}>
-            <Text style={[styles.timerText, isDone && { color: '#FF3B30' }]}>
+            <Text style={[styles.timerText, isDone && { color: Colors.red }]}>
               {isDone ? "TIME'S UP!" : formatTime(remaining)}
             </Text>
             {isDone && <Text style={{ fontSize: 48 }}>⏰</Text>}
@@ -78,11 +79,11 @@ export default function WebHourglassScreen() {
 
       <View style={styles.controls}>
         {!isRunning ? (
-          <TouchableOpacity style={[styles.controlBtn, { backgroundColor: '#32ADE6' }]} onPress={remaining > 0 ? start : reset}>
+          <TouchableOpacity style={[styles.controlBtn, { backgroundColor: Colors.cyan }]} onPress={remaining > 0 ? start : reset}>
             <Text style={styles.controlBtnText}>{remaining > 0 && !isDone ? '▶ Start' : '🔄 Reset'}</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={[styles.controlBtn, { backgroundColor: '#FF9500' }]} onPress={pause}>
+          <TouchableOpacity style={[styles.controlBtn, { backgroundColor: Colors.orange }]} onPress={pause}>
             <Text style={styles.controlBtnText}>⏸ Pause</Text>
           </TouchableOpacity>
         )}
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
   label: { color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: '800', letterSpacing: 1.5, marginBottom: 12 },
   presetsRow: { flexDirection: 'row', gap: 10, marginBottom: 32 },
   preset: { flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.08)', cursor: 'pointer' },
-  presetActive: { backgroundColor: '#32ADE6' },
+  presetActive: { backgroundColor: Colors.cyan },
   presetText: { color: 'white', fontSize: 15, fontWeight: '700' },
   timerArea: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   timerCircle: { position: 'relative', width: 280, height: 280, justifyContent: 'center', alignItems: 'center' },

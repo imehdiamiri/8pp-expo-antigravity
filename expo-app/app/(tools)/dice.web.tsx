@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,7 +20,7 @@ const Die = ({ value, size }: { value: number; size: number }) => {
   const dotSize = size * 0.18;
   return (
     <View style={{ width: size, height: size, position: 'relative' }}>
-      <LinearGradient colors={['#ffffff', '#e0e0e0']} style={[StyleSheet.absoluteFill, { borderRadius: size * 0.18, borderWidth: 1, borderColor: 'rgba(0,0,0,0.12)' }]} />
+      <LinearGradient colors={[Colors.white, '#e0e0e0']} style={[StyleSheet.absoluteFill, { borderRadius: size * 0.18, borderWidth: 1, borderColor: 'rgba(0,0,0,0.12)' }]} />
       {pips.map((p, i) => (
         <View key={i} style={{
           position: 'absolute', width: dotSize, height: dotSize, borderRadius: dotSize / 2,
@@ -54,7 +55,7 @@ export default function WebDiceScreen() {
               style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: '12px 0', borderRadius: 12,
-                backgroundColor: diceCount === n ? '#FF9500' : 'rgba(255,255,255,0.08)',
+                backgroundColor: diceCount === n ? Colors.orange : 'rgba(255,255,255,0.08)',
               }}>
               <Text style={[styles.countText, diceCount === n && { color: '#000' }]}>{n}</Text>
             </WebPress>
@@ -71,7 +72,7 @@ export default function WebDiceScreen() {
 
       <WebPress onPress={roll} disabled={isRolling}
         style={{
-          backgroundColor: '#FF9500', borderRadius: 16, padding: '18px 0',
+          backgroundColor: Colors.orange, borderRadius: 16, padding: '18px 0',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
         <Text style={styles.rollBtnText}>{isRolling ? '🎲 Rolling...' : '🎲 Roll Dice'}</Text>

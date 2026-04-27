@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Dimensions, Animated, Easing } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -12,7 +13,7 @@ type Phase = 'idle' | 'spinning' | 'landed' | 'choosing' | 'prompt';
 type Choice = 'truth' | 'dare';
 type Difficulty = 'mild' | 'classic' | 'bold';
 
-const PLAYER_COLORS = ['#FF3B30','#FF9500','#FFCC00','#34C759','#00C7BE','#5AC8FA','#007AFF','#5856D6','#AF52DE','#FF2D55','#A2845E','#30B0C7'];
+const PLAYER_COLORS = [Colors.red,Colors.orange,Colors.yellow,Colors.green,'#00C7BE','#5AC8FA','#007AFF','#5856D6','#AF52DE','#FF2D55','#A2845E','#30B0C7'];
 
 // All content from SpinBottleContent (iOS)
 const TRUTHS: Record<Difficulty, string[]> = {
@@ -130,7 +131,7 @@ export function SpinBottleSession({ session }: Props) {
 
   // ═══ PROMPT SCREEN ═══
   if (phase === 'prompt') {
-    const promptColor = choice === 'truth' ? '#007AFF' : '#FF3B30';
+    const promptColor = choice === 'truth' ? '#007AFF' : Colors.red;
     return (
       <View style={st.container}>
         <View style={st.promptWrap}>
@@ -182,7 +183,7 @@ export function SpinBottleSession({ session }: Props) {
           </Text>
         </View>
         <View style={st.vibePill}>
-          <IconSymbol name="flame.fill" size={11} color="#FF3B30" />
+          <IconSymbol name="flame.fill" size={11} color=Colors.red />
           <Text style={st.vibeTx}>{difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</Text>
         </View>
       </View>
@@ -217,7 +218,7 @@ export function SpinBottleSession({ session }: Props) {
               transform: [{ translateX: x }, { translateY: y }],
             }]}>
               {isSelected ? (
-                <CurrentTurnPill playerName={p.username} accent="#34C759" />
+                <CurrentTurnPill playerName={p.username} accent=Colors.green />
               ) : (
                 <Text style={st.playerNodeTx}>{p.username}</Text>
               )}
@@ -288,7 +289,7 @@ const st = StyleSheet.create({
   headerTitle: { color: '#fff', fontSize: 17, fontWeight: 'bold' },
   headerSub: { color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 2 },
   vibePill: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: 'rgba(255,59,48,0.14)', borderRadius: 20 },
-  vibeTx: { color: '#FF3B30', fontSize: 12, fontWeight: 'bold' },
+  vibeTx: { color: Colors.red, fontSize: 12, fontWeight: 'bold' },
   banner: { flexDirection: 'row', alignItems: 'center', gap: 12, marginHorizontal: 20, marginTop: 12, padding: 12, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1.2 },
   bannerLabel: { color: 'rgba(255,255,255,0.45)', fontSize: 11, fontWeight: '700', letterSpacing: 1 },
   bannerName: { color: '#fff', fontSize: 17, fontWeight: '800' },

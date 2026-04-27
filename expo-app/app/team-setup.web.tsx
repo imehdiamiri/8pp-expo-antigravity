@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Link, useRouter, useLocalSearchParams } from 'expo-router';
@@ -5,7 +6,7 @@ import { Link, useRouter, useLocalSearchParams } from 'expo-router';
 interface TeamPlayer { id: string; displayName: string; isConnected: boolean; teamId: string | null; }
 
 const TEAM_COLORS = {
-  a: { primary: '#FF9500', bg: 'rgba(255,149,0,0.12)', label: 'Team A', emoji: '🔥' },
+  a: { primary: Colors.orange, bg: 'rgba(255,149,0,0.12)', label: 'Team A', emoji: '🔥' },
   b: { primary: '#5AC8FA', bg: 'rgba(90,200,250,0.12)', label: 'Team B', emoji: '⚡' },
 };
 
@@ -59,7 +60,7 @@ export default function WebTeamSetupScreen() {
 
   return (
     <View style={s.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       <View style={s.topNav}>
         <Link href="/" style={s.backLink}><Text style={s.backText}>← Back</Text></Link>
       </View>
@@ -83,7 +84,7 @@ export default function WebTeamSetupScreen() {
                 <Text style={s.playerName}>{p.displayName}</Text>
                 <View style={{ flex: 1 }} />
                 <TouchableOpacity style={[s.assignBtn, { backgroundColor: 'rgba(255,149,0,0.12)' }]} onPress={() => assign(p.id, 'team_a')}>
-                  <Text style={{ color: '#FF9500', fontSize: 12, fontWeight: '700' }}>→ A</Text>
+                  <Text style={{ color: Colors.orange, fontSize: 12, fontWeight: '700' }}>→ A</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[s.assignBtn, { backgroundColor: 'rgba(90,200,250,0.12)' }]} onPress={() => assign(p.id, 'team_b')}>
                   <Text style={{ color: '#5AC8FA', fontSize: 12, fontWeight: '700' }}>→ B</Text>

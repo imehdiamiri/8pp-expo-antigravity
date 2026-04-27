@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -36,10 +37,10 @@ const PREDEFINED_QUESTIONS = [
 const COLORS = [
   '#FF2D55', // Pink/Red
   '#007AFF', // Blue
-  '#34C759', // Green
-  '#FF9500', // Orange
+  Colors.green, // Green
+  Colors.orange, // Orange
   '#AF52DE', // Purple
-  '#FFCC00', // Yellow
+  Colors.yellow, // Yellow
   '#5AC8FA', // Cyan
   '#5856D6', // Indigo
 ];
@@ -200,7 +201,7 @@ export function PassGuessSession({ session }: Props) {
       {phase === 'intro' && (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.iconHeader}>
-            <IconSymbol name="text.bubble.fill" size={48} color="#FFCC00" />
+            <IconSymbol name="text.bubble.fill" size={48} color=Colors.yellow />
           </View>
           <Text style={styles.title}>Round {roundNumber} of {totalRounds}</Text>
           <Text style={styles.subtitle}>Everyone writes a private answer first. No reveals until the end.</Text>
@@ -386,7 +387,7 @@ export function PassGuessSession({ session }: Props) {
           <View style={styles.card}>
             {session.players.slice().sort((a,b) => scores[b.id] - scores[a.id]).map((p, i) => (
               <HStack key={p.id} style={styles.leaderboardRow}>
-                <Text style={[styles.rank, i === 0 && { color: '#FFCC00' }]}>#{i + 1}</Text>
+                <Text style={[styles.rank, i === 0 && { color: Colors.yellow }]}>#{i + 1}</Text>
                 <Text style={[styles.leaderboardName, { color: getPlayerColor(session.players.findIndex(x => x.id === p.id)) }]}>{p.username}</Text>
                 <Text style={styles.scoreText}>{scores[p.id]} pts</Text>
               </HStack>
@@ -401,13 +402,13 @@ export function PassGuessSession({ session }: Props) {
 
       {phase === 'finished' && (
         <ScrollView contentContainerStyle={[styles.scrollContent, { alignItems: 'center' }]}>
-          <IconSymbol name="trophy.fill" size={64} color="#FFCC00" style={{ marginTop: 40 }} />
+          <IconSymbol name="trophy.fill" size={64} color=Colors.yellow style={{ marginTop: 40 }} />
           <Text style={[styles.title, { marginTop: 20 }]}>Final Results</Text>
 
           <View style={[styles.card, { width: '100%', marginTop: 20 }]}>
             {session.players.slice().sort((a,b) => scores[b.id] - scores[a.id]).map((p, i) => (
               <HStack key={p.id} style={styles.leaderboardRow}>
-                <Text style={[styles.rank, i === 0 && { color: '#FFCC00' }]}>#{i + 1}</Text>
+                <Text style={[styles.rank, i === 0 && { color: Colors.yellow }]}>#{i + 1}</Text>
                 <Text style={[styles.leaderboardName, { color: getPlayerColor(session.players.findIndex(x => x.id === p.id)) }]}>{p.username}</Text>
                 <Text style={styles.scoreText}>{scores[p.id]} pts</Text>
               </HStack>
@@ -569,7 +570,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   turnPill: {
-    backgroundColor: '#34C759',
+    backgroundColor: Colors.green,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,

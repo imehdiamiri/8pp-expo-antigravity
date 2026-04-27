@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 export enum GameMode {
   singleDevice = 'singleDevice',
   multiDevice = 'multiDevice',
@@ -19,7 +20,7 @@ export const GameModeDetails: Record<
     title: 'Multi Phone',
     subtitle: 'Everyone plays on their own phone',
     icon: 'apps', // SF: apps.iphone
-    accentColor: '#34C759', // green
+    accentColor: Colors.green, // green
     shortLabel: 'Multi-D',
   },
   [GameMode.teamMode]: {

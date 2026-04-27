@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Link, useRouter } from 'expo-router';
@@ -29,7 +30,7 @@ export default function WebJoinLobbyScreen() {
   return (
     <View style={styles.webContainer}>
       {/* Dark background */}
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
 
       <Link href="/" style={styles.backButton}>
         <Text style={styles.backText}>← Back to Home</Text>

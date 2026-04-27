@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Image } from 'expo-image';
@@ -225,7 +226,7 @@ export default function HourglassToolScreen() {
 
       {/* Timer Display */}
       <Animated.View style={[styles.timerDisplay, animatedContainerStyle]}>
-        <Text style={[styles.timeText, isAlarming ? { color: '#FF3B30' } : { color: '#007AFF' }]}>
+        <Text style={[styles.timeText, isAlarming ? { color: Colors.red } : { color: '#007AFF' }]}>
           {timeString}
         </Text>
 
@@ -243,19 +244,19 @@ export default function HourglassToolScreen() {
       {/* Controls */}
       <View style={styles.controlsRow}>
         {isAlarming ? (
-          <ControlButton title="Stop" icon="stop.fill" colors={['#FF3B30', '#FF9500']} onPress={stopAlarm} />
+          <ControlButton title="Stop" icon="stop.fill" colors={[Colors.red, Colors.orange]} onPress={stopAlarm} />
         ) : isRunning ? (
           <>
-            <ControlButton title="Pause" icon="pause.fill" colors={['#FF9500', '#FFCC00']} onPress={pause} />
+            <ControlButton title="Pause" icon="pause.fill" colors={[Colors.orange, Colors.yellow]} onPress={pause} />
             <ControlButton title="Cancel" icon="xmark" colors={['#8E8E93', 'rgba(142, 142, 147, 0.7)']} onPress={cancel} />
           </>
         ) : isPaused ? (
           <>
-            <ControlButton title="Resume" icon="play.fill" colors={['#32ADE6', '#007AFF']} onPress={resume} />
+            <ControlButton title="Resume" icon="play.fill" colors={[Colors.cyan, '#007AFF']} onPress={resume} />
             <ControlButton title="Cancel" icon="xmark" colors={['#8E8E93', 'rgba(142, 142, 147, 0.7)']} onPress={cancel} />
           </>
         ) : (
-          <ControlButton title="Start" icon="play.fill" colors={['#32ADE6', '#007AFF']} onPress={start} disabled={totalSet === 0} />
+          <ControlButton title="Start" icon="play.fill" colors={[Colors.cyan, '#007AFF']} onPress={start} disabled={totalSet === 0} />
         )}
       </View>
     </View>
@@ -371,7 +372,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     backgroundColor: 'rgba(50, 173, 230, 0.25)',
     alignSelf: 'center',
-    shadowColor: '#32ADE6',
+    shadowColor: Colors.cyan,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 16,

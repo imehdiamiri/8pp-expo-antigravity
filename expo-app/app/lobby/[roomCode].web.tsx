@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter, Link } from 'expo-router';
@@ -36,7 +37,7 @@ export default function WebLobbyScreen() {
   if (!currentRoom) {
     return (
       <View style={styles.container}>
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', zIndex: 1 }}>
           <ActivityIndicator size="large" color="white" />
           <Text style={{ color: 'white', marginTop: 12 }}>Connecting to lobby...</Text>
@@ -47,7 +48,7 @@ export default function WebLobbyScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       
       <View style={styles.topNav}>
         <Link href="/" style={styles.backBtn}>
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
   backBtn: { padding: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 8, cursor: 'pointer', textDecorationLine: 'none' },
   backText: { color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '600' },
   leaveBtn: { padding: 12, backgroundColor: 'rgba(255,59,48,0.1)', borderRadius: 8, cursor: 'pointer' },
-  leaveText: { color: '#FF3B30', fontSize: 13, fontWeight: '600' },
+  leaveText: { color: Colors.red, fontSize: 13, fontWeight: '600' },
   scrollContent: { padding: 48 },
   centerLayout: { maxWidth: 900, alignSelf: 'center', width: '100%' },
   roomCard: {
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(52,199,89,0.08)', borderWidth: 1,
     borderColor: 'rgba(52,199,89,0.25)', marginBottom: 32, gap: 8,
   },
-  gameTitle: { color: '#34C759', fontSize: 28, fontWeight: '800', marginBottom: 8 },
+  gameTitle: { color: Colors.green, fontSize: 28, fontWeight: '800', marginBottom: 8 },
   codeLabel: { color: 'rgba(52,199,89,0.8)', fontSize: 12, fontWeight: '800', letterSpacing: 2 },
   codeText: { color: 'white', fontSize: 56, fontWeight: '900', letterSpacing: 12, fontFamily: 'monospace' },
   actionRow: { flexDirection: 'row', gap: 12, marginTop: 12 },
@@ -157,12 +158,12 @@ const styles = StyleSheet.create({
   sectionTitle: { color: 'white', fontSize: 17, fontWeight: '700', marginBottom: 8 },
   hintText: { color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 16 },
   startBtn: {
-    backgroundColor: '#34C759', borderRadius: 14, paddingVertical: 16,
+    backgroundColor: Colors.green, borderRadius: 14, paddingVertical: 16,
     alignItems: 'center', cursor: 'pointer',
   },
   startBtnText: { color: 'white', fontSize: 17, fontWeight: '700' },
   waitingText: { color: 'rgba(255,255,255,0.6)', fontSize: 16, textAlign: 'center', paddingVertical: 24 },
-  errorText: { color: '#FF3B30', fontSize: 13, textAlign: 'center', marginTop: 12 },
+  errorText: { color: Colors.red, fontSize: 13, textAlign: 'center', marginTop: 12 },
   playerRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     padding: 14, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.03)',
@@ -178,5 +179,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,214,10,0.15)', paddingHorizontal: 10,
     paddingVertical: 4, borderRadius: 10,
   },
-  hostBadgeText: { color: '#FFD60A', fontSize: 11, fontWeight: '800' },
+  hostBadgeText: { color: Colors.yellow, fontSize: 11, fontWeight: '800' },
 });

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -45,7 +46,7 @@ const Die2DView = ({ value, size, shake, index }: { value: number; size: number;
       animatedStyle
     ]}>
       <LinearGradient
-        colors={['#ffffff', '#e0e0e0']}
+        colors={[Colors.white, '#e0e0e0']}
         style={[StyleSheet.absoluteFill, { borderRadius: size * 0.18, borderWidth: 1, borderColor: 'rgba(0,0,0,0.12)' }]}
       />
       <LinearGradient
@@ -61,7 +62,7 @@ const Die2DView = ({ value, size, shake, index }: { value: number; size: number;
               width: dotSize,
               height: dotSize,
               borderRadius: dotSize / 2,
-              backgroundColor: '#0A84FF',
+              backgroundColor: Colors.blue,
               left: p.x * size - dotSize / 2,
               top: p.y * size - dotSize / 2,
             }}
@@ -170,7 +171,7 @@ export default function DiceToolScreen() {
         </View>
 
         <TouchableOpacity onPress={roll} disabled={isRolling} activeOpacity={0.8} style={{ width: '100%', paddingHorizontal: 20, paddingBottom: 28 }}>
-          <LinearGradient colors={['#0A84FF', '#32ADE6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.rollButton}>
+          <LinearGradient colors={[Colors.blue, Colors.cyan]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.rollButton}>
             <IconSymbol name="dice.fill" size={18} color="white" weight="heavy" />
             <Text style={styles.rollButtonText}>{isRolling ? 'Rolling...' : 'Roll'}</Text>
           </LinearGradient>
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 96,
     fontWeight: '900',
-    color: '#0A84FF',
+    color: Colors.blue,
     textShadowColor: 'rgba(10, 132, 255, 0.5)',
     textShadowOffset: { width: 0, height: 4 },
     textShadowRadius: 20,

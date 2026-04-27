@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   StyleSheet,
@@ -215,8 +216,8 @@ export default function DrawRushMultiDeviceSession({
           {/* Header */}
           <View style={styles.headerRow}>
             <View style={[styles.timerPill, secondsRemaining <= 10 && styles.timerPillDanger]}>
-              <IconSymbol name="timer" size={14} color={secondsRemaining <= 10 ? '#FF3B30' : '#fff'} />
-              <Text style={[styles.timerText, secondsRemaining <= 10 && { color: '#FF3B30' }]}>{secondsRemaining}s</Text>
+              <IconSymbol name="timer" size={14} color={secondsRemaining <= 10 ? Colors.red : '#fff'} />
+              <Text style={[styles.timerText, secondsRemaining <= 10 && { color: Colors.red }]}>{secondsRemaining}s</Text>
             </View>
             <View style={styles.drawerInfo}>
               <Text style={styles.drawerInfoLabel}>Drawer</Text>
@@ -271,7 +272,7 @@ export default function DrawRushMultiDeviceSession({
                   <IconSymbol
                     name={submitted ? 'checkmark.circle.fill' : 'circle' as any}
                     size={10}
-                    color={submitted ? '#34C759' : 'rgba(255,255,255,0.3)'}
+                    color={submitted ? Colors.green : 'rgba(255,255,255,0.3)'}
                   />
                   <Text style={styles.stripName}>{p.name}</Text>
                 </View>
@@ -364,7 +365,7 @@ export default function DrawRushMultiDeviceSession({
                 <IconSymbol
                   name={sub.isCorrect ? 'checkmark.circle.fill' : 'xmark.circle.fill' as any}
                   size={16}
-                  color={sub.isCorrect ? '#34C759' : '#FF3B30'}
+                  color={sub.isCorrect ? Colors.green : Colors.red}
                 />
               </View>
             ))}
@@ -414,7 +415,7 @@ export default function DrawRushMultiDeviceSession({
         </View>
 
         <Pressable style={[styles.actionBtn, { marginTop: 20 }]} onPress={onExit} activeOpacity={0.8}>
-          <LinearGradient colors={['#FF9500', '#FF6B00']} style={styles.actionGradient}>
+          <LinearGradient colors={[Colors.orange, '#FF6B00']} style={styles.actionGradient}>
             <Text style={styles.actionText}>Exit</Text>
           </LinearGradient>
         </Pressable>
@@ -434,7 +435,7 @@ const styles = StyleSheet.create({
   // Intro
   turnLabel: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.5)', marginTop: 12 },
   drawerPill: { backgroundColor: 'rgba(52,199,89,0.2)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
-  drawerPillText: { fontSize: 13, fontWeight: '700', color: '#34C759' },
+  drawerPillText: { fontSize: 13, fontWeight: '700', color: Colors.green },
   subText: { fontSize: 13, color: 'rgba(255,255,255,0.5)', textAlign: 'center', maxWidth: 280 },
 
   // Header

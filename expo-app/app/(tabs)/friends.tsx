@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Share, Alert, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -116,7 +117,7 @@ export default function FriendsScreen() {
         {/* Quick Join Card */}
         <BlurView intensity={30} tint="dark" style={styles.quickJoinCard}>
           <View style={styles.quickJoinIconContainer}>
-            <IconSymbol name="number.square.fill" size={22} color="#0A84FF" />
+            <IconSymbol name="number.square.fill" size={22} color=Colors.blue />
           </View>
           <View style={styles.quickJoinTextContainer}>
             <Text style={styles.quickJoinTitle}>Join with Code</Text>
@@ -238,7 +239,7 @@ export default function FriendsScreen() {
                 <Text style={styles.subHeadingText}>Results</Text>
                 {!currentUserId ? (
                   <TouchableOpacity onPress={() => router.push('/auth')}>
-                    <Text style={[styles.noMatchesText, { color: '#0A84FF' }]}>Log in to search friends</Text>
+                    <Text style={[styles.noMatchesText, { color: Colors.blue }]}>Log in to search friends</Text>
                   </TouchableOpacity>
                 ) : isSearching ? (
                   <Text style={styles.noMatchesText}>Searching...</Text>
@@ -251,12 +252,12 @@ export default function FriendsScreen() {
                       <Text style={styles.friendName} numberOfLines={1}>{result.username}</Text>
                       <View style={{ flex: 1 }} />
                       {result.relationshipState === 'friends' ? (
-                        <Text style={{ color: '#34C759', fontSize: 11, fontWeight: '600' }}>Friends ✓</Text>
+                        <Text style={{ color: Colors.green, fontSize: 11, fontWeight: '600' }}>Friends ✓</Text>
                       ) : result.relationshipState === 'pendingOutgoing' ? (
-                        <Text style={{ color: '#FF9500', fontSize: 11, fontWeight: '600' }}>Pending</Text>
+                        <Text style={{ color: Colors.orange, fontSize: 11, fontWeight: '600' }}>Pending</Text>
                       ) : result.relationshipState === 'pendingIncoming' ? (
                         <TouchableOpacity 
-                          style={[styles.invitePillButton, { backgroundColor: '#34C759' }]}
+                          style={[styles.invitePillButton, { backgroundColor: Colors.green }]}
                           onPress={() => {
                             const req = requests.find(r => r.fromUserId === result.id);
                             if (req && currentUserId) acceptRequest(req.id, currentUserId);
@@ -288,7 +289,7 @@ export default function FriendsScreen() {
                     <Text style={styles.friendName} numberOfLines={1}>{req.fromUsername}</Text>
                     <View style={{ flex: 1 }} />
                     <TouchableOpacity 
-                      style={[styles.invitePillButton, { backgroundColor: '#34C759', marginRight: 6 }]}
+                      style={[styles.invitePillButton, { backgroundColor: Colors.green, marginRight: 6 }]}
                       onPress={() => currentUserId && acceptRequest(req.id, currentUserId)}
                     >
                       <Text style={styles.invitePillButtonText}>Accept</Text>
@@ -297,7 +298,7 @@ export default function FriendsScreen() {
                       style={[styles.invitePillButton, { backgroundColor: 'rgba(255,59,48,0.2)' }]}
                       onPress={() => declineRequest(req.id)}
                     >
-                      <Text style={[styles.invitePillButtonText, { color: '#FF3B30' }]}>Decline</Text>
+                      <Text style={[styles.invitePillButtonText, { color: Colors.red }]}>Decline</Text>
                     </TouchableOpacity>
                   </View>
                 ))}
@@ -346,7 +347,7 @@ export default function FriendsScreen() {
               <Text style={styles.publicRoomsSubtitle}>Open multiplayer rooms you can join.</Text>
             </View>
             <TouchableOpacity style={styles.loginButton} onPress={() => router.push('/auth')}>
-              <IconSymbol name="person.crop.circle" size={12} color="#0A84FF" />
+              <IconSymbol name="person.crop.circle" size={12} color=Colors.blue />
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
           </View>
@@ -443,7 +444,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   quickJoinButton: {
-    backgroundColor: '#0A84FF',
+    backgroundColor: Colors.blue,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
@@ -526,7 +527,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   meBadgeText: {
-    color: '#0A84FF',
+    color: Colors.blue,
     fontSize: 11,
     fontWeight: 'bold',
   },
@@ -567,7 +568,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#34C759',
+    backgroundColor: Colors.green,
     borderRadius: 100,
     borderWidth: 1.5,
     borderColor: 'rgba(0,0,0,0.7)',
@@ -606,7 +607,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#0A84FF',
+    backgroundColor: Colors.blue,
     borderRadius: 10,
     paddingVertical: 8,
     marginTop: 4,
@@ -617,7 +618,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   invitePillButton: {
-    backgroundColor: '#0A84FF',
+    backgroundColor: Colors.blue,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
@@ -668,7 +669,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(10, 132, 255, 0.25)',
   },
   loginButtonText: {
-    color: '#0A84FF',
+    color: Colors.blue,
     fontSize: 12,
     fontWeight: 'bold',
   },

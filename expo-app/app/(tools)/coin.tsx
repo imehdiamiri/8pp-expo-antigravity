@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
@@ -195,12 +196,12 @@ export default function CoinFlipToolScreen() {
       {/* Stats Row */}
       <View style={styles.statsRow}>
         <View style={styles.statPill}>
-          <View style={[styles.statDot, { backgroundColor: '#FFD60A' }]} />
+          <View style={[styles.statDot, { backgroundColor: Colors.yellow }]} />
           <Text style={styles.statTitle}>HEADS</Text>
           <Text style={styles.statValue}>{headsCount}</Text>
         </View>
         <View style={styles.statPill}>
-          <View style={[styles.statDot, { backgroundColor: '#FF9F0A' }]} />
+          <View style={[styles.statDot, { backgroundColor: Colors.orange }]} />
           <Text style={styles.statTitle}>TAILS</Text>
           <Text style={styles.statValue}>{tailsCount}</Text>
         </View>
@@ -250,7 +251,7 @@ export default function CoinFlipToolScreen() {
         <Text style={styles.resultHeader}>{hasResult ? "RESULT" : "READY"}</Text>
         <Text style={[
           styles.resultText,
-          hasResult ? { color: '#FFD60A', textShadowColor: 'rgba(255, 214, 10, 0.5)', textShadowRadius: 16, textShadowOffset: { width: 0, height: 4 } } : {}
+          hasResult ? { color: Colors.yellow, textShadowColor: 'rgba(255, 214, 10, 0.5)', textShadowRadius: 16, textShadowOffset: { width: 0, height: 4 } } : {}
         ]}>
           {getResultText()}
         </Text>
@@ -284,7 +285,7 @@ export default function CoinFlipToolScreen() {
         ]}
       >
         <LinearGradient
-          colors={['#FFD60A', '#FF9F0A']}
+          colors={[Colors.yellow, Colors.orange]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.flipButton}
@@ -422,7 +423,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 28,
     borderRadius: 999,
-    shadowColor: '#FFD60A',
+    shadowColor: Colors.yellow,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 14,

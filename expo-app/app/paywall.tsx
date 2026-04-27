@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useEffect, useState } from 'react';
 import { 
   View, 
@@ -129,8 +130,8 @@ export default function PaywallScreen() {
         {/* Features Block */}
         <View style={styles.featuresBlock}>
           <FeatureRow icon="gamecontroller.fill" color="#007AFF" text="All 4 Premium games unlocked" />
-          <FeatureRow icon="star.fill" color="#FF9500" text="Star bonus each billing period" />
-          <FeatureRow icon="sparkles" color="#FFCC00" text="AI cards at 1 ★ (instead of 5)" />
+          <FeatureRow icon="star.fill" color=Colors.orange text="Star bonus each billing period" />
+          <FeatureRow icon="sparkles" color=Colors.yellow text="AI cards at 1 ★ (instead of 5)" />
           <FeatureRow icon="sparkles" color="#AF52DE" text="Support ongoing development" />
         </View>
 
@@ -163,7 +164,7 @@ export default function PaywallScreen() {
           onPress={() => selectedPackage && handlePurchase(selectedPackage)}
         >
           <LinearGradient
-            colors={['#FF9500', '#E68A00']}
+            colors={[Colors.orange, '#E68A00']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.ctaGradient}
@@ -199,7 +200,7 @@ export default function PaywallScreen() {
                 key={pkg.identifier} 
                 pkg={pkg} 
                 icon="star.fill"
-                iconColor="#FF9500"
+                iconColor=Colors.orange
                 onPurchase={() => handlePurchase(pkg)}
                 isPurchasing={isPurchasing}
               />
@@ -254,7 +255,7 @@ export default function PaywallScreen() {
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FF9500" />
+          <ActivityIndicator size="large" color=Colors.orange />
         </View>
       ) : (
         <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}>
@@ -516,7 +517,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   badgeContainer: {
-    backgroundColor: '#34C759',
+    backgroundColor: Colors.green,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 12,

@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, PanResponder, Dimensions, Pressable, Platform } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -137,8 +138,8 @@ export function CardsDeckRenderer({ categoryId }: Props) {
           style={[styles.toggleButton, includeSpicy && styles.toggleButtonActive]}
           onPress={() => setIncludeSpicy(!includeSpicy)}
         >
-          <IconSymbol name="flame.fill" size={12} color={includeSpicy ? '#FF9500' : 'rgba(255,255,255,0.5)'} />
-          <Text style={[styles.toggleText, includeSpicy && { color: '#FF9500' }]}>Spicy</Text>
+          <IconSymbol name="flame.fill" size={12} color={includeSpicy ? Colors.orange : 'rgba(255,255,255,0.5)'} />
+          <Text style={[styles.toggleText, includeSpicy && { color: Colors.orange }]}>Spicy</Text>
         </Pressable>
       </View>
     </>
@@ -238,7 +239,7 @@ function CardFace({ card, category }: { card: PartyCard, category: any }) {
       <View style={styles.cardContent}>
         {card.isSpicy && (
           <View style={styles.spicyBadge}>
-            <IconSymbol name="flame.fill" size={12} color="#FF9500" />
+            <IconSymbol name="flame.fill" size={12} color=Colors.orange />
             <Text style={styles.spicyText}>SPICY</Text>
           </View>
         )}
@@ -382,7 +383,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   spicyText: {
-    color: '#FF9500',
+    color: Colors.orange,
     fontSize: 11,
     fontWeight: '900',
   },

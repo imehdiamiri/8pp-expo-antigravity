@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
 import { Link } from 'expo-router';
@@ -11,7 +12,7 @@ const TOOL_EMOJIS: Record<string, string> = {
 export default function WebToolsScreen() {
   return (
     <View style={styles.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       <ScrollView style={{ flex: 1, zIndex: 1 }} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.pageTitle}>Party Toolkit</Text>
         <Text style={styles.pageSubtitle}>Quick tools for your party games</Text>

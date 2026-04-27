@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, Link } from 'expo-router';
@@ -11,7 +12,7 @@ export default function WebCardsDeckScreen() {
   if (!category) {
     return (
       <View style={s.container}>
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', zIndex: 1 }}>
           <Text style={{ color: 'white', fontSize: 20 }}>Category not found</Text>
           <Link href="/(tabs)/tools" style={{ color: '#5AC8FA', marginTop: 16, textDecorationLine: 'none' }}>← Back to Tools</Link>
@@ -22,7 +23,7 @@ export default function WebCardsDeckScreen() {
 
   return (
     <View style={s.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       <View style={s.header}>
         <Link href="/(tabs)/tools" style={s.backLink}><Text style={s.backText}>← Back to Tools</Text></Link>
         <Text style={[s.title, { color: category.accentColor }]}>{category.title}</Text>

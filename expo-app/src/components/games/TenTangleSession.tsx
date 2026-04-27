@@ -1,3 +1,4 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
@@ -43,11 +44,11 @@ const SCENARIOS = [
 ];
 
 function numberColor(num: number, max: number): string {
-  if (max <= 1) return '#34C759';
+  if (max <= 1) return Colors.green;
   const frac = (num - 1) / (max - 1);
-  if (frac < 0.34) return '#FF3B30';
-  if (frac < 0.67) return '#FFCC00';
-  return '#34C759';
+  if (frac < 0.34) return Colors.red;
+  if (frac < 0.67) return Colors.yellow;
+  return Colors.green;
 }
 
 function numberLabel(num: number, max: number): string {
@@ -145,9 +146,9 @@ export function TenTangleSession({ session }: Props) {
   if (phase === 'guesserAnnounce') {
     return (
       <View style={st.container}><View style={st.center}>
-        <View style={st.iconBox}><IconSymbol name="eye.fill" size={52} color="#FF9500" /></View>
+        <View style={st.iconBox}><IconSymbol name="eye.fill" size={52} color=Colors.orange /></View>
         <Text style={st.roundLabel}>Round {round} of {totalRounds}</Text>
-        <Text style={[st.title, { color: '#FF9500' }]}>{guesser.username}</Text>
+        <Text style={[st.title, { color: Colors.orange }]}>{guesser.username}</Text>
         <Text style={st.sub}>You are the Guesser this round!</Text>
         <Text style={st.hint}>Everyone else will get a secret number. Watch them act and guess their numbers.</Text>
         <Pressable style={st.btn} onPress={handleProceedToPass}><Text style={st.btnTx}>Continue</Text></Pressable>
@@ -191,7 +192,7 @@ export function TenTangleSession({ session }: Props) {
   if (phase === 'scenarioReveal') {
     return (
       <View style={st.container}><View style={st.center}>
-        <IconSymbol name="theatermask.and.paintbrush.fill" size={52} color="#FFCC00" />
+        <IconSymbol name="theatermask.and.paintbrush.fill" size={52} color=Colors.yellow />
         <Text style={st.roundLabel}>Scenario</Text>
         <View style={st.scenarioCard}>
           <Text style={st.scenarioText}>{scenario}</Text>
@@ -206,7 +207,7 @@ export function TenTangleSession({ session }: Props) {
   if (phase === 'acting') {
     return (
       <View style={st.container}><View style={st.center}>
-        <IconSymbol name="person.3.fill" size={52} color="#34C759" />
+        <IconSymbol name="person.3.fill" size={52} color=Colors.green />
         <Text style={st.title}>Acting Time!</Text>
         <View style={st.scenarioCard}><Text style={st.scenarioText}>{scenario}</Text></View>
         <Text style={st.sub}>{guesser.username} — watch everyone carefully!</Text>
@@ -231,7 +232,7 @@ export function TenTangleSession({ session }: Props) {
                     const sel = guesses[p.id] === n;
                     return (
                       <Pressable key={n} onPress={() => { Haptics.selectionAsync(); setGuesses(prev => ({ ...prev, [p.id]: n })); }}
-                        style={[st.numBtn, sel && { backgroundColor: '#FF9500', borderColor: '#FF9500' }]}>
+                        style={[st.numBtn, sel && { backgroundColor: Colors.orange, borderColor: Colors.orange }]}>
                         <Text style={[st.numBtnTx, sel && { color: '#fff' }]}>{n}</Text>
                       </Pressable>
                     );
@@ -265,8 +266,8 @@ export function TenTangleSession({ session }: Props) {
                 <Text style={st.revealName}>{p.username}</Text>
                 <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
                   <Text style={st.revealGuess}>Guess: {guess}</Text>
-                  <Text style={[st.revealActual, { color: ok ? '#34C759' : '#FF3B30' }]}>Actual: {actual}</Text>
-                  {ok && <IconSymbol name="checkmark.circle.fill" size={18} color="#34C759" />}
+                  <Text style={[st.revealActual, { color: ok ? Colors.green : Colors.red }]}>Actual: {actual}</Text>
+                  {ok && <IconSymbol name="checkmark.circle.fill" size={18} color=Colors.green />}
                 </View>
               </View>
             );
@@ -305,7 +306,7 @@ export function TenTangleSession({ session }: Props) {
     <View style={st.container}>
       <ScrollView contentContainerStyle={st.scrollPad}>
         <View style={{ alignItems: 'center', gap: 8, marginBottom: 20 }}>
-          <IconSymbol name="trophy.fill" size={44} color="#FFCC00" />
+          <IconSymbol name="trophy.fill" size={44} color=Colors.yellow />
           <Text style={st.title}>Final Results</Text>
         </View>
         {sortedScores.map((p, i) => (
@@ -349,5 +350,5 @@ const st = StyleSheet.create({
   scoreFirst: { backgroundColor: 'rgba(255,204,0,0.06)', borderColor: 'rgba(255,204,0,0.2)' },
   scoreRank: { fontSize: 20, width: 40, textAlign: 'center' },
   scoreName: { color: '#fff', fontSize: 16, fontWeight: '600', flex: 1 },
-  scoreVal: { color: '#FF9500', fontSize: 17, fontWeight: 'bold' },
+  scoreVal: { color: Colors.orange, fontSize: 17, fontWeight: 'bold' },
 });

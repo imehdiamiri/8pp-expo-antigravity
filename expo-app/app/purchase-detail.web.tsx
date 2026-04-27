@@ -1,10 +1,11 @@
+import { Colors } from '@/src/theme/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 
 const TIERS = [
   { id: 'weekly', name: 'Weekly', emoji: '🔥', color: '#FF6B6B', price: '$4.99/wk', stars: 15 },
-  { id: 'monthly', name: 'Monthly', emoji: '⭐', color: '#FFD60A', price: '$9.99/mo', stars: 100 },
+  { id: 'monthly', name: 'Monthly', emoji: '⭐', color: Colors.yellow, price: '$9.99/mo', stars: 100 },
   { id: 'yearly', name: 'Yearly', emoji: '💎', color: '#5AC8FA', price: '$49.99/yr', stars: 1500 },
   { id: 'lifetime', name: 'Lifetime', emoji: '👑', color: '#AF52DE', price: '$19.99', stars: 0 },
 ];
@@ -12,7 +13,7 @@ const TIERS = [
 export default function WebPurchaseDetailScreen() {
   return (
     <View style={s.container}>
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0a0a12' }} />
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: Colors.appBackground }} />
       <View style={s.topNav}>
         <Link href="/paywall" style={s.backLink}><Text style={s.backText}>← Back to Premium</Text></Link>
       </View>

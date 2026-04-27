@@ -1,7 +1,8 @@
+import { Colors } from '@/src/theme/Colors';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 
-const TEAM_COLORS = ['#FF9F0A', '#32ADE6', '#FF2D55', '#34C759', '#AF52DE', '#FFCC00'];
+const TEAM_COLORS = [Colors.orange, Colors.cyan, '#FF2D55', Colors.green, '#AF52DE', Colors.yellow];
 
 export default function WebTeamsScreen() {
   const [names, setNames] = useState<string[]>([]);
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 32, maxWidth: 700, alignSelf: 'center', width: '100%' },
   inputRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
   input: { flex: 1, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', borderRadius: 12, color: 'white', fontSize: 16, padding: 14, outlineStyle: 'none' },
-  addBtn: { backgroundColor: '#34C759', borderRadius: 12, paddingHorizontal: 20, justifyContent: 'center', cursor: 'pointer' },
+  addBtn: { backgroundColor: Colors.green, borderRadius: 12, paddingHorizontal: 20, justifyContent: 'center', cursor: 'pointer' },
   addBtnText: { color: 'white', fontSize: 15, fontWeight: '700' },
   chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(255,255,255,0.08)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
@@ -127,6 +128,6 @@ const styles = StyleSheet.create({
   memberRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dot: { width: 6, height: 6, borderRadius: 3 },
   memberName: { color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: '600' },
-  splitBtn: { backgroundColor: '#34C759', borderRadius: 16, paddingVertical: 18, alignItems: 'center', cursor: 'pointer', marginTop: 16 },
+  splitBtn: { backgroundColor: Colors.green, borderRadius: 16, paddingVertical: 18, alignItems: 'center', cursor: 'pointer', marginTop: 16 },
   splitBtnText: { color: 'white', fontSize: 17, fontWeight: '700' },
 });
