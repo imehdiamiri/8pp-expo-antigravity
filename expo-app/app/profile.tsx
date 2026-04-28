@@ -208,6 +208,24 @@ export default function ProfileScreen() {
     </View>
   );
 
+  // Invite Section
+  const renderInviteSection = () => (
+    <SurfaceCard style={{ marginBottom: 16 }}>
+      <TouchableOpacity style={styles.prefRow} onPress={() => router.push('/invite')}>
+        <View style={styles.prefLeft}>
+          <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: 'rgba(255, 45, 85, 0.2)', alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="gift" size={16} color={Colors.pink} />
+          </View>
+          <View>
+            <Text style={styles.prefText}>Invite & Earn Stars</Text>
+            <Text style={{ color: Colors.secondary, fontSize: 12 }}>Share your code to get +30 ★</Text>
+          </View>
+        </View>
+        <Ionicons name="arrow-forward" size={14} color={Colors.secondary} />
+      </TouchableOpacity>
+    </SurfaceCard>
+  );
+
   // Preferences Card
   const renderPreferences = () => (
     <SurfaceCard>
@@ -329,6 +347,7 @@ export default function ProfileScreen() {
         {renderIdentityCard()}
         {isGuest && renderLoginPrompt()}
         {renderWalletSection()}
+        {!isGuest && renderInviteSection()}
         {renderPreferences()}
         {!isGuest && renderDangerZone()}
       </ScrollView>
