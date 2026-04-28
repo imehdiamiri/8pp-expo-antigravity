@@ -13,8 +13,5 @@
   },
   "database": {
     "rules": "firebase-rtdb-rules.json"
-  },
-  "functions": {
-    "source": "functions"
   }
 }

@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, SharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { AudioManager } from '@/src/services/AudioManager';
 
 const { width } = Dimensions.get('window');
 
@@ -101,6 +102,7 @@ export default function DiceToolScreen() {
     if (isRolling) return;
     setIsRolling(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    AudioManager.play('tileFlip');
     scaleAnim.value = withSpring(0.95, { damping: 10, stiffness: 100 });
 
     let ticks = 0;
@@ -115,6 +117,7 @@ export default function DiceToolScreen() {
         scaleAnim.value = withSpring(1);
         setIsRolling(false);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        AudioManager.play('success');
       }
     }, 70);
   };
@@ -141,10 +144,9 @@ export default function DiceToolScreen() {
           <TouchableOpacity
             key={n}
             onPress={() => {
-              if (!isRolling) {
-                syncValues(n);
-                Haptics.selectionAsync();
-              }
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              AudioManager.play('buttonTap');
+              syncValues(n);
             }}
             disabled={isRolling}
             style={[styles.countButton, count === n ? styles.countButtonActive : styles.countButtonInactive]}

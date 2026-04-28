@@ -17,7 +17,6 @@ import { initializeAuth, getReactNativePersistence, getAuth, Auth } from 'fireba
 import { getFirestore, Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getDatabase, Database, ref, set as fbSet } from 'firebase/database';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
-import { getFunctions, Functions } from 'firebase/functions';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -71,10 +70,6 @@ const rtdb: Database = getDatabase(app);
 // ─── Storage (avatars, generated content) ───
 
 const storage: FirebaseStorage = getStorage(app);
-
-// ─── Cloud Functions ───
-
-const functionsApi: Functions = getFunctions(app);
 
 // ─── User Profile Sync ───
 // Call this after sign-in / sign-up to ensure user data exists in RTDB + Firestore.
@@ -175,7 +170,6 @@ export {
   db,
   rtdb,
   storage,
-  functionsApi,
   firebaseConfig,
   syncUserProfile,
   setUserOnline,

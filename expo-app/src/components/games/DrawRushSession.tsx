@@ -5,6 +5,7 @@ import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import * as Haptics from '@/src/utils/safeHaptics';
 import Svg, { Path } from 'react-native-svg';
+import { AudioManager } from '@/src/services/AudioManager';
 
 interface Props { session: GameSession; }
 type Phase = 'turnIntro' | 'drawerReveal' | 'drawing' | 'passForGuesses' | 'guessing' | 'drawerJudging' | 'roundResults' | 'finalLeaderboard';
@@ -64,7 +65,8 @@ export function DrawRushSession({ session }: Props) {
     if (phase === 'drawing' && timeLeft > 0) {
       timerRef.current = setInterval(() => {
         setTimeLeft(t => {
-          if (t <= 1) { clearInterval(timerRef.current!); setPhase('passForGuesses'); return 0; }
+          if (t <= 4 && t > 1) { AudioManager.play('countdown'); }
+          if (t <= 1) { clearInterval(timerRef.current!); AudioManager.play('countdownFinal'); setPhase('passForGuesses'); return 0; }
           return t - 1;
         });
       }, 1000);
@@ -110,27 +112,30 @@ export function DrawRushSession({ session }: Props) {
     },
   })).current;
 
-  const handleStartDrawing = () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTimeLeft(DRAW_DURATION); setStrokes([]); setPhase('drawing'); };
-  const handleFinishEarly = () => { if (timerRef.current) clearInterval(timerRef.current); setPhase('passForGuesses'); };
-  const handleStartGuessing = () => { setGuessIdx(0); setAnswers([]); setGuessText(''); setPhase('guessing'); };
+  const handleStartDrawing = () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); AudioManager.play('buttonTap'); setTimeLeft(DRAW_DURATION); setStrokes([]); setPhase('drawing'); };
+  const handleFinishEarly = () => { if (timerRef.current) clearInterval(timerRef.current); AudioManager.play('buttonTap'); setPhase('passForGuesses'); };
+  const handleStartGuessing = () => { AudioManager.play('phaseChange'); setGuessIdx(0); setAnswers([]); setGuessText(''); setPhase('guessing'); };
 
   const handleSubmitGuess = () => {
     const t = guessText.trim();
     if (!t || !currentGuesser) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    AudioManager.play('buttonTap');
     setAnswers(prev => [...prev, { id: `${Date.now()}`, playerId: currentGuesser.id, playerName: currentGuesser.username, text: t, isCorrect: false, isJudged: false }]);
     setGuessText('');
-    if (guessIdx + 1 >= guessers.length) setPhase('drawerJudging');
+    if (guessIdx + 1 >= guessers.length) { AudioManager.play('phaseChange'); setPhase('drawerJudging'); }
     else setGuessIdx(guessIdx + 1);
   };
 
   const handleJudge = (id: string, correct: boolean) => {
     Haptics.selectionAsync();
+    AudioManager.play('buttonTap');
     setAnswers(prev => prev.map(a => a.id === id ? {...a, isCorrect: correct, isJudged: true} : a));
   };
 
   const handleFinalizeJudge = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    AudioManager.play('success');
     const newScores = {...scores};
     answers.filter(a => a.isCorrect).forEach(a => { newScores[a.playerId] = (newScores[a.playerId] || 0) + 10; });
     setScores(newScores);
@@ -138,7 +143,8 @@ export function DrawRushSession({ session }: Props) {
   };
 
   const handleNextTurn = () => {
-    if (drawerIdx + 1 >= players.length) { setPhase('finalLeaderboard'); return; }
+    if (drawerIdx + 1 >= players.length) { AudioManager.play('gameOver'); setPhase('finalLeaderboard'); return; }
+    AudioManager.play('phaseChange');
     setDrawerIdx(drawerIdx + 1);
     setPhase('turnIntro');
   };

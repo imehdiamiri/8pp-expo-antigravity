@@ -18,16 +18,7 @@ import * as Haptics from 'expo-haptics';
 import { BlurView } from 'expo-blur';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
-// SoundManager equivalent is simple here for now, or we can just use Haptics
-const playDiceRoll = () => {
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-};
-const playButtonTap = () => {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-};
-const playSuccess = () => {
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-};
+import { AudioManager } from '@/src/services/AudioManager';
 
 const HEADS_URL = "https://r2-pub.rork.com/generated-images/5ed19d54-708a-4c39-bd70-944d23883fc4.png";
 const TAILS_URL = "https://r2-pub.rork.com/generated-images/592738ac-9267-4db2-99e0-714050751883.png";
@@ -104,7 +95,8 @@ export default function CoinFlipToolScreen() {
   ];
 
   const resetStats = () => {
-    playButtonTap();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    AudioManager.play('buttonTap');
     setHeadsCount(0);
     setTailsCount(0);
   };
@@ -124,7 +116,8 @@ export default function CoinFlipToolScreen() {
     if (isFlipping) return;
     setIsFlipping(true);
     setHasResult(false);
-    playDiceRoll();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    AudioManager.play('tileFlip'); // No coin spin sound, fallback to tileFlip
 
     const outcomes = Array.from({ length: coinCount }, () => Math.random() > 0.5);
     
@@ -166,6 +159,8 @@ export default function CoinFlipToolScreen() {
         setResultsAreHeads(outcomes);
         setHasResult(true);
         setIsFlipping(false);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        AudioManager.play('success');
         let newHeads = headsCount;
         let newTails = tailsCount;
         outcomes.forEach(outcome => {
@@ -174,7 +169,6 @@ export default function CoinFlipToolScreen() {
         });
         setHeadsCount(newHeads);
         setTailsCount(newTails);
-        playSuccess();
       }, settleDuration + 50);
 
     }, spinDuration);
@@ -183,7 +177,7 @@ export default function CoinFlipToolScreen() {
 
   const handleCoinCountChange = (count: number) => {
     if (isFlipping) return;
-    playButtonTap();
+    AudioManager.play('buttonTap');
     setCoinCount(count);
     setHasResult(false);
   };
