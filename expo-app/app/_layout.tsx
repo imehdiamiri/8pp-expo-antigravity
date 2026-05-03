@@ -74,7 +74,13 @@ export default function RootLayout() {
         if (!currentUser && !inAuthGroup && isProtectedRoute) {
           router.replace('/auth');
         } else if (currentUser && (inAuthGroup || inOnboarding)) {
-          router.replace('/(tabs)');
+          // Only redirect away from auth if user is NOT anonymous (guest).
+          // Anonymous users visiting /auth want to upgrade to a real account,
+          // so let them stay on the auth screen.
+          const isAnonymous = currentUser.isAnonymous;
+          if (!isAnonymous) {
+            router.replace('/(tabs)');
+          }
         }
       }
     }, 10);
