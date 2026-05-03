@@ -26,7 +26,7 @@ type TurnPhase = 'ready' | 'running' | 'reveal';
 
 export function GuessTheSecondsSession({ session }: Props) {
   const players = session.players;
-  const roundsPerPlayer = session.maxRounds || 3;
+  const roundsPerPlayer = Math.max(1, session.maxRounds || 3);
   const totalTurns = players.length * roundsPerPlayer;
 
   // Build turn order: [P1-R1, P2-R1, P1-R2, P2-R2, ...]
@@ -48,6 +48,15 @@ export function GuessTheSecondsSession({ session }: Props) {
   const [results, setResults] = useState<TurnResult[]>([]);
   const [roundTargets, setRoundTargets] = useState<Record<number, number>>({});
   const [lastResult, setLastResult] = useState<TurnResult | null>(null);
+
+  // Guard: if no players somehow, show nothing (prevents 0-turn instant finish)
+  if (players.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: 'white', fontSize: 16 }}>No players found. Go back and add players.</Text>
+      </View>
+    );
+  }
 
   const isFinished = activeTurnIndex >= totalTurns;
   const currentTurn = !isFinished ? turnOrder[activeTurnIndex] : null;
