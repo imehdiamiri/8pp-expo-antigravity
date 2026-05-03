@@ -1,5 +1,5 @@
 import { Colors } from '@/src/theme/Colors';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -73,36 +73,39 @@ export function TenTangleSession({ session }: Props) {
     players.forEach(p => { s[p.id] = 0; });
     return s;
   });
-  const [usedScenarios, setUsedScenarios] = useState<Set<number>>(new Set());
 
   const guesser = players[guesserIdx];
   const nonGuessers = players.filter((_, i) => i !== guesserIdx);
   const maxNumber = nonGuessers.length;
 
-  const startRound = useCallback(() => {
+  const usedScenariosRef = useRef<Set<number>>(new Set());
+
+  const startRound = (currentGuesserIdx: number) => {
+    // Compute nonGuessers from the passed index (avoids stale closure)
+    const roundNonGuessers = players.filter((_, i) => i !== currentGuesserIdx);
+
     // Assign numbers
-    const nums = Array.from({ length: nonGuessers.length }, (_, i) => i + 1);
+    const nums = Array.from({ length: roundNonGuessers.length }, (_, i) => i + 1);
     for (let i = nums.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [nums[i], nums[j]] = [nums[j], nums[i]]; }
     const assigned: Record<string, number> = {};
-    nonGuessers.forEach((p, i) => { assigned[p.id] = nums[i]; });
+    roundNonGuessers.forEach((p, i) => { assigned[p.id] = nums[i]; });
     setAssignedNumbers(assigned);
 
     // Pick scenario
     let idx: number;
-    const used = new Set(usedScenarios);
+    const used = usedScenariosRef.current;
     if (used.size >= SCENARIOS.length) used.clear();
     do { idx = Math.floor(Math.random() * SCENARIOS.length); } while (used.has(idx));
     used.add(idx);
-    setUsedScenarios(used);
     setScenario(SCENARIOS[idx]);
 
     setPassIdx(0);
     setGuesses({});
     setPhase('guesserAnnounce');
-  }, [nonGuessers, usedScenarios]);
+  };
 
   // Init first round
-  React.useEffect(() => { startRound(); }, []);
+  React.useEffect(() => { startRound(0); }, []);
 
   const handleProceedToPass = () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setPassIdx(0); setPhase('passToPlayer'); };
   const handleShowNumber = () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setPhase('showNumber'); };
@@ -134,8 +137,8 @@ export function TenTangleSession({ session }: Props) {
     if (nextGuesser >= players.length) { setPhase('finalResults'); return; }
     setGuesserIdx(nextGuesser);
     setRound(round + 1);
-    // Recalculate nonGuessers for next round
-    setTimeout(() => startRound(), 50);
+    // Start with the correct new guesser index directly
+    startRound(nextGuesser);
   };
 
   const allGuessed = Object.values(guesses).every(v => v !== null);
@@ -302,6 +305,19 @@ export function TenTangleSession({ session }: Props) {
   }
 
   // ═══ FINAL RESULTS ═══
+  const handlePlayAgain = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setRound(1);
+    setGuesserIdx(0);
+    setScores(() => {
+      const s: Record<string, number> = {};
+      players.forEach(p => { s[p.id] = 0; });
+      return s;
+    });
+    usedScenariosRef.current.clear();
+    startRound(0);
+  };
+
   return (
     <View style={st.container}>
       <ScrollView contentContainerStyle={st.scrollPad}>
@@ -316,6 +332,9 @@ export function TenTangleSession({ session }: Props) {
             <Text style={st.scoreVal}>{scores[p.id] || 0} pts</Text>
           </View>
         ))}
+        <Pressable style={[st.btn, { backgroundColor: Colors.green }]} onPress={handlePlayAgain}>
+          <Text style={st.btnTx}>Play Again</Text>
+        </Pressable>
       </ScrollView>
     </View>
   );

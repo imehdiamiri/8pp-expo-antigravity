@@ -1,6 +1,6 @@
 import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions, Animated as RNAnimated } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import * as Haptics from '@/src/utils/safeHaptics';
@@ -48,8 +48,8 @@ const GRID_SIZES: Record<string, {cols:number;rows:number}> = {
 };
 
 function getGridDims(session: {gameConfig?: Record<string,any>}) {
-  const key = session.gameConfig?.gridSize || 'small4x4';
-  return GRID_SIZES[key] || GRID_SIZES.small4x4;
+  const key = session.gameConfig?.gridSize || 'tiny3x4';
+  return GRID_SIZES[key] || GRID_SIZES.tiny3x4;
 }
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -62,6 +62,84 @@ function shuffleArray<T>(arr: T[]): T[] {
 }
 
 import { useGameSync } from '@/src/hooks/useGameSync';
+
+// Animated tile wrapper with 3D flip effect matching iOS rotation3DEffect
+function FlipTile({ isFlipped, isMatched, color, symbol, size, onPress, disabled, index }: {
+  isFlipped: boolean; isMatched: boolean; color: string; symbol: string;
+  size: number; onPress: () => void; disabled: boolean; index: number;
+}) {
+  const flipAnim = React.useRef(new RNAnimated.Value(0)).current;
+  const isShowingFront = isFlipped || isMatched;
+
+  React.useEffect(() => {
+    RNAnimated.spring(flipAnim, {
+      toValue: isShowingFront ? 1 : 0,
+      friction: 8,
+      tension: 60,
+      useNativeDriver: true,
+    }).start();
+  }, [isShowingFront]);
+
+  const frontInterpolate = flipAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['180deg', '90deg', '0deg'],
+  });
+  const backInterpolate = flipAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['0deg', '90deg', '180deg'],
+  });
+  const frontOpacity = flipAnim.interpolate({
+    inputRange: [0, 0.5, 0.5, 1],
+    outputRange: [0, 0, 1, 1],
+  });
+  const backOpacity = flipAnim.interpolate({
+    inputRange: [0, 0.5, 0.5, 1],
+    outputRange: [1, 1, 0, 0],
+  });
+
+  return (
+    <Pressable
+      style={[
+        styles.tileWrapper,
+        { width: size, height: size },
+        isMatched && { opacity: 0.55, transform: [{ scale: 0.94 }] },
+      ]}
+      onPress={onPress}
+      disabled={disabled}
+      accessible
+      accessibilityLabel={isShowingFront ? `Tile ${symbol}` : `Hidden tile ${index + 1}`}
+      accessibilityHint={isMatched ? 'Already matched' : isFlipped ? 'Flipped' : 'Double-tap to flip'}
+      accessibilityRole="button"
+    >
+      {/* Front face */}
+      <RNAnimated.View style={[StyleSheet.absoluteFill, { transform: [{ rotateY: frontInterpolate }], opacity: frontOpacity, backfaceVisibility: 'hidden' }]}>
+        <LinearGradient
+          colors={[
+            color + (isMatched ? '59' : 'A6'),
+            color + (isMatched ? '33' : '59'),
+          ]}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+          style={[styles.tileFront, {
+            borderColor: color + (isMatched ? '73' : 'E6'),
+            shadowColor: color,
+          }]}
+        >
+          <IconSymbol name={symbol as any} size={28} color="white" />
+        </LinearGradient>
+      </RNAnimated.View>
+      {/* Back face */}
+      <RNAnimated.View style={[StyleSheet.absoluteFill, { transform: [{ rotateY: backInterpolate }], opacity: backOpacity, backfaceVisibility: 'hidden' }]}>
+        <LinearGradient
+          colors={['#38408C', '#1E2359']}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+          style={styles.tileBack}
+        >
+          <IconSymbol name="questionmark" size={24} color="rgba(90,200,250,0.75)" />
+        </LinearGradient>
+      </RNAnimated.View>
+    </Pressable>
+  );
+}
 
 export function MemoryGridSession({ session }: Props) {
   const [boardState, setBoardState] = useState({
@@ -305,7 +383,7 @@ export function MemoryGridSession({ session }: Props) {
 
           <View style={styles.statBubbleRow}>
             <View style={styles.statBubble}>
-              <Text style={styles.statBubbleValue}>4×4</Text>
+              <Text style={styles.statBubbleValue}>{cols}×{rows}</Text>
               <Text style={styles.statBubbleLabel}>Grid</Text>
             </View>
             <View style={styles.statBubble}>
@@ -320,7 +398,7 @@ export function MemoryGridSession({ session }: Props) {
             )}
           </View>
 
-          <Pressable style={styles.primaryBtn} onPress={handleStart}>
+          <Pressable style={styles.primaryBtn} onPress={() => handleStart()}>
             <Text style={styles.primaryBtnText}>Start</Text>
           </Pressable>
         </ScrollView>
@@ -372,50 +450,19 @@ export function MemoryGridSession({ session }: Props) {
         <View style={[styles.gridContainer, { paddingHorizontal: gridPadding - 12 }]}>
           <View style={[styles.grid, { gap: tileGap }]}>
             {tiles.map((tile, i) => {
-              const isShowingFront = tile.isFlipped || tile.isMatched;
               const color = tileColor(tile.colorIndex);
               return (
-                <Pressable
+                <FlipTile
                   key={tile.id}
-                  style={[
-                    styles.tileWrapper,
-                    { width: tileSize, height: tileSize },
-                    tile.isMatched && { opacity: 0.55, transform: [{ scale: 0.94 }] }
-                  ]}
+                  isFlipped={tile.isFlipped}
+                  isMatched={tile.isMatched}
+                  color={color}
+                  symbol={tile.symbol}
+                  size={tileSize}
                   onPress={() => handleFlipTile(i)}
-                  activeOpacity={0.8}
                   disabled={tile.isFlipped || tile.isMatched || isResolving}
-                  accessible
-                  accessibilityLabel={tile.isFlipped || tile.isMatched ? `Tile ${tile.symbol}` : `Hidden tile ${i + 1}`}
-                  accessibilityHint={tile.isMatched ? 'Already matched' : tile.isFlipped ? 'Flipped' : 'Double-tap to flip'}
-                  accessibilityRole="button"
-                >
-                  {isShowingFront ? (
-                    // Front face: matches iOS frontFace
-                    <LinearGradient
-                      colors={[
-                        color + (tile.isMatched ? '59' : 'A6'),
-                        color + (tile.isMatched ? '33' : '59'),
-                      ]}
-                      start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                      style={[styles.tileFront, {
-                        borderColor: color + (tile.isMatched ? '73' : 'E6'),
-                        shadowColor: color,
-                      }]}
-                    >
-                      <IconSymbol name={tile.symbol as any} size={28} color="white" />
-                    </LinearGradient>
-                  ) : (
-                    // Back face: matches iOS backFace colors exactly
-                    <LinearGradient
-                      colors={['#38408C', '#1E2359']}
-                      start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                      style={styles.tileBack}
-                    >
-                      <IconSymbol name="questionmark" size={24} color="rgba(90,200,250,0.75)" />
-                    </LinearGradient>
-                  )}
-                </Pressable>
+                  index={i}
+                />
               );
             })}
           </View>

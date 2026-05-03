@@ -1,11 +1,10 @@
 import { Colors } from '@/src/theme/Colors';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
 import * as Haptics from '@/src/utils/safeHaptics';
-import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
   session: GameSession;
@@ -32,6 +31,22 @@ const PREDEFINED_QUESTIONS = [
   "What is the most embarrassing song you know all the words to?",
   "If you had to get a useless tattoo right now, what would it be?",
   "What is your villain origin story?",
+  "What is the most overrated thing in life?",
+  "If you could only eat one meal for the rest of your life, what would it be?",
+  "What is the pettiest reason you stopped talking to someone?",
+  "What's a hill you're willing to die on?",
+  "If you were a ghost, who would you haunt first?",
+  "What is the biggest lie you've ever told and gotten away with?",
+  "What's the most embarrassing thing in your search history?",
+  "If you could swap lives with someone for a day, who would it be?",
+  "What is something you pretend to like but secretly hate?",
+  "What would your autobiography be called?",
+  "What's the dumbest thing you believed as a kid?",
+  "If animals could talk, which would be the rudest?",
+  "What is your toxic trait?",
+  "If you were famous, what would you be famous for?",
+  "What is the most chaotic thing you've done at a party?",
+  "What is your hot take that would get you cancelled?",
 ];
 
 const COLORS = [
@@ -52,7 +67,17 @@ function getPlayerColor(index: number) {
 export function PassGuessSession({ session }: Props) {
   const [phase, setPhase] = useState<Phase>('intro');
   const [roundNumber, setRoundNumber] = useState(1);
-  const totalRounds = 3; // Hardcoded for now or from session
+  const totalRounds = (session.gameConfig?.rounds as number) || 1;
+
+  // Timer state
+  const answerTime = (session.gameConfig?.answerTime as number) || 60;
+  const guessTime = (session.gameConfig?.guessTime as number) || 30;
+  const [timer, setTimer] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearTimer = () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
+
+  useEffect(() => { return () => clearTimer(); }, []);
 
   // State
   const [question, setQuestion] = useState(PREDEFINED_QUESTIONS[0]);
@@ -93,22 +118,67 @@ export function PassGuessSession({ session }: Props) {
     setActivePlayerIndex(0);
     setPrivacyAction('answer');
     setShowPrivacyScreen(true);
+    setTimer(answerTime);
     setPhase('answering');
   };
 
   const handlePrivacyReady = () => {
     Haptics.selectionAsync();
     setShowPrivacyScreen(false);
+    // Start countdown timer
+    clearTimer();
+    const limit = phase === 'answering' ? answerTime : guessTime;
+    setTimer(limit);
+    timerRef.current = setInterval(() => {
+      setTimer(prev => {
+        if (prev <= 1) {
+          clearTimer();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
-  const handleSubmitAnswer = () => {
-    if (!currentAnswer.trim()) return;
+  // Auto-skip on answer timer expiry
+  useEffect(() => {
+    if (phase === 'answering' && timer === 0 && !showPrivacyScreen) {
+      handleSubmitAnswer(true);
+    }
+  }, [timer, phase, showPrivacyScreen]);
+
+  // Auto-skip on guess timer expiry
+  useEffect(() => {
+    if (phase === 'guessing' && timer === 0 && !showPrivacyScreen) {
+      // skip this guess (no selection)
+      handleSkipGuess();
+    }
+  }, [timer, phase, showPrivacyScreen]);
+
+  const handleSkipGuess = () => {
+    clearTimer();
+    const nextVoteCount = votes.length;
+    if (nextVoteCount >= session.players.length * answers.length) {
+      calculateScores();
+      setPhase('reveal');
+    } else {
+      const nextVoterIndex = nextVoteCount % session.players.length;
+      setActivePlayerIndex(nextVoterIndex);
+      setPrivacyAction('guess');
+      setShowPrivacyScreen(true);
+    }
+  };
+
+  const handleSubmitAnswer = (autoSkip = false) => {
+    clearTimer();
+    if (!autoSkip && !currentAnswer.trim()) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     
+    const text = currentAnswer.trim() || '(no answer)';
     setAnswers(prev => [...prev, {
       id: Math.random().toString(),
       playerID: currentPlayer.id,
-      text: currentAnswer.trim()
+      text,
     }]);
     
     setCurrentAnswer('');
@@ -128,6 +198,7 @@ export function PassGuessSession({ session }: Props) {
 
   const handleSubmitGuess = () => {
     if (!selectedGuess) return;
+    clearTimer();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
     const currentAnswerToGuess = answers[Math.floor(votes.length / session.players.length)];
@@ -142,7 +213,6 @@ export function PassGuessSession({ session }: Props) {
 
     const nextVoteCount = votes.length + 1;
     if (nextVoteCount >= session.players.length * answers.length) {
-      // Calculate scores and move to reveal
       calculateScores();
       setPhase('reveal');
     } else {
@@ -273,6 +343,10 @@ export function PassGuessSession({ session }: Props) {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Private Answer</Text>
             <Text style={styles.cardSubtitle}>No previous answers are shown.</Text>
+            {timer > 0 && <View style={styles.timerRow}>
+              <IconSymbol name="timer" size={14} color={timer <= 10 ? Colors.red : '#5AC8FA'} />
+              <Text style={[styles.timerText, timer <= 10 && { color: Colors.red }]}>{timer}s</Text>
+            </View>}
             <TextInput
               style={styles.input}
               placeholder="Write your answer"
@@ -287,7 +361,7 @@ export function PassGuessSession({ session }: Props) {
 
             <Pressable 
               style={[styles.primaryBtn, !currentAnswer.trim() && { opacity: 0.5 }]} 
-              onPress={handleSubmitAnswer}
+              onPress={() => handleSubmitAnswer(false)}
               disabled={!currentAnswer.trim()}
             >
               <Text style={styles.primaryBtnText}>Done & Pass</Text>
@@ -414,6 +488,11 @@ export function PassGuessSession({ session }: Props) {
               </HStack>
             ))}
           </View>
+
+          <Pressable style={[styles.primaryBtn, { marginTop: 20, width: '100%', backgroundColor: Colors.green }]}
+            onPress={() => { setRoundNumber(1); setPhase('intro'); setScores(() => { const s: Record<string,number> = {}; session.players.forEach(p => s[p.id] = 0); return s; }); }}>
+            <Text style={styles.primaryBtnText}>Play Again</Text>
+          </Pressable>
         </ScrollView>
       )}
     </View>
@@ -648,5 +727,18 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 17,
     fontWeight: 'bold',
-  }
+  },
+  timerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+    alignSelf: 'flex-end',
+  },
+  timerText: {
+    color: '#5AC8FA',
+    fontSize: 17,
+    fontWeight: 'bold',
+    fontVariant: ['tabular-nums'],
+  },
 });

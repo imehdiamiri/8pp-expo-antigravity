@@ -23,8 +23,8 @@ const GAME_VIBES = [
   { id: 'challenge', title: 'Challenge', icon: 'flame.fill', color: Colors.red },
 ];
 
-// Mock ideas
-const MOCK_IDEAS = [
+// Built-in starter ideas — shown when LLM is not configured
+const STARTER_IDEAS = [
   {
     id: '1',
     title: 'Laugh Out Loud',
@@ -54,14 +54,36 @@ export default function FactoryScreen() {
   const minPlayers = 2;
   const maxPlayers = 20;
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (isGenerating) return;
     setIsGenerating(true);
-    setTimeout(() => {
-      setIdeas(MOCK_IDEAS);
-      setExpandedIdeaId(MOCK_IDEAS[0].id);
-      setIsGenerating(false);
-    }, 1500);
+
+    try {
+      const { isLLMConfigured, complete, stripCodeFences } = await import('@/src/services/LLMService');
+
+      if (!isLLMConfigured()) {
+        // Use built-in starter ideas when no API key is set
+        setIdeas(STARTER_IDEAS);
+        setExpandedIdeaId(STARTER_IDEAS[0].id);
+        setIsGenerating(false);
+        return;
+      }
+
+      const systemPrompt = `You are a creative party game designer. Generate 2-3 unique party game ideas as JSON array. Each object: { "id": unique_string, "title": string, "description": one_sentence, "steps": string_array_3_to_5, "tags": string_array_2 }. Return ONLY valid JSON.`;
+      const userPrompt = `Create party games for ${playerCount} players with a "${vibe.title}" vibe.${prompt ? ` Theme: ${prompt}` : ''}`;
+
+      const raw = await complete(systemPrompt, userPrompt);
+      const parsed = JSON.parse(stripCodeFences(raw));
+      const results = Array.isArray(parsed) ? parsed : [parsed];
+      setIdeas(results);
+      if (results.length > 0) setExpandedIdeaId(results[0].id);
+    } catch (err: any) {
+      console.warn('AI generation failed, using fallback ideas:', err.message);
+      setIdeas(STARTER_IDEAS);
+      setExpandedIdeaId(STARTER_IDEAS[0].id);
+    }
+
+    setIsGenerating(false);
   };
 
   return (

@@ -83,9 +83,23 @@ export default function ProfileScreen() {
         { 
           text: 'Delete Permanently', 
           style: 'destructive',
-          onPress: () => {
+          onPress: async () => {
             if (activeSession) exitActiveSession();
-            // TODO: Actually delete account
+            try {
+              const { deleteUser } = await import('firebase/auth');
+              const { auth } = await import('@/src/lib/firebase');
+              const { getDatabase, ref, remove } = await import('firebase/database');
+              const user = auth.currentUser;
+              if (user) {
+                // Delete user data from RTDB
+                const db = getDatabase();
+                await remove(ref(db, `users/${user.uid}`));
+                // Delete the Firebase Auth account
+                await deleteUser(user);
+              }
+            } catch (e: any) {
+              console.warn('Account deletion error:', e.message);
+            }
             signOut();
             safeBack();
           }

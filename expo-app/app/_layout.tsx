@@ -37,9 +37,9 @@ export default function RootLayout() {
     initialize();
     DeviceIdentity.init(); // warm device ID cache
 
-    // Configure LLM service if API key is available
-    const openAIKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
-    if (openAIKey) configureLLM(openAIKey);
+    // Configure LLM service with Gemini API key (free tier)
+    const geminiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
+    if (geminiKey) configureLLM(geminiKey);
   }, [initialize]);
 
   // Track app foreground/background for presence
@@ -66,7 +66,7 @@ export default function RootLayout() {
 
     // Ensure we route after the root layout has finished mounting
     // On web, allow deep-linking to game, tools, paywall, etc. without requiring auth
-    const isProtectedRoute = segments[0] === '(tabs)' || segments.length === 0;
+    const isProtectedRoute = segments[0] === '(tabs)' || (segments.length as number) === 0;
     const timer = setTimeout(() => {
       if (!hasCompletedOnboarding && !inOnboarding) {
         router.replace('/onboarding');

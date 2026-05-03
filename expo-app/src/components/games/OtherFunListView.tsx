@@ -81,7 +81,7 @@ function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial
       ) : (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,20,30,0.85)' }]} />
       )}
-      <Pressable activeOpacity={0.7} onPress={onToggle} style={styles.cardHeader}>
+      <Pressable onPress={onToggle} style={styles.cardHeader}>
         <View style={[styles.iconContainer, { backgroundColor: tintColor + '33' }]}>
           <IconSymbol name={game.iconName as any} size={22} color={tintColor} weight="semibold" />
         </View>

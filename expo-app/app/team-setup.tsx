@@ -18,6 +18,7 @@ import * as Clipboard from 'expo-clipboard';
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { showToast } from '@/src/components/ToastOverlay';
+import { useMultiplayerStore } from '@/src/store/useMultiplayerStore';
 
 /**
  * TeamSetupScreen — matches iOS TeamSetupView + TeamModeEntryView
@@ -50,19 +51,22 @@ export default function TeamSetupScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ gameId?: string; roomCode?: string }>();
+  const { currentRoom, isHost, roomCode: storeRoomCode } = useMultiplayerStore();
 
-  const [isHost] = useState(true); // In production, derived from multiplayer state
   const [isBusy, setIsBusy] = useState(false);
-  const [roomCode] = useState(params.roomCode || 'DEMO');
-  const [gameName] = useState('Party Game');
+  const roomCode = params.roomCode || storeRoomCode || '------';
+  const gameName = currentRoom?.gameId || 'Party Game';
 
-  // Mock players — in production, wired to useMultiplayerStore
-  const [players, setPlayers] = useState<TeamPlayer[]>([
-    { id: '1', displayName: 'Player 1', isConnected: true, teamId: null },
-    { id: '2', displayName: 'Player 2', isConnected: true, teamId: null },
-    { id: '3', displayName: 'Player 3', isConnected: true, teamId: null },
-    { id: '4', displayName: 'Player 4', isConnected: true, teamId: null },
-  ]);
+  // Derive players from the live multiplayer room, fall back to empty
+  const roomPlayers = currentRoom?.players ?? {};
+  const [players, setPlayers] = useState<TeamPlayer[]>(() =>
+    Object.entries(roomPlayers).map(([id, p]: [string, any]) => ({
+      id,
+      displayName: p.name || `Player`,
+      isConnected: p.connected !== false,
+      teamId: null,
+    }))
+  );
 
   const teamState = useMemo<TeamState>(() => ({
     teamA: players.filter(p => p.teamId === 'team_a'),

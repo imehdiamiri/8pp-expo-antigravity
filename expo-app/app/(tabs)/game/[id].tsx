@@ -9,6 +9,7 @@ import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Games, GamesDefinitions, GameMode, GameModeDetails } from '@/src/models/AppModels';
 import { getGameInstructions } from '@/src/constants/GameLocalization';
+import { usePaywallStore } from '@/src/store/usePaywallStore';
 
 export default function GameDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -62,7 +63,8 @@ export default function GameDetailScreen() {
     }
   };
 
-  const isLocked = false; // TODO: Tie to AppViewModel unlockStatus
+  const { isPremium } = usePaywallStore();
+  const isLocked = gameDef.id.isPremium && !isPremium;
   const accentColor = getAccentColor(gameDef.accentName);
 
   const handleModeSelect = (mode: GameMode) => {

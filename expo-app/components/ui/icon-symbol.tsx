@@ -39,7 +39,6 @@ const MAPPING = {
   'apps': 'apps',
   'bookmark': 'bookmark-border',
   'bookmark.fill': 'bookmark',
-  'theatermasks.fill': 'theater-comedy',
   'bubble.left.and.bubble.right.fill': 'forum',
   'bolt.fill': 'flash-on',
   'exclamationmark.triangle.fill': 'warning',

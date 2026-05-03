@@ -301,6 +301,17 @@ export function DrawRushSession({ session }: Props) {
   }
 
   // ═══ FINAL LEADERBOARD ═══
+  const handlePlayAgain = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setDrawerIdx(0);
+    setStrokes([]);
+    setCurrentStroke(null);
+    setAnswers([]);
+    setUsedConcepts(new Set());
+    setScores(() => { const s: Record<string,number> = {}; players.forEach(p => s[p.id] = 0); return s; });
+    setPhase('turnIntro');
+  };
+
   return (
     <View style={st.container}>
       <ScrollView contentContainerStyle={{padding:16,paddingBottom:40}}>
@@ -315,6 +326,9 @@ export function DrawRushSession({ session }: Props) {
             <Text style={st.rankScore}>{scores[p.id]||0} pts</Text>
           </View>
         ))}
+        <Pressable style={[st.btn,{marginTop:24,backgroundColor:Colors.green}]} onPress={handlePlayAgain}>
+          <Text style={st.btnTx}>Play Again</Text>
+        </Pressable>
       </ScrollView>
     </View>
   );

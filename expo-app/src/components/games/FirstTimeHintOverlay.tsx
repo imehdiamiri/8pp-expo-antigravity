@@ -51,7 +51,7 @@ export function FirstTimeHintOverlay({ storageKey, icon, title, tip, accent = '#
   return (
     <Modal transparent animationType="none" visible={visible}>
       <Animated.View style={[st.backdrop, { opacity: opacityAnim }]}>
-        <Pressable style={st.dismissArea} activeOpacity={1} onPress={dismiss} />
+        <Pressable style={st.dismissArea} onPress={dismiss} />
         <Animated.View style={[st.card, { transform: [{ scale: scaleAnim }], opacity: opacityAnim }]}>
           {/* Icon */}
           <View style={[st.iconCircle, { backgroundColor: accent + '26' }]}>

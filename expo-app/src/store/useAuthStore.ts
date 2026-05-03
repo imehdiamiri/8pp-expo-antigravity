@@ -185,26 +185,74 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   signInWithGoogle: async () => {
     set({ isBusy: true, errorMessage: null });
     try {
-      // For Expo Go / development, use a simplified mock approach
-      // In production with EAS builds, you would use @react-native-google-signin/google-signin
-      // or expo-auth-session with Google provider
-      
-      // TODO: Replace with real Google Sign-In when building with EAS
-      // For now, use anonymous auth as a placeholder
-      console.warn('Google Sign-In requires EAS build. Using anonymous auth for development.');
-      const userCredential = await firebaseSignInAnonymously(auth);
+      // Dynamic import to avoid crash in Expo Go where native module isn't available
+      const { GoogleSignin, statusCodes } = await import(
+        '@react-native-google-signin/google-signin'
+      );
+
+      // Configure Google Sign-In (idempotent — safe to call multiple times)
+      GoogleSignin.configure({
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '',
+      });
+
+      // Check for Play Services on Android
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+      // Trigger the native Google Sign-In flow
+      const signInResult = await GoogleSignin.signIn();
+      const idToken =
+        signInResult.data?.idToken ?? (signInResult as any).idToken;
+
+      if (!idToken) {
+        throw new Error('No ID token returned from Google Sign-In.');
+      }
+
+      // Create Firebase credential and sign in
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      const userCredential = await signInWithCredential(auth, googleCredential);
       const user = userCredential.user;
-      
+
+      const displayName =
+        user.displayName ?? user.email?.split('@')[0] ?? 'GooglePlayer';
+
       set({
         currentUser: user,
         authAccount: {
           id: user.uid,
-          username: 'GoogleUser',
+          username: displayName,
+          email: user.email ?? undefined,
           provider: 'google',
         },
         isBusy: false,
       });
     } catch (err: any) {
+      // Handle known cancellation codes gracefully
+      if (
+        err.code === 'SIGN_IN_CANCELLED' ||
+        err.code === '12501' ||
+        err.code === 'ERR_REQUEST_CANCELED'
+      ) {
+        set({ isBusy: false });
+        return;
+      }
+
+      // Fallback: if native module is missing (Expo Go), explain clearly
+      if (
+        err.message?.includes('cannot find') ||
+        err.message?.includes('NativeModule') ||
+        err.message?.includes('requireNativeModule')
+      ) {
+        console.warn(
+          'Google Sign-In native module not available. Build with EAS for native support.'
+        );
+        set({
+          errorMessage:
+            'Google Sign-In requires an EAS build. Use username/password or Apple Sign-In.',
+          isBusy: false,
+        });
+        return;
+      }
+
       set({ errorMessage: err.message, isBusy: false });
       throw err;
     }

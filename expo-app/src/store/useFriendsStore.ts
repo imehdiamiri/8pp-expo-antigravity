@@ -95,35 +95,50 @@ export const useFriendsStore = create<FriendsState>()(
         }
         set({ isSearching: true });
         try {
-          const usersRef = ref(database, 'users');
-          const snapshot = await fbGet(usersRef);
-          if (!snapshot.exists()) {
-            set({ searchResults: [], isSearching: false });
-            return;
+          let rawResults: Array<{ id: string; username: string; email?: string; avatarURL?: string }> = [];
+
+          // Try Cloud Function first (indexed, scalable)
+          try {
+            const { getFunctions, httpsCallable } = await import('firebase/functions');
+            const { app } = await import('../lib/firebase');
+            const functions = getFunctions(app);
+            const searchUsersFn = httpsCallable(functions, 'searchUsers');
+            const response = await searchUsersFn({ query: trimmed.toLowerCase() });
+            rawResults = (response.data as any).results || [];
+          } catch (fnError: any) {
+            // Fallback: client-side search (for dev / functions not deployed)
+            console.warn('searchUsers function unavailable, falling back to client scan:', fnError.message);
+            const usersRef = ref(database, 'users');
+            const snapshot = await fbGet(usersRef);
+            if (snapshot.exists()) {
+              const data = snapshot.val();
+              const lowerQuery = trimmed.toLowerCase();
+              for (const [uid, userData] of Object.entries(data as Record<string, any>)) {
+                if (uid === currentUserId) continue;
+                const username = userData.username || userData.displayName || '';
+                const email = userData.email || '';
+                if (username.toLowerCase().includes(lowerQuery) || email.toLowerCase().includes(lowerQuery)) {
+                  rawResults.push({ id: uid, username, email });
+                }
+              }
+            }
           }
-          
-          const results: FriendSearchResult[] = [];
-          const data = snapshot.val();
-          const lowerQuery = trimmed.toLowerCase();
-          
-          for (const [uid, userData] of Object.entries(data as Record<string, any>)) {
-            if (uid === currentUserId) continue;
-            const username = userData.username || userData.displayName || '';
-            const email = userData.email || '';
-            
-            if (username.toLowerCase().includes(lowerQuery) || email.toLowerCase().includes(lowerQuery)) {
+
+          // Enrich with relationship state
+          const results: FriendSearchResult[] = rawResults
+            .filter(r => r.id !== currentUserId)
+            .slice(0, 20)
+            .map(r => {
               const friends = get().onlineFriends;
               const requests = get().friendRequests;
               let state: FriendSearchResult['relationshipState'] = 'none';
-              if (friends.some(f => f.id === uid)) state = 'friends';
-              else if (requests.some(r => r.fromUserId === currentUserId && r.toUserId === uid && r.status === 'pending')) state = 'pendingOutgoing';
-              else if (requests.some(r => r.fromUserId === uid && r.toUserId === currentUserId && r.status === 'pending')) state = 'pendingIncoming';
-              
-              results.push({ id: uid, username, email, relationshipState: state });
-            }
-          }
-          
-          set({ searchResults: results.slice(0, 20), isSearching: false });
+              if (friends.some(f => f.id === r.id)) state = 'friends';
+              else if (requests.some(req => req.fromUserId === currentUserId && req.toUserId === r.id && req.status === 'pending')) state = 'pendingOutgoing';
+              else if (requests.some(req => req.fromUserId === r.id && req.toUserId === currentUserId && req.status === 'pending')) state = 'pendingIncoming';
+              return { id: r.id, username: r.username, email: r.email, avatarURL: r.avatarURL, relationshipState: state };
+            });
+
+          set({ searchResults: results, isSearching: false });
         } catch (e: any) {
           set({ searchResults: [], isSearching: false });
           showToast.error(e.message);

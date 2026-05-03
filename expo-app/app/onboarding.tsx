@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -93,6 +93,10 @@ export default function OnboardingScreen() {
     }
   };
 
+  const handleNameChange = useCallback((text: string) => {
+    setName(text);
+  }, []);
+
   const handleComplete = () => {
     const trimmed = name.trim();
     if (trimmed.length < 2) return;
@@ -100,103 +104,11 @@ export default function OnboardingScreen() {
     Keyboard.dismiss();
     setPlayerName(trimmed);
     setHasCompletedOnboarding(true);
-    // _layout.tsx will automatically redirect
+    // Explicitly navigate — don't rely on _layout auto-redirect
+    router.replace('/auth');
   };
 
-  // --- Page 1: Welcome ---
-  const WelcomePage = () => (
-    <View style={styles.page}>
-      <View style={styles.iconSection}>
-        <GlowView color="rgba(0, 122, 255, 0.6)" size={320} style={{ position: 'absolute' }} />
-        <BouncingIcon active={currentPage === 0}>
-          <LinearGradient
-            colors={[Colors.blue, Colors.cyan]}
-            style={styles.iconGradient}
-          >
-            <IconSymbol name="gamecontroller.fill" size={68} color="white" />
-          </LinearGradient>
-        </BouncingIcon>
-      </View>
-      <View style={styles.textSection}>
-        <Text style={styles.title2}>Welcome to</Text>
-        <Text style={styles.viralTitle}>8PartyPlay</Text>
-        <Text style={styles.bodyText}>
-          The ultimate party game collection.{'\n'}Play with friends, compete, and have fun!
-        </Text>
-      </View>
-    </View>
-  );
-
-  // --- Page 2: Showcase ---
-  const ShowcasePage = () => (
-    <View style={styles.page}>
-      <View style={styles.iconSection}>
-        <GlowView color="rgba(52, 199, 89, 0.6)" size={320} style={{ position: 'absolute' }} />
-        <BouncingIcon active={currentPage === 1}>
-          <LinearGradient
-            colors={[Colors.green, Colors.mint]}
-            style={styles.iconGradient}
-          >
-            <IconSymbol name="sparkles" size={68} color="white" />
-          </LinearGradient>
-        </BouncingIcon>
-      </View>
-      <View style={styles.textSection}>
-        <Text style={styles.showcaseTitle}>All the Viral Games</Text>
-        <Text style={styles.title1}>In One Place</Text>
-        <Text style={styles.bodyText}>
-          Every trending party game you've seen{'\n'}on social media — ready to play instantly{'\n'}with your friends. No setup needed.
-        </Text>
-        <View style={styles.pillsRow}>
-          <FeaturePill icon="person.3.fill" text="Multiplayer" />
-          <FeaturePill icon="iphone" text="One Device" />
-          <FeaturePill icon="bolt.fill" text="Instant" />
-        </View>
-      </View>
-    </View>
-  );
-
-  // --- Page 3: Name Entry ---
-  const NameEntryPage = () => (
-    <View style={styles.page}>
-      <View style={styles.iconSection}>
-        <GlowView color="rgba(175, 82, 222, 0.6)" size={320} style={{ position: 'absolute' }} />
-        <BouncingIcon active={currentPage === 2}>
-          <LinearGradient
-            colors={[Colors.purple, Colors.pink]}
-            style={styles.iconGradient}
-          >
-            <IconSymbol name="person.crop.circle.badge.plus" size={60} color="white" />
-          </LinearGradient>
-        </BouncingIcon>
-      </View>
-      <View style={styles.textSection}>
-        <Text style={styles.title1}>What's Your Name?</Text>
-        <Text style={styles.bodyText}>
-          This will be your default player name{'\n'}in party games.
-        </Text>
-        
-        <View style={styles.inputWrapper}>
-          <View style={styles.inputContainer}>
-            <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
-            <TextInput
-              ref={inputRef}
-              style={styles.input}
-              placeholder="Enter your name"
-              placeholderTextColor="rgba(255,255,255,0.3)"
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-              autoCorrect={false}
-              returnKeyType="done"
-              onSubmitEditing={() => Keyboard.dismiss()}
-            />
-          </View>
-          <Text style={styles.caption}>You can change this anytime</Text>
-        </View>
-      </View>
-    </View>
-  );
+  // Pages are defined outside the component (see below) to prevent re-mounting on state change
 
   const isNameValid = name.trim().length >= 2;
 
@@ -217,10 +129,16 @@ export default function OnboardingScreen() {
             onScroll={scrollHandler}
             scrollEventThrottle={16}
             onMomentumScrollEnd={handleMomentumScrollEnd}
+            keyboardShouldPersistTaps="handled"
           >
-            <WelcomePage />
-            <ShowcasePage />
-            <NameEntryPage />
+            <WelcomePage currentPage={currentPage} />
+            <ShowcasePage currentPage={currentPage} />
+            <NameEntryPage
+              currentPage={currentPage}
+              inputRef={inputRef}
+              name={name}
+              onChangeName={handleNameChange}
+            />
           </Animated.ScrollView>
 
           {/* Bottom Controls */}
@@ -277,6 +195,108 @@ export default function OnboardingScreen() {
     </KeyboardAvoidingView>
   );
 }
+
+// --- Page 1: Welcome (defined outside to prevent re-mounting) ---
+const WelcomePage = React.memo(({ currentPage }: { currentPage: number }) => (
+  <View style={styles.page}>
+    <View style={styles.iconSection}>
+      <GlowView color="rgba(0, 122, 255, 0.6)" size={320} style={{ position: 'absolute' }} />
+      <BouncingIcon active={currentPage === 0}>
+        <LinearGradient
+          colors={[Colors.blue, Colors.cyan]}
+          style={styles.iconGradient}
+        >
+          <IconSymbol name="gamecontroller.fill" size={68} color="white" />
+        </LinearGradient>
+      </BouncingIcon>
+    </View>
+    <View style={styles.textSection}>
+      <Text style={styles.title2}>Welcome to</Text>
+      <Text style={styles.viralTitle}>8PartyPlay</Text>
+      <Text style={styles.bodyText}>
+        The ultimate party game collection.{'\n'}Play with friends, compete, and have fun!
+      </Text>
+    </View>
+  </View>
+));
+
+// --- Page 2: Showcase ---
+const ShowcasePage = React.memo(({ currentPage }: { currentPage: number }) => (
+  <View style={styles.page}>
+    <View style={styles.iconSection}>
+      <GlowView color="rgba(52, 199, 89, 0.6)" size={320} style={{ position: 'absolute' }} />
+      <BouncingIcon active={currentPage === 1}>
+        <LinearGradient
+          colors={[Colors.green, Colors.mint]}
+          style={styles.iconGradient}
+        >
+          <IconSymbol name="sparkles" size={68} color="white" />
+        </LinearGradient>
+      </BouncingIcon>
+    </View>
+    <View style={styles.textSection}>
+      <Text style={styles.showcaseTitle}>All the Viral Games</Text>
+      <Text style={styles.title1}>In One Place</Text>
+      <Text style={styles.bodyText}>
+        Every trending party game you've seen{'\n'}on social media — ready to play instantly{'\n'}with your friends. No setup needed.
+      </Text>
+      <View style={styles.pillsRow}>
+        <FeaturePill icon="person.3.fill" text="Multiplayer" />
+        <FeaturePill icon="iphone" text="One Device" />
+        <FeaturePill icon="bolt.fill" text="Instant" />
+      </View>
+    </View>
+  </View>
+));
+
+// --- Page 3: Name Entry ---
+interface NameEntryPageProps {
+  currentPage: number;
+  inputRef: React.RefObject<TextInput | null>;
+  name: string;
+  onChangeName: (text: string) => void;
+}
+
+const NameEntryPage = React.memo(({ currentPage, inputRef, name, onChangeName }: NameEntryPageProps) => (
+  <View style={styles.page}>
+    <View style={styles.iconSection}>
+      <GlowView color="rgba(175, 82, 222, 0.6)" size={320} style={{ position: 'absolute' }} />
+      <BouncingIcon active={currentPage === 2}>
+        <LinearGradient
+          colors={[Colors.purple, Colors.pink]}
+          style={styles.iconGradient}
+        >
+          <IconSymbol name="person.crop.circle.badge.plus" size={60} color="white" />
+        </LinearGradient>
+      </BouncingIcon>
+    </View>
+    <View style={styles.textSection}>
+      <Text style={styles.title1}>What's Your Name?</Text>
+      <Text style={styles.bodyText}>
+        This will be your default player name{'\n'}in party games.
+      </Text>
+      
+      <View style={styles.inputWrapper}>
+        <View style={styles.inputContainer}>
+          <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
+          <TextInput
+            ref={inputRef}
+            style={styles.input}
+            placeholder="Enter your name"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            value={name}
+            onChangeText={onChangeName}
+            autoCapitalize="words"
+            autoCorrect={false}
+            returnKeyType="done"
+            onSubmitEditing={() => Keyboard.dismiss()}
+          />
+        </View>
+        <Text style={styles.caption}>You can change this anytime</Text>
+      </View>
+    </View>
+  </View>
+));
 
 const FeaturePill = ({ icon, text }: { icon: any; text: string }) => (
   <View style={styles.pill}>

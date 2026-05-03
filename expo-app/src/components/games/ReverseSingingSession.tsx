@@ -1,84 +1,314 @@
 import { Colors } from '@/src/theme/Colors';
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Platform } from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, ScrollView, Platform, Alert, AppState, AppStateStatus } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
-// Platform-safe audio import
+// Platform-safe imports
 let Audio: any = null;
+let FileSystem: any = null;
+let Sharing: any = null;
+
 if (Platform.OS !== 'web') {
   try { Audio = require('expo-av').Audio; } catch {}
+  try { FileSystem = require('expo-file-system'); } catch {}
+  try { Sharing = require('expo-sharing'); } catch {}
 }
 
 interface Props {
   session: GameSession;
 }
 
+const MAX_RECORD_SECONDS = 60;
 const WAVEFORM_BARS = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.4, 0.3, 0.6, 0.5];
+
+// ─── WAV PCM Reversal ────────────────────────────────────
+// Reads a WAV file (recorded as LINEAR_PCM / WAV), reverses
+// the sample data at the byte level, writes a new file.
+
+async function reverseWavFile(inputUri: string): Promise<string | null> {
+  if (!FileSystem) return null;
+
+  try {
+    // Read the full file as base64
+    const base64 = await FileSystem.readAsStringAsync(inputUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    // Decode base64 → byte array
+    const binaryStr = atob(base64);
+    const bytes = new Uint8Array(binaryStr.length);
+    for (let i = 0; i < binaryStr.length; i++) {
+      bytes[i] = binaryStr.charCodeAt(i);
+    }
+
+    // Parse WAV header (standard 44-byte RIFF header)
+    // Validate it's a WAV: "RIFF" at offset 0, "WAVE" at offset 8
+    const riff = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+    const wave = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+
+    if (riff !== 'RIFF' || wave !== 'WAVE') {
+      console.warn('reverseWavFile: Not a valid WAV file, skipping reversal');
+      return null;
+    }
+
+    // Find the "data" chunk — usually starts at byte 36, but search for it
+    let dataOffset = 12;
+    let dataSize = 0;
+    while (dataOffset < bytes.length - 8) {
+      const chunkId = String.fromCharCode(
+        bytes[dataOffset], bytes[dataOffset + 1],
+        bytes[dataOffset + 2], bytes[dataOffset + 3]
+      );
+      const chunkSize = bytes[dataOffset + 4] |
+        (bytes[dataOffset + 5] << 8) |
+        (bytes[dataOffset + 6] << 16) |
+        (bytes[dataOffset + 7] << 24);
+
+      if (chunkId === 'data') {
+        dataOffset += 8; // skip "data" + size field
+        dataSize = chunkSize;
+        break;
+      }
+      dataOffset += 8 + chunkSize;
+    }
+
+    if (dataSize === 0) {
+      console.warn('reverseWavFile: Could not find data chunk');
+      return null;
+    }
+
+    // Get bits per sample (byte 34-35 in standard WAV header)
+    const bitsPerSample = bytes[34] | (bytes[35] << 8);
+    const bytesPerSample = bitsPerSample / 8;
+    const numChannels = bytes[22] | (bytes[23] << 8);
+    const blockAlign = bytesPerSample * numChannels;
+
+    // Reverse the audio samples in the data section
+    const reversed = new Uint8Array(bytes.length);
+    reversed.set(bytes); // copy full file including header
+
+    const numSamples = Math.floor(dataSize / blockAlign);
+    for (let i = 0; i < numSamples; i++) {
+      const srcOffset = dataOffset + i * blockAlign;
+      const dstOffset = dataOffset + (numSamples - 1 - i) * blockAlign;
+      for (let b = 0; b < blockAlign; b++) {
+        reversed[dstOffset + b] = bytes[srcOffset + b];
+      }
+    }
+
+    // Encode back to base64
+    let reversedBinary = '';
+    for (let i = 0; i < reversed.length; i++) {
+      reversedBinary += String.fromCharCode(reversed[i]);
+    }
+    const reversedBase64 = btoa(reversedBinary);
+
+    // Write to a new file
+    const outputUri = inputUri.replace(/\.wav$/i, '_reversed.wav');
+    await FileSystem.writeAsStringAsync(outputUri, reversedBase64, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    return outputUri;
+  } catch (err) {
+    console.error('reverseWavFile error:', err);
+    return null;
+  }
+}
+
+// ─── Component ───────────────────────────────────────────
 
 export function ReverseSingingSession({ session }: Props) {
   const [activeStep, setActiveStep] = useState<'playerOne' | 'playerTwo'>('playerOne');
-  
+
   // Player 1 State
-  const [p1Recording, setP1Recording] = useState<Audio.Recording | null>(null);
+  const [p1Recording, setP1Recording] = useState<any>(null);
   const [p1Uri, setP1Uri] = useState<string | null>(null);
+  const [p1ReversedUri, setP1ReversedUri] = useState<string | null>(null);
   const [p1Duration, setP1Duration] = useState(0);
+  const [p1Reversing, setP1Reversing] = useState(false);
 
   // Player 2 State
-  const [p2Recording, setP2Recording] = useState<Audio.Recording | null>(null);
+  const [p2Recording, setP2Recording] = useState<any>(null);
   const [p2Uri, setP2Uri] = useState<string | null>(null);
+  const [p2ReversedUri, setP2ReversedUri] = useState<string | null>(null);
   const [p2Duration, setP2Duration] = useState(0);
+  const [p2Reversing, setP2Reversing] = useState(false);
 
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [sound, setSound] = useState<any>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
+  // Refs for cleanup
+  const p1RecRef = useRef<any>(null);
+  const p2RecRef = useRef<any>(null);
+
+  // ── Request mic permission on mount ──
+  useEffect(() => {
+    if (!Audio) return;
+    (async () => {
+      const { granted } = await Audio.requestPermissionsAsync();
+      if (!granted) {
+        Alert.alert(
+          'Microphone Access Needed',
+          'This game needs microphone access to record audio. Please enable it in Settings.'
+        );
+      }
+    })();
+  }, []);
+
+  // ── Recording timer with 60s auto-stop ──
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (p1Recording) {
-      interval = setInterval(() => setP1Duration(prev => prev + 1), 1000);
+      interval = setInterval(() => {
+        setP1Duration(prev => {
+          if (prev + 1 >= MAX_RECORD_SECONDS) {
+            stopRecording(1);
+            return MAX_RECORD_SECONDS;
+          }
+          return prev + 1;
+        });
+      }, 1000);
     } else if (p2Recording) {
-      interval = setInterval(() => setP2Duration(prev => prev + 1), 1000);
+      interval = setInterval(() => {
+        setP2Duration(prev => {
+          if (prev + 1 >= MAX_RECORD_SECONDS) {
+            stopRecording(2);
+            return MAX_RECORD_SECONDS;
+          }
+          return prev + 1;
+        });
+      }, 1000);
     }
     return () => clearInterval(interval);
   }, [p1Recording, p2Recording]);
 
+  // ── Sound cleanup on change ──
   useEffect(() => {
     return sound ? () => { sound.unloadAsync(); } : undefined;
   }, [sound]);
 
+  // ── Stop recording on app background ──
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
+      if (state !== 'active') {
+        if (p1RecRef.current) stopRecording(1);
+        if (p2RecRef.current) stopRecording(2);
+      }
+    });
+    return () => sub.remove();
+  }, []);
+
+  // ── Cleanup on unmount ──
+  useEffect(() => {
+    return () => {
+      if (p1RecRef.current) {
+        try { p1RecRef.current.stopAndUnloadAsync(); } catch {}
+      }
+      if (p2RecRef.current) {
+        try { p2RecRef.current.stopAndUnloadAsync(); } catch {}
+      }
+      if (sound) {
+        try { sound.unloadAsync(); } catch {}
+      }
+    };
+  }, []);
+
+  // ── Recording ──
   async function startRecording(player: 1 | 2) {
+    if (!Audio) return;
     try {
-      await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
-      const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
-      
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      // Record as WAV (LINEAR PCM) so we can reverse the samples
+      const recordingOptions = {
+        isMeteringEnabled: false,
+        android: {
+          extension: '.wav',
+          outputFormat: 6, // DEFAULT
+          audioEncoder: 0, // DEFAULT (PCM)
+          sampleRate: 44100,
+          numberOfChannels: 1,
+          bitRate: 705600,
+        },
+        ios: {
+          extension: '.wav',
+          outputFormat: 'lpcm' as any,
+          audioQuality: 127, // max
+          sampleRate: 44100,
+          numberOfChannels: 1,
+          bitRate: 705600,
+          linearPCMBitDepth: 16,
+          linearPCMIsBigEndian: false,
+          linearPCMIsFloat: false,
+        },
+        web: {},
+      };
+
+      const { recording } = await Audio.Recording.createAsync(recordingOptions);
+
       if (player === 1) {
         setP1Recording(recording);
+        p1RecRef.current = recording;
         setP1Uri(null);
+        setP1ReversedUri(null);
         setP1Duration(0);
         // Reset Player 2 when Player 1 records again
         setP2Uri(null);
+        setP2ReversedUri(null);
         setP2Duration(0);
+        setActiveStep('playerOne');
       } else {
         setP2Recording(recording);
+        p2RecRef.current = recording;
         setP2Uri(null);
+        setP2ReversedUri(null);
         setP2Duration(0);
       }
     } catch (err) {
       console.error('Failed to start recording', err);
+      Alert.alert('Audio Error', 'Could not start recording. Please try again.');
     }
   }
 
   async function stopRecording(player: 1 | 2) {
     try {
-      if (player === 1 && p1Recording) {
-        await p1Recording.stopAndUnloadAsync();
-        setP1Uri(p1Recording.getURI());
+      if (player === 1 && p1RecRef.current) {
+        const rec = p1RecRef.current;
+        await rec.stopAndUnloadAsync();
+        const uri = rec.getURI();
+        setP1Uri(uri);
         setP1Recording(null);
+        p1RecRef.current = null;
+
+        // Generate reversed audio in background
+        if (uri) {
+          setP1Reversing(true);
+          const reversedUri = await reverseWavFile(uri);
+          setP1ReversedUri(reversedUri);
+          setP1Reversing(false);
+        }
+
         setActiveStep('playerTwo');
-      } else if (player === 2 && p2Recording) {
-        await p2Recording.stopAndUnloadAsync();
-        setP2Uri(p2Recording.getURI());
+      } else if (player === 2 && p2RecRef.current) {
+        const rec = p2RecRef.current;
+        await rec.stopAndUnloadAsync();
+        const uri = rec.getURI();
+        setP2Uri(uri);
         setP2Recording(null);
+        p2RecRef.current = null;
+
+        // Generate reversed audio (the "result")
+        if (uri) {
+          setP2Reversing(true);
+          const reversedUri = await reverseWavFile(uri);
+          setP2ReversedUri(reversedUri);
+          setP2Reversing(false);
+        }
       }
       await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
     } catch (error) {
@@ -86,12 +316,68 @@ export function ReverseSingingSession({ session }: Props) {
     }
   }
 
+  // ── Playback ──
   async function playSound(uri: string | null, rate: number = 1.0) {
-    if (!uri) return;
-    if (sound) await sound.unloadAsync();
-    const { sound: newSound } = await Audio.Sound.createAsync({ uri }, { rate, shouldCorrectPitch: false });
-    setSound(newSound);
-    await newSound.playAsync();
+    if (!uri || !Audio) return;
+    try {
+      if (sound) await sound.unloadAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+      });
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri },
+        { rate, shouldCorrectPitch: rate !== 1.0 }
+      );
+      setSound(newSound);
+      setIsPlaying(true);
+      newSound.setOnPlaybackStatusUpdate((status: any) => {
+        if (status.didJustFinish) setIsPlaying(false);
+      });
+      await newSound.playAsync();
+    } catch (err) {
+      console.error('Playback error:', err);
+      setIsPlaying(false);
+    }
+  }
+
+  // ── Sharing ──
+  async function handleShare(uri: string | null) {
+    if (!uri || !Sharing) {
+      Alert.alert('Share', 'No audio to share yet.');
+      return;
+    }
+    const available = await Sharing.isAvailableAsync();
+    if (!available) {
+      Alert.alert('Sharing not available on this device');
+      return;
+    }
+    await Sharing.shareAsync(uri, { mimeType: 'audio/wav', dialogTitle: 'Share Recording' });
+  }
+
+  function showShareOptions() {
+    const options: { label: string; uri: string | null }[] = [];
+    if (p2Uri) options.push({ label: 'Share Player 2 Raw Mimic', uri: p2Uri });
+    if (p2ReversedUri) options.push({ label: 'Share Result (Reversed Mimic)', uri: p2ReversedUri });
+    else if (p1ReversedUri) options.push({ label: 'Share Reversed Player 1', uri: p1ReversedUri });
+
+    if (options.length === 0) {
+      Alert.alert('Nothing to share yet');
+      return;
+    }
+
+    if (options.length === 1) {
+      handleShare(options[0].uri);
+      return;
+    }
+
+    Alert.alert('Share', 'Choose what to share', [
+      ...options.map(opt => ({
+        text: opt.label,
+        onPress: () => handleShare(opt.uri),
+      })),
+      { text: 'Cancel', style: 'cancel' as const },
+    ]);
   }
 
   return (
@@ -127,7 +413,7 @@ export function ReverseSingingSession({ session }: Props) {
               onPress={() => p1Recording ? stopRecording(1) : startRecording(1)}
             >
               <IconSymbol name={p1Recording ? "stop.fill" : "record.circle.fill"} size={28} color="white" />
-              <Text style={styles.btnText}>{p1Recording ? `${p1Duration}s / 60s` : "Record"}</Text>
+              <Text style={styles.btnText}>{p1Recording ? `${p1Duration}s / ${MAX_RECORD_SECONDS}s` : "Record"}</Text>
             </Pressable>
 
             <Pressable 
@@ -141,23 +427,20 @@ export function ReverseSingingSession({ session }: Props) {
 
           <View style={styles.gridRow}>
             <Pressable 
-              style={[styles.squareBtn, { backgroundColor: '#007AFF' }, !p1Uri && styles.disabled]}
-              onPress={() => {
-                alert('True reverse playback requires a backend or native module. Playing normal for now.');
-                playSound(p1Uri);
-              }}
-              disabled={!p1Uri}
+              style={[styles.squareBtn, { backgroundColor: '#007AFF' }, (!p1ReversedUri && !p1Reversing) && styles.disabled]}
+              onPress={() => playSound(p1ReversedUri)}
+              disabled={!p1ReversedUri}
             >
               <IconSymbol name="backward.fill" size={28} color="white" />
-              <Text style={styles.btnText}>Play Reverse (Mock)</Text>
+              <Text style={styles.btnText}>{p1Reversing ? 'Reversing…' : 'Play Reverse'}</Text>
             </Pressable>
 
             <Pressable 
-              style={[styles.circleBtn, !p1Uri && styles.disabled]}
-              onPress={() => playSound(p1Uri, 2.0)}
-              disabled={!p1Uri}
+              style={[styles.circleBtn, !p1ReversedUri && styles.disabled]}
+              onPress={() => playSound(p1ReversedUri, 0.5)}
+              disabled={!p1ReversedUri}
             >
-              <IconSymbol name="hare.fill" size={24} color="white" />
+              <IconSymbol name="tortoise.fill" size={24} color="white" />
             </Pressable>
           </View>
         </View>
@@ -197,7 +480,7 @@ export function ReverseSingingSession({ session }: Props) {
               disabled={activeStep !== 'playerTwo'}
             >
               <IconSymbol name={p2Recording ? "stop.fill" : "record.circle.fill"} size={28} color="white" />
-              <Text style={styles.btnText}>{p2Recording ? `${p2Duration}s / 60s` : "Record Mimic"}</Text>
+              <Text style={styles.btnText}>{p2Recording ? `${p2Duration}s / ${MAX_RECORD_SECONDS}s` : "Record Mimic"}</Text>
             </Pressable>
 
             <Pressable 
@@ -211,18 +494,18 @@ export function ReverseSingingSession({ session }: Props) {
 
           <View style={styles.gridRow}>
             <Pressable 
-              style={[styles.squareBtn, { backgroundColor: Colors.green }, !p2Uri && styles.disabled]}
-              onPress={() => playSound(p2Uri)} // Mock reverse
-              disabled={!p2Uri}
+              style={[styles.squareBtn, { backgroundColor: Colors.green }, (!p2ReversedUri && !p2Reversing) && styles.disabled]}
+              onPress={() => playSound(p2ReversedUri || p1ReversedUri)}
+              disabled={!p2ReversedUri && !p1ReversedUri}
             >
               <IconSymbol name="sparkles" size={28} color="white" />
-              <Text style={styles.btnText}>Result</Text>
+              <Text style={styles.btnText}>{p2Reversing ? 'Reversing…' : 'Result'}</Text>
             </Pressable>
 
             <Pressable 
-              style={[styles.circleBtn, !p2Uri && styles.disabled]}
-              onPress={() => alert('Share sheet would open here')}
-              disabled={!p2Uri}
+              style={[styles.circleBtn, (!p2Uri && !p2ReversedUri) && styles.disabled]}
+              onPress={showShareOptions}
+              disabled={!p2Uri && !p2ReversedUri}
             >
               <IconSymbol name="square.and.arrow.up" size={24} color="white" />
             </Pressable>
@@ -251,10 +534,10 @@ export function ReverseSingingSession({ session }: Props) {
               <Pressable style={[styles.historyCircleBtn, { backgroundColor: '#FF2D55' }]} onPress={() => playSound(p2Uri)}>
                 <IconSymbol name="mic.fill" size={16} color="white" />
               </Pressable>
-              <Pressable style={[styles.historyCircleBtn, { backgroundColor: '#007AFF' }]} onPress={() => playSound(p2Uri)}>
+              <Pressable style={[styles.historyCircleBtn, { backgroundColor: '#007AFF' }]} onPress={() => playSound(p2ReversedUri || p2Uri)}>
                 <IconSymbol name="sparkles" size={16} color="white" />
               </Pressable>
-              <Pressable style={styles.historyCircleBtn} onPress={() => alert('Share')}>
+              <Pressable style={styles.historyCircleBtn} onPress={showShareOptions}>
                 <IconSymbol name="ellipsis" size={16} color="white" />
               </Pressable>
             </View>

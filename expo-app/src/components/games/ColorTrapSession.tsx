@@ -74,6 +74,7 @@ export function ColorTrapSession({ session }: Props) {
   const spawnCursorRef = useRef(0);
   const elapsedRef = useRef(0);
   const activeTilesRef = useRef<ActiveTile[]>([]);
+  const hitsRef = useRef(0);
   const failsRef = useRef(0);
   const gameActiveRef = useRef(false);
 
@@ -95,6 +96,7 @@ export function ColorTrapSession({ session }: Props) {
     setActiveTiles([]);
     setElapsed(0);
     setHits(0);
+    hitsRef.current = 0;
     setFails(0);
     setEliminated(false);
     spawnCursorRef.current = 0;
@@ -119,6 +121,21 @@ export function ColorTrapSession({ session }: Props) {
 
       // Expire tiles
       const lt = diff.tileLifetime;
+      const expiring = activeTilesRef.current.filter(tile =>
+        !tile.isHit && (elapsedRef.current - tile.spawnedAt) > lt
+      );
+      // Non-forbidden tiles that expire without tap = missed fail
+      for (const tile of expiring) {
+        if (tile.colorIndex !== forbidden) {
+          failsRef.current++;
+          setFails(failsRef.current);
+          if (failsRef.current >= MAX_FAILS) {
+            setEliminated(true);
+            finishGame(true);
+            return;
+          }
+        }
+      }
       activeTilesRef.current = activeTilesRef.current.filter(tile => {
         if (!tile.isHit && (elapsedRef.current - tile.spawnedAt) > lt) return false;
         if (tile.isHit && (elapsedRef.current - tile.spawnedAt) > 0.35) return false;
@@ -139,14 +156,14 @@ export function ColorTrapSession({ session }: Props) {
   const finishGame = useCallback((wasEliminated: boolean) => {
     gameActiveRef.current = false;
     if (tickRef.current) clearInterval(tickRef.current);
-    const score = hits * 10 + Math.floor(elapsedRef.current * 5) - failsRef.current * 15;
+    const score = hitsRef.current * 10 + Math.floor(elapsedRef.current * 5) - failsRef.current * 15;
     setResults(prev => [...prev, {
-      playerId: player.id, hits, fails: failsRef.current,
+      playerId: player.id, hits: hitsRef.current, fails: failsRef.current,
       survivalTime: elapsedRef.current, score: Math.max(0, score), eliminated: wasEliminated,
     }]);
     if (playerIdx + 1 >= players.length) setPhase('results');
     else setPhase('playerComplete');
-  }, [hits, player, playerIdx, players.length]);
+  }, [player, playerIdx, players.length]);
 
   const handleTap = (tileId: number) => {
     if (!gameActiveRef.current) return;
@@ -167,7 +184,8 @@ export function ColorTrapSession({ session }: Props) {
       // Correct
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       activeTilesRef.current[idx].isHit = true;
-      setHits(prev => prev + 1);
+      hitsRef.current++;
+      setHits(hitsRef.current);
     }
   };
 
@@ -247,7 +265,6 @@ export function ColorTrapSession({ session }: Props) {
               <Pressable
                 key={tile.id}
                 onPress={() => handleTap(tile.id)}
-                activeOpacity={0.6}
                 style={[st.fallingTile, {
                   left: x, top: y,
                   width: tileSize * tile.size, height: tileSize * tile.size,
@@ -303,6 +320,9 @@ export function ColorTrapSession({ session }: Props) {
             </View>
           );
         })}
+        <Pressable style={[st.btn, { backgroundColor: Colors.green }]} onPress={() => { setPlayerIdx(0); setResults([]); setPhase('ready'); }}>
+          <Text style={st.btnTx}>Play Again</Text>
+        </Pressable>
       </ScrollView>
     </View>
   );

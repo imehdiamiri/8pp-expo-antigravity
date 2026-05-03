@@ -192,7 +192,7 @@ export default function DrawRushMultiDeviceSession({
               : 'Get ready to guess!'}
           </Text>
           {isLocalPlayerDrawer ? (
-            <Pressable style={styles.actionBtn} onPress={startDrawing} activeOpacity={0.8}>
+            <Pressable style={styles.actionBtn} onPress={startDrawing}>
               <LinearGradient colors={['#5AC8FA', '#34AADC']} style={styles.actionGradient}>
                 <Text style={styles.actionText}>Reveal Concept & Start</Text>
               </LinearGradient>
@@ -383,7 +383,7 @@ export default function DrawRushMultiDeviceSession({
           </View>
 
           {isHost && (
-            <Pressable style={styles.actionBtn} onPress={nextTurn} activeOpacity={0.8}>
+            <Pressable style={styles.actionBtn} onPress={nextTurn}>
               <LinearGradient colors={['#5AC8FA', '#34AADC']} style={styles.actionGradient}>
                 <Text style={styles.actionText}>
                   {currentDrawerIndex + 1 >= players.length ? 'Show Final Leaderboard' : 'Next Drawer'}
@@ -414,7 +414,7 @@ export default function DrawRushMultiDeviceSession({
           ))}
         </View>
 
-        <Pressable style={[styles.actionBtn, { marginTop: 20 }]} onPress={onExit} activeOpacity={0.8}>
+        <Pressable style={[styles.actionBtn, { marginTop: 20 }]} onPress={onExit}>
           <LinearGradient colors={[Colors.orange, '#FF6B00']} style={styles.actionGradient}>
             <Text style={styles.actionText}>Exit</Text>
           </LinearGradient>

@@ -1,6 +1,6 @@
 import { Colors } from '@/src/theme/Colors';
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
 import { GameSession } from '@/src/store/useGameStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import * as Haptics from '@/src/utils/safeHaptics';
@@ -9,15 +9,22 @@ interface Props {
   session: GameSession;
 }
 
-type Phase = 'reveal' | 'ready' | 'discussion' | 'voting' | 'results' | 'leaderboard' | 'finished';
+type Phase = 'reveal' | 'ready' | 'discussion' | 'clueGiving' | 'voting' | 'results' | 'leaderboard' | 'finished';
 
-const WORDS = [
-  'Hospital', 'Library', 'School', 'Restaurant', 'Bank',
-  'Airplane', 'Submarine', 'Train', 'Spaceship', 'Cruise Ship',
-  'Apple', 'Banana', 'Orange', 'Grapes', 'Watermelon',
-  'Dog', 'Cat', 'Elephant', 'Lion', 'Tiger',
-  'Guitar', 'Piano', 'Drum', 'Violin', 'Flute'
-];
+const WORD_BANKS: Record<string, string[]> = {
+  animals: ['Dog', 'Cat', 'Elephant', 'Lion', 'Tiger', 'Penguin', 'Giraffe', 'Dolphin', 'Eagle', 'Shark', 'Rabbit', 'Horse', 'Bear', 'Wolf', 'Fox'],
+  food: ['Pizza', 'Sushi', 'Burger', 'Pasta', 'Taco', 'Chocolate', 'Ice Cream', 'Pancake', 'Steak', 'Salad', 'Soup', 'Sandwich', 'Cake', 'Cookie', 'Bread'],
+  places: ['Hospital', 'Library', 'School', 'Restaurant', 'Bank', 'Airport', 'Museum', 'Beach', 'Stadium', 'Cinema', 'Park', 'Church', 'Mall', 'Gym', 'Zoo'],
+  jobs: ['Doctor', 'Teacher', 'Chef', 'Pilot', 'Firefighter', 'Astronaut', 'Detective', 'Farmer', 'Architect', 'Nurse', 'Dentist', 'Lawyer', 'Artist', 'Singer', 'Actor'],
+  movies: ['Titanic', 'Jaws', 'Avatar', 'Frozen', 'Batman', 'Shrek', 'Inception', 'Gladiator', 'Rocky', 'Aladdin', 'Jumanji', 'Moana', 'Coco', 'Bolt', 'Cars'],
+  random: ['Umbrella', 'Telescope', 'Volcano', 'Diamond', 'Castle', 'Pirate', 'Rainbow', 'Robot', 'Dragon', 'Treasure', 'Compass', 'Candle', 'Bridge', 'Clock', 'Mirror'],
+};
+
+function pickWord(category?: string): string {
+  const cat = category && WORD_BANKS[category] ? category : 'random';
+  const bank = WORD_BANKS[cat];
+  return bank[Math.floor(Math.random() * bank.length)];
+}
 
 const COLORS = [
   '#FF2D55', '#007AFF', Colors.green, Colors.orange, '#AF52DE', Colors.yellow, '#5AC8FA', '#5856D6'
@@ -30,7 +37,9 @@ function getPlayerColor(index: number) {
 export function ImposterSession({ session }: Props) {
   const [phase, setPhase] = useState<Phase>('reveal');
   const [roundNumber, setRoundNumber] = useState(1);
-  const totalRounds = 3;
+  const totalRounds = session.maxRounds ?? session.gameConfig?.rounds ?? 3;
+  const gameStyle: 'discussion' | 'clue' = session.gameConfig?.gameStyle ?? 'discussion';
+  const category: string = session.gameConfig?.category ?? 'random';
 
   const [imposterId, setImposterId] = useState('');
   const [secretWord, setSecretWord] = useState('');
@@ -45,6 +54,10 @@ export function ImposterSession({ session }: Props) {
   const [selectedSuspect, setSelectedSuspect] = useState<string | null>(null);
 
   const [scores, setScores] = useState<Record<string, number>>({});
+
+  // Clue mode state
+  const [clues, setClues] = useState<Record<string, string>>({});
+  const [currentClue, setCurrentClue] = useState('');
 
   useEffect(() => {
     if (Object.keys(scores).length === 0) {
@@ -70,15 +83,17 @@ export function ImposterSession({ session }: Props) {
 
   const startNewRound = () => {
     const randomImposter = session.players[Math.floor(Math.random() * session.players.length)];
-    const randomWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+    const randomWord = pickWord(category);
     
     setImposterId(randomImposter.id);
     setSecretWord(randomWord);
     
     setVotes({});
+    setClues({});
+    setCurrentClue('');
     setActivePlayerIndex(0);
     setIsRoleRevealed(false);
-    setDiscussionTimeLeft(120);
+    setDiscussionTimeLeft(session.gameConfig?.discussionTime ?? 120);
     setIsTimerRunning(false);
     
     setPhase('reveal');
@@ -101,8 +116,28 @@ export function ImposterSession({ session }: Props) {
 
   const handleStartDiscussion = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setPhase('discussion');
-    setIsTimerRunning(true);
+    if (gameStyle === 'clue') {
+      setActivePlayerIndex(0);
+      setPhase('clueGiving');
+    } else {
+      setPhase('discussion');
+      setIsTimerRunning(true);
+    }
+  };
+
+  const handleSubmitClue = () => {
+    if (!currentClue.trim()) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const playerId = session.players[activePlayerIndex].id;
+    const trimmed = currentClue.trim().substring(0, 30);
+    setClues(prev => ({ ...prev, [playerId]: trimmed }));
+    setCurrentClue('');
+
+    if (activePlayerIndex + 1 < session.players.length) {
+      setActivePlayerIndex(prev => prev + 1);
+    } else {
+      handleMoveToVoting();
+    }
   };
 
   const handleMoveToVoting = () => {
@@ -146,21 +181,21 @@ export function ImposterSession({ session }: Props) {
     });
 
     const imposterCaught = topSuspectId === imposterId;
-    const newScores = { ...scores };
 
-    if (imposterCaught) {
-      // 100 points to everyone who voted correctly
-      Object.entries(votes).forEach(([voterId, suspectId]) => {
-        if (suspectId === imposterId && voterId !== imposterId) {
-          newScores[voterId] += 100;
-        }
-      });
-    } else {
-      // 150 points to imposter if they survive
-      newScores[imposterId] += 150;
-    }
-
-    setScores(newScores);
+    // Use functional update to avoid stale closure
+    setScores(prev => {
+      const newScores = { ...prev };
+      if (imposterCaught) {
+        Object.entries(votes).forEach(([voterId, suspectId]) => {
+          if (suspectId === imposterId && voterId !== imposterId) {
+            newScores[voterId] = (newScores[voterId] || 0) + 100;
+          }
+        });
+      } else {
+        newScores[imposterId] = (newScores[imposterId] || 0) + 150;
+      }
+      return newScores;
+    });
   };
 
   const nextPhase = () => {
@@ -226,10 +261,12 @@ export function ImposterSession({ session }: Props) {
         <ScrollView contentContainerStyle={styles.centerContent}>
           <IconSymbol name="person.3.fill" size={64} color="#007AFF" />
           <Text style={styles.title}>Everyone has seen their role</Text>
-          <Text style={styles.subtitle}>Get ready for 2 minutes of discussion!</Text>
+          <Text style={styles.subtitle}>
+            {gameStyle === 'clue' ? 'Get ready to give clues!' : `Get ready for discussion!`}
+          </Text>
           
           <Pressable style={[styles.primaryBtn, { marginTop: 40, paddingHorizontal: 60 }]} onPress={handleStartDiscussion}>
-            <Text style={styles.primaryBtnText}>Start Discussion</Text>
+            <Text style={styles.primaryBtnText}>{gameStyle === 'clue' ? 'Start Clues' : 'Start Discussion'}</Text>
           </Pressable>
         </ScrollView>
       )}
@@ -264,6 +301,57 @@ export function ImposterSession({ session }: Props) {
           <Pressable style={styles.secondaryBtn} onPress={handleMoveToVoting}>
             <Text style={styles.secondaryBtnText}>Skip to Voting</Text>
           </Pressable>
+        </ScrollView>
+      )}
+
+      {phase === 'clueGiving' && (
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.card}>
+            <View style={styles.centerItems}>
+              <IconSymbol name="magnifyingglass.circle.fill" size={48} color="#AF52DE" />
+              <Text style={styles.title}>{currentPlayer?.username}'s Clue</Text>
+              <Text style={styles.subtitle}>Give a one-word clue about the secret word</Text>
+            </View>
+
+            <TextInput
+              style={styles.clueInput}
+              value={currentClue}
+              onChangeText={t => setCurrentClue(t.substring(0, 30))}
+              placeholder="Type your clue..."
+              placeholderTextColor="rgba(255,255,255,0.3)"
+              maxLength={30}
+              autoFocus
+            />
+            <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, textAlign: 'right', marginTop: 4 }}>
+              {currentClue.length}/30
+            </Text>
+
+            <Pressable
+              style={[styles.primaryBtn, { marginTop: 20 }, !currentClue.trim() && { opacity: 0.5 }]}
+              onPress={handleSubmitClue}
+              disabled={!currentClue.trim()}
+            >
+              <Text style={styles.primaryBtnText}>Submit Clue</Text>
+            </Pressable>
+          </View>
+
+          {Object.keys(clues).length > 0 && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Clues Given</Text>
+              <View style={{ marginTop: 10, gap: 8 }}>
+                {Object.entries(clues).map(([pid, clue]) => {
+                  const player = session.players.find(p => p.id === pid);
+                  const idx = session.players.findIndex(p => p.id === pid);
+                  return (
+                    <View key={pid} style={styles.resultRow}>
+                      <Text style={[styles.resultName, { color: getPlayerColor(idx) }]}>{player?.username}</Text>
+                      <Text style={{ color: 'white', fontSize: 15, fontWeight: '600' }}>"{clue}"</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          )}
         </ScrollView>
       )}
 
@@ -383,14 +471,23 @@ export function ImposterSession({ session }: Props) {
           <Text style={[styles.title, { marginTop: 20 }]}>Final Results</Text>
 
           <View style={[styles.card, { width: '100%', marginTop: 20 }]}>
-            {session.players.slice().sort((a,b) => scores[b.id] - scores[a.id]).map((p, i) => (
+            {session.players.slice().sort((a,b) => (scores[b.id] || 0) - (scores[a.id] || 0)).map((p, i) => (
               <View key={p.id} style={styles.leaderboardRow}>
                 <Text style={[styles.rank, i === 0 && { color: Colors.yellow }]}>#{i + 1}</Text>
                 <Text style={[styles.leaderboardName, { color: getPlayerColor(session.players.findIndex(x => x.id === p.id)) }]}>{p.username}</Text>
-                <Text style={styles.scoreText}>{scores[p.id]} pts</Text>
+                <Text style={styles.scoreText}>{scores[p.id] || 0} pts</Text>
               </View>
             ))}
           </View>
+
+          <Pressable style={[styles.primaryBtn, { marginTop: 20, width: '100%', backgroundColor: Colors.green }]} onPress={() => {
+            setRoundNumber(1);
+            setScores({});
+            session.players.forEach(p => setScores(prev => ({ ...prev, [p.id]: 0 })));
+            startNewRound();
+          }}>
+            <Text style={styles.primaryBtnText}>Play Again</Text>
+          </Pressable>
         </ScrollView>
       )}
     </View>
@@ -440,5 +537,6 @@ const styles = StyleSheet.create({
   leaderboardRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
   rank: { color: 'rgba(255,255,255,0.4)', fontSize: 16, fontWeight: 'bold', width: 30 },
   leaderboardName: { fontSize: 17, fontWeight: 'bold', flex: 1 },
-  scoreText: { color: 'white', fontSize: 17, fontWeight: 'bold' }
+  scoreText: { color: 'white', fontSize: 17, fontWeight: 'bold' },
+  clueInput: { backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 14, padding: 16, color: 'white', fontSize: 17, marginTop: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }
 });

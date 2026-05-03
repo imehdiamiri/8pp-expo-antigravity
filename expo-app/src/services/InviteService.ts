@@ -1,4 +1,4 @@
-import { db, auth } from '../lib/firebase';
+import { rtdb as database, auth } from '../lib/firebase';
 import { ref, get, update, query, orderByChild, equalTo, set } from 'firebase/database';
 
 export class InviteService {
@@ -6,7 +6,7 @@ export class InviteService {
     const uid = auth.currentUser?.uid;
     if (!uid) return '';
 
-    const userRef = ref(db, `users/${uid}/inviteCode`);
+    const userRef = ref(database, `users/${uid}/inviteCode`);
     const snapshot = await get(userRef);
     let code = snapshot.val();
 
@@ -21,7 +21,7 @@ export class InviteService {
     const uid = auth.currentUser?.uid;
     if (!uid) return { totalInvites: 0, starsEarned: 0 };
 
-    const statsRef = ref(db, `users/${uid}/inviteStats`);
+    const statsRef = ref(database, `users/${uid}/inviteStats`);
     const snapshot = await get(statsRef);
     const val = snapshot.val() || {};
     return {
@@ -37,14 +37,14 @@ export class InviteService {
     const cleanCode = code.trim().toUpperCase();
 
     // 1. Check if user already redeemed a code
-    const invitedByRef = ref(db, `users/${uid}/invitedBy`);
+    const invitedByRef = ref(database, `users/${uid}/invitedBy`);
     const checkSnap = await get(invitedByRef);
     if (checkSnap.exists()) {
       throw new Error('You have already redeemed an invite code.');
     }
 
     // 2. Find the referrer by code
-    const usersRef = ref(db, 'users');
+    const usersRef = ref(database, 'users');
     const q = query(usersRef, orderByChild('inviteCode'), equalTo(cleanCode));
     const snapshot = await get(q);
 
@@ -61,30 +61,31 @@ export class InviteService {
       throw new Error('You cannot redeem your own invite code.');
     }
 
-    // 3. Grant rewards
     // +10 stars for the new user
-    const myWalletRef = ref(db, `users/${uid}/wallet/stars`);
+    const myWalletRef = ref(database, `users/${uid}/wallet`);
     const myWalletSnap = await get(myWalletRef);
-    const myStars = (myWalletSnap.val() || 0) + 10;
+    const myBalance = (myWalletSnap.exists() ? myWalletSnap.val().balance || 0 : 0) + 10;
 
     // +30 stars for the referrer
-    const refWalletRef = ref(db, `users/${referrerUid}/wallet/stars`);
+    const refWalletRef = ref(database, `users/${referrerUid}/wallet`);
     const refWalletSnap = await get(refWalletRef);
-    const refStars = (refWalletSnap.val() || 0) + 30;
+    const refBalance = (refWalletSnap.exists() ? refWalletSnap.val().balance || 0 : 0) + 30;
 
-    const refStatsRef = ref(db, `users/${referrerUid}/inviteStats`);
+    const refStatsRef = ref(database, `users/${referrerUid}/inviteStats`);
     const refStatsSnap = await get(refStatsRef);
     const refStats = refStatsSnap.val() || { totalInvites: 0, starsEarned: 0 };
 
     // 4. Update Database
     const updates: any = {};
     updates[`users/${uid}/invitedBy`] = referrerUid;
-    updates[`users/${uid}/wallet/stars`] = myStars;
-    updates[`users/${referrerUid}/wallet/stars`] = refStars;
+    updates[`users/${uid}/wallet/balance`] = myBalance;
+    updates[`users/${uid}/wallet/updatedAt`] = Date.now();
+    updates[`users/${referrerUid}/wallet/balance`] = refBalance;
+    updates[`users/${referrerUid}/wallet/updatedAt`] = Date.now();
     updates[`users/${referrerUid}/inviteStats/totalInvites`] = refStats.totalInvites + 1;
     updates[`users/${referrerUid}/inviteStats/starsEarned`] = refStats.starsEarned + 30;
 
-    await update(ref(db), updates);
+    await update(ref(database), updates);
     return true;
   }
 }

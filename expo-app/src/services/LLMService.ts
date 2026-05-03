@@ -1,20 +1,21 @@
 /**
- * LLMService — matches iOS LLMService
- * OpenAI-compatible API integration for AI card generation.
- * 
- * Configuration: Set OPENAI_API_KEY in your environment or .env file.
+ * LLMService — Google Gemini integration for AI card generation.
+ *
+ * Uses Gemini 2.0 Flash (free tier — 15 RPM, 1M TPM).
+ * Get your free API key at: https://aistudio.google.com/apikey
+ *
+ * Configuration: Set EXPO_PUBLIC_GEMINI_API_KEY in your .env file.
  * The service falls back to a mock response when no key is configured,
  * allowing offline development and testing.
  */
 
-const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const MODEL = 'gpt-4o-mini';
+const MODEL = 'gemini-2.0-flash';
 
 // In production, load from env or secure storage
 let API_KEY: string | null = null;
 
 /**
- * Configure the LLM service with an API key.
+ * Configure the LLM service with a Gemini API key.
  * Call this during app initialization if the key is available.
  */
 export function configureLLM(apiKey: string): void {
@@ -39,7 +40,7 @@ export function stripCodeFences(text: string): string {
 }
 
 /**
- * Complete a chat prompt using the configured LLM.
+ * Complete a chat prompt using Google Gemini.
  * Falls back to a mock response when no API key is set.
  */
 export async function complete(system: string, user: string): Promise<string> {
@@ -49,33 +50,40 @@ export async function complete(system: string, user: string): Promise<string> {
     return mockCompletion(user);
   }
 
-  const response = await fetch(OPENAI_API_URL, {
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
+
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${API_KEY}`,
     },
     body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: user },
+      systemInstruction: {
+        parts: [{ text: system }],
+      },
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: user }],
+        },
       ],
-      temperature: 0.9,
-      max_tokens: 100,
+      generationConfig: {
+        temperature: 0.9,
+        maxOutputTokens: 256,
+      },
     }),
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`LLM request failed (${response.status}): ${errorBody}`);
+    throw new Error(`Gemini request failed (${response.status}): ${errorBody}`);
   }
 
   const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
+  const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!content) {
-    throw new Error('Empty LLM response');
+    throw new Error('Empty Gemini response');
   }
 
   return content;

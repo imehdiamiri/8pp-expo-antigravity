@@ -23,13 +23,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // ─── Configuration ───
 
 const firebaseConfig = {
-  apiKey:            process.env.EXPO_PUBLIC_FIREBASE_API_KEY            || 'AIzaSyBbV12f3iA95YKGC28lInL7ufXfEA6Pa-s',
-  authDomain:        process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN        || 'partyplay-app-8pp.firebaseapp.com',
-  projectId:         process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID         || 'partyplay-app-8pp',
-  storageBucket:     process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET     || 'partyplay-app-8pp.firebasestorage.app',
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '994785726311',
-  appId:             process.env.EXPO_PUBLIC_FIREBASE_APP_ID             || '1:994785726311:web:68ba8fa8b4cd85eea5a9c2',
-  databaseURL:       process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL       || 'https://partyplay-app-8pp-default-rtdb.firebaseio.com',
+  apiKey:            process.env.EXPO_PUBLIC_FIREBASE_API_KEY            || 'AIzaSyAs2iX3l4sqg1F5QTMdNv0kx4z1H8hOqCU',
+  authDomain:        process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN        || 'partyplay-8.firebaseapp.com',
+  projectId:         process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID         || 'partyplay-8',
+  storageBucket:     process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET     || 'partyplay-8.firebasestorage.app',
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '1003126250476',
+  appId:             process.env.EXPO_PUBLIC_FIREBASE_APP_ID             || '1:1003126250476:web:6914df967838f18ffa7ec9',
+  databaseURL:       process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL       || 'https://partyplay-8-default-rtdb.firebaseio.com',
 };
 
 // ─── App ───

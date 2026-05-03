@@ -135,7 +135,7 @@ export function TapInOrderSession({ session }: Props) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setMissTaps(prev => prev + 1);
       setWrongFlash(cellIndex);
-      setTimeout(() => { if (wrongFlash === cellIndex) setWrongFlash(null); }, 300);
+      setTimeout(() => setWrongFlash(null), 300);
     }
   };
 
@@ -310,7 +310,7 @@ export function TapInOrderSession({ session }: Props) {
             if (isWrong) borderColor = 'rgba(255,59,48,1)';
 
             return (
-              <Pressable key={idx} onPress={() => handleTap(idx)} activeOpacity={0.7}
+              <Pressable key={idx} onPress={() => handleTap(idx)}
                 disabled={isPreview || isTapped}
                 style={{ width: tileSz, height: tileSz }}>
                 <LinearGradient colors={colors} start={{x:0,y:0}} end={{x:1,y:1}}

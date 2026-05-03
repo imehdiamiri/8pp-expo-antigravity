@@ -16,8 +16,10 @@ const GRID_MAP: Record<string, number> = { easy: 4, medium: 5, hard: 6, expert: 
 const DEFAULT_GRID = 5;
 
 // Path generator matching iOS MemoryPathGenerator (DFS with validation)
-function generatePath(rows: number, cols: number): PathCoord[] {
+function generatePath(rows: number, cols: number, targetLength: number = 8): PathCoord[] {
   const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+  const minLen = Math.max(4, targetLength - 1);
+  const maxLen = targetLength + 1;
   
   function tryGenerate(): PathCoord[] | null {
     const startCol = Math.floor(Math.random() * cols);
@@ -27,32 +29,29 @@ function generatePath(rows: number, cols: number): PathCoord[] {
     visited.add(`${start.row},${start.col}`);
     
     function dfs(current: PathCoord): boolean {
-      if (path.length >= 8 && path.length <= 10) {
+      if (path.length >= minLen && path.length <= maxLen) {
         const s = path[0], e = path[path.length - 1];
         const dist = Math.abs(s.row - e.row) + Math.abs(s.col - e.col);
-        if (dist >= 4 && countTurns(path) >= 2) return true;
+        if (dist >= Math.min(4, Math.floor(targetLength / 2)) && countTurns(path) >= 2) return true;
       }
-      if (path.length >= 10) return false;
+      if (path.length >= maxLen) return false;
       
       let neighbors: PathCoord[] = [];
       for (const [dr, dc] of dirs) {
         const nr = current.row + dr, nc = current.col + dc;
         if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !visited.has(`${nr},${nc}`)) {
-          // Check not too cramped
           let adjUsed = 0;
           for (const [dr2, dc2] of dirs) {
             const ar = nr + dr2, ac = nc + dc2;
             if (ar >= 0 && ar < rows && ac >= 0 && ac < cols && visited.has(`${ar},${ac}`)) adjUsed++;
           }
           if (adjUsed < 3) {
-            // Check no too-long straight
             if (!wouldCreateLongStraight(path, { row: nr, col: nc })) {
               neighbors.push({ row: nr, col: nc });
             }
           }
         }
       }
-      // Shuffle
       for (let i = neighbors.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [neighbors[i], neighbors[j]] = [neighbors[j], neighbors[i]];
@@ -79,7 +78,7 @@ function generatePath(rows: number, cols: number): PathCoord[] {
   // Fallback: zigzag path
   const fallback: PathCoord[] = [];
   let col = Math.floor(cols / 2), goRight = true;
-  for (let row = 0; row < rows && fallback.length < 10; row++) {
+  for (let row = 0; row < rows && fallback.length < maxLen; row++) {
     fallback.push({ row, col });
     if (row < rows - 1) {
       if (goRight && col < cols - 1) { col++; fallback.push({ row, col }); }
@@ -87,7 +86,7 @@ function generatePath(rows: number, cols: number): PathCoord[] {
       goRight = !goRight;
     }
   }
-  return fallback.slice(0, 10);
+  return fallback.slice(0, maxLen);
 }
 
 function countTurns(path: PathCoord[]): number {
@@ -115,12 +114,17 @@ function wouldCreateLongStraight(path: PathCoord[], next: PathCoord): boolean {
 
 export function MemoryPathSession({ session }: Props) {
   const GRID = GRID_MAP[session.gameConfig?.gridSize] ?? DEFAULT_GRID;
+  const pathLength = session.gameConfig?.pathLength ?? 8;
+  const gameMode: 'timeRace' | 'turnBased' = session.gameConfig?.gameMode ?? 'timeRace';
+  const MAX_ATTEMPTS = 3; // for turn-based mode
+
   const [phase, setPhase] = useState<Phase>('ready');
   const [playerIndex, setPlayerIndex] = useState(0);
   const [path, setPath] = useState<PathCoord[]>([]);
   const [tileStates, setTileStates] = useState<TileState[][]>([]);
   const [progress, setProgress] = useState(1); // starts at 1 (start tile already known)
   const [attempts, setAttempts] = useState(0);
+  const [turnAttempts, setTurnAttempts] = useState(MAX_ATTEMPTS); // for turn-based
   const [wrongTile, setWrongTile] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [results, setResults] = useState<PlayerResult[]>([]);
@@ -140,7 +144,7 @@ export function MemoryPathSession({ session }: Props) {
   }, [phase]);
 
   const initBoard = () => {
-    const p = generatePath(GRID, GRID);
+    const p = generatePath(GRID, GRID, pathLength);
     setPath(p);
     const states: TileState[][] = Array.from({ length: GRID }, () => Array(GRID).fill('hidden'));
     states[p[0].row][p[0].col] = 'start';
@@ -148,6 +152,7 @@ export function MemoryPathSession({ session }: Props) {
     setTileStates(states);
     setProgress(1);
     setAttempts(0);
+    setTurnAttempts(MAX_ATTEMPTS);
     setElapsed(0);
     setWrongTile(null);
   };
@@ -215,6 +220,22 @@ export function MemoryPathSession({ session }: Props) {
       newStates[row][col] = 'wrong';
       setTileStates(newStates);
       triggerShake();
+
+      if (gameMode === 'turnBased') {
+        const remaining = turnAttempts - 1;
+        setTurnAttempts(remaining);
+        if (remaining <= 0) {
+          // Out of attempts — fail this player
+          setTimeout(() => {
+            setWrongTile(null);
+            if (timerRef.current) clearInterval(timerRef.current);
+            setResults(prev => [...prev, { playerId: player.id, timeMs: elapsed * 1000, attempts: attempts + 1, finished: false, progress }]);
+            if (playerIndex + 1 >= players.length) setPhase('results');
+            else setPhase('playerComplete');
+          }, 500);
+          return;
+        }
+      }
 
       setTimeout(() => {
         setWrongTile(null);
@@ -289,7 +310,7 @@ export function MemoryPathSession({ session }: Props) {
         <View style={s.topBar}>
           <View style={{ flex: 1 }}>
             <Text style={s.hName}>{player.username}</Text>
-            <Text style={s.hSub}>{stepsFound}/{stepsToFind} steps</Text>
+            <Text style={s.hSub}>{stepsFound}/{stepsToFind} steps{gameMode === 'turnBased' ? ` · ${turnAttempts} tries left` : ''}</Text>
           </View>
           <View style={s.timerPill}>
             <IconSymbol name="timer" size={16} color="#00C7BE" />
@@ -312,7 +333,7 @@ export function MemoryPathSession({ session }: Props) {
                 const colors = getTileColors(state, isW);
                 const border = getTileBorder(state, isW);
                 return (
-                  <Pressable key={c} onPress={() => handleTap(r, c)} activeOpacity={0.8}
+                  <Pressable key={c} onPress={() => handleTap(r, c)}
                     disabled={state === 'correct' || state === 'start'}
                     style={{ width: tileSz, height: tileSz }}>
                     <LinearGradient colors={colors} start={{x:0,y:0}} end={{x:1,y:1}}
