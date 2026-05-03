@@ -22,12 +22,66 @@ interface Props {
 const MAX_RECORD_SECONDS = 60;
 const WAVEFORM_BARS = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.4, 0.3, 0.6, 0.5];
 
+// ─── Base64 helpers (Hermes-safe, no atob/btoa needed) ───
+const B64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const B64_LOOKUP = new Uint8Array(128);
+for (let i = 0; i < B64_CHARS.length; i++) B64_LOOKUP[B64_CHARS.charCodeAt(i)] = i;
+
+function base64ToBytes(b64: string): Uint8Array {
+  // Strip padding
+  let len = b64.length;
+  while (len > 0 && b64[len - 1] === '=') len--;
+
+  const byteLen = (len * 3) >> 2;
+  const bytes = new Uint8Array(byteLen);
+  let p = 0;
+
+  for (let i = 0; i < len; i += 4) {
+    const a = B64_LOOKUP[b64.charCodeAt(i)];
+    const b = i + 1 < len ? B64_LOOKUP[b64.charCodeAt(i + 1)] : 0;
+    const c = i + 2 < len ? B64_LOOKUP[b64.charCodeAt(i + 2)] : 0;
+    const d = i + 3 < len ? B64_LOOKUP[b64.charCodeAt(i + 3)] : 0;
+
+    bytes[p++] = (a << 2) | (b >> 4);
+    if (p < byteLen) bytes[p++] = ((b & 0x0F) << 4) | (c >> 2);
+    if (p < byteLen) bytes[p++] = ((c & 0x03) << 6) | d;
+  }
+  return bytes;
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  const len = bytes.length;
+  const parts: string[] = [];
+  // Process in chunks to avoid stack overflow on large arrays
+  const CHUNK = 24000; // must be multiple of 3
+
+  for (let offset = 0; offset < len; offset += CHUNK) {
+    const end = Math.min(offset + CHUNK, len);
+    let chunk = '';
+    for (let i = offset; i < end; i += 3) {
+      const a = bytes[i];
+      const b = i + 1 < end ? bytes[i + 1] : 0;
+      const c = i + 2 < end ? bytes[i + 2] : 0;
+
+      chunk += B64_CHARS[a >> 2];
+      chunk += B64_CHARS[((a & 0x03) << 4) | (b >> 4)];
+      chunk += (i + 1 < len) ? B64_CHARS[((b & 0x0F) << 2) | (c >> 6)] : '=';
+      chunk += (i + 2 < len) ? B64_CHARS[c & 0x3F] : '=';
+    }
+    parts.push(chunk);
+  }
+  return parts.join('');
+}
+
 // ─── WAV PCM Reversal ────────────────────────────────────
 // Reads a WAV file (recorded as LINEAR_PCM / WAV), reverses
 // the sample data at the byte level, writes a new file.
 
 async function reverseWavFile(inputUri: string): Promise<string | null> {
-  if (!FileSystem) return null;
+  if (!FileSystem) {
+    Alert.alert('Reverse Error', 'File system module is not available.');
+    return null;
+  }
 
   try {
     // Read the full file as base64
@@ -35,12 +89,13 @@ async function reverseWavFile(inputUri: string): Promise<string | null> {
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    // Decode base64 → byte array
-    const binaryStr = atob(base64);
-    const bytes = new Uint8Array(binaryStr.length);
-    for (let i = 0; i < binaryStr.length; i++) {
-      bytes[i] = binaryStr.charCodeAt(i);
+    if (!base64 || base64.length < 100) {
+      Alert.alert('Reverse Error', 'Recording file is empty or too small.');
+      return null;
     }
+
+    // Decode base64 → byte array (Hermes-safe, no atob)
+    const bytes = base64ToBytes(base64);
 
     // Parse WAV header (standard 44-byte RIFF header)
     // Validate it's a WAV: "RIFF" at offset 0, "WAVE" at offset 8
@@ -48,7 +103,8 @@ async function reverseWavFile(inputUri: string): Promise<string | null> {
     const wave = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
 
     if (riff !== 'RIFF' || wave !== 'WAVE') {
-      console.warn('reverseWavFile: Not a valid WAV file, skipping reversal');
+      console.warn('reverseWavFile: Not a valid WAV file (got', riff, wave, ')');
+      Alert.alert('Reverse Error', 'The recorded audio is not in WAV format. Try recording again.');
       return null;
     }
 
@@ -75,6 +131,7 @@ async function reverseWavFile(inputUri: string): Promise<string | null> {
 
     if (dataSize === 0) {
       console.warn('reverseWavFile: Could not find data chunk');
+      Alert.alert('Reverse Error', 'Could not parse the audio data. Try recording again.');
       return null;
     }
 
@@ -83,6 +140,11 @@ async function reverseWavFile(inputUri: string): Promise<string | null> {
     const bytesPerSample = bitsPerSample / 8;
     const numChannels = bytes[22] | (bytes[23] << 8);
     const blockAlign = bytesPerSample * numChannels;
+
+    if (blockAlign === 0 || bytesPerSample === 0) {
+      Alert.alert('Reverse Error', 'Invalid WAV format (0 bytes per sample).');
+      return null;
+    }
 
     // Reverse the audio samples in the data section
     const reversed = new Uint8Array(bytes.length);
@@ -97,12 +159,8 @@ async function reverseWavFile(inputUri: string): Promise<string | null> {
       }
     }
 
-    // Encode back to base64
-    let reversedBinary = '';
-    for (let i = 0; i < reversed.length; i++) {
-      reversedBinary += String.fromCharCode(reversed[i]);
-    }
-    const reversedBase64 = btoa(reversedBinary);
+    // Encode back to base64 (Hermes-safe, no btoa)
+    const reversedBase64 = bytesToBase64(reversed);
 
     // Write to a new file
     const outputUri = inputUri.replace(/\.wav$/i, '_reversed.wav');
@@ -111,8 +169,9 @@ async function reverseWavFile(inputUri: string): Promise<string | null> {
     });
 
     return outputUri;
-  } catch (err) {
+  } catch (err: any) {
     console.error('reverseWavFile error:', err);
+    Alert.alert('Reverse Error', `Failed to reverse audio: ${err?.message || 'Unknown error'}`);
     return null;
   }
 }
@@ -217,23 +276,28 @@ export function ReverseSingingSession({ session }: Props) {
 
   // ── Recording ──
   async function startRecording(player: 1 | 2) {
-    if (!Audio) return;
+    if (!Audio) {
+      Alert.alert('Audio Error', 'Audio module is not available on this device.');
+      return;
+    }
     try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
       });
 
-      // Record as WAV (LINEAR PCM) so we can reverse the samples
+      // Platform-specific recording options:
+      // iOS: Record as WAV (LINEAR PCM) — can be reversed byte-by-byte
+      // Android: Cannot record WAV via expo-av/MediaRecorder, use AAC instead
       const recordingOptions = {
         isMeteringEnabled: false,
         android: {
-          extension: '.wav',
-          outputFormat: 6, // DEFAULT
-          audioEncoder: 0, // DEFAULT (PCM)
+          extension: '.m4a',
+          outputFormat: 2,   // MPEG_4
+          audioEncoder: 3,   // AAC
           sampleRate: 44100,
           numberOfChannels: 1,
-          bitRate: 705600,
+          bitRate: 128000,
         },
         ios: {
           extension: '.wav',
@@ -285,12 +349,15 @@ export function ReverseSingingSession({ session }: Props) {
         setP1Recording(null);
         p1RecRef.current = null;
 
-        // Generate reversed audio in background
-        if (uri) {
+        // Generate reversed audio in background (iOS only — Android uses AAC, not WAV)
+        if (uri && Platform.OS === 'ios') {
           setP1Reversing(true);
           const reversedUri = await reverseWavFile(uri);
           setP1ReversedUri(reversedUri);
           setP1Reversing(false);
+        } else if (uri && Platform.OS === 'android') {
+          // Android cannot record WAV, so byte-level reversal is not possible
+          setP1ReversedUri(null);
         }
 
         setActiveStep('playerTwo');
@@ -302,12 +369,14 @@ export function ReverseSingingSession({ session }: Props) {
         setP2Recording(null);
         p2RecRef.current = null;
 
-        // Generate reversed audio (the "result")
-        if (uri) {
+        // Generate reversed audio (iOS only)
+        if (uri && Platform.OS === 'ios') {
           setP2Reversing(true);
           const reversedUri = await reverseWavFile(uri);
           setP2ReversedUri(reversedUri);
           setP2Reversing(false);
+        } else if (uri && Platform.OS === 'android') {
+          setP2ReversedUri(null);
         }
       }
       await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
