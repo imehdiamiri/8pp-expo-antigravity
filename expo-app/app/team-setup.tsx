@@ -150,8 +150,8 @@ export default function TeamSetupScreen() {
               paddingVertical: 6,
             }}
           >
-            <IconSymbol name="chevron.left" size={16} color="white" />
-            <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Leave</Text>
+            <IconSymbol name="chevron.left" size={18} color="#007AFF" />
+            <Text style={{ color: '#007AFF', fontSize: 17, fontWeight: '400', marginLeft: 2 }}>Leave</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Team Setup</Text>
           <View style={{ width: 50 }} />

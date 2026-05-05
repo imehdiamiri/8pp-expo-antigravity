@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Platform }
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -91,7 +92,7 @@ export default function GameDetailScreen() {
           hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
           style={styles.backButtonCustom}
         >
-          <IconSymbol name="chevron.left" size={16} color="white" />
+          <IconSymbol name="chevron.left" size={18} color="#007AFF" />
           <Text style={styles.backButtonCustomText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitleCustom}>{game.name}</Text>
@@ -174,16 +175,16 @@ export default function GameDetailScreen() {
                 return (
                   <TouchableOpacity 
                     key={mode} 
-                    style={[styles.modeCard, { borderColor: `${modeAccent}66` }]}
+                    style={styles.modeCard}
                     activeOpacity={0.7}
                     onPress={() => handleModeSelect(mode)}
                   >
-                    <View style={[styles.modeCardBg, { backgroundColor: `${modeAccent}1F` }]} />
+                    <View style={[styles.modeCardBg, { backgroundColor: `${modeAccent}12` }]} />
                     
                     <View style={[styles.modeIconContainer, { backgroundColor: modeAccent }]}>
                       {mode === GameMode.multiDevice ? (
                         <View style={styles.multiPhoneContainer}>
-                          <IconSymbol name="iphone" size={18} color="rgba(255,255,255,0.6)" />
+                          <IconSymbol name="iphone" size={18} color="rgba(255,255,255,0.9)" />
                         </View>
                       ) : (
                         <IconSymbol name={modeDetails.icon as any} size={22} color="white" />
@@ -197,7 +198,7 @@ export default function GameDetailScreen() {
                       </Text>
                     </View>
                     
-                    <IconSymbol name="chevron.right" size={18} color={modeAccent} />
+                    <IconSymbol name="chevron.right" size={16} color="rgba(255,255,255,0.3)" />
                   </TouchableOpacity>
                 );
               })}
@@ -210,7 +211,7 @@ export default function GameDetailScreen() {
           <View style={styles.instructionsContainer}>
             {getGameInstructions(id!).map((step, i) => (
               <View key={i} style={styles.instructionRow}>
-                <View style={[styles.stepBadge, { backgroundColor: accentColor + '33' }]}>
+                <View style={[styles.stepBadge, { backgroundColor: accentColor + '22' }]}>
                   <Text style={[styles.stepBadgeText, { color: accentColor }]}>{i + 1}</Text>
                 </View>
                 <Text style={styles.instructionText}>{step}</Text>
@@ -253,19 +254,19 @@ const styles = StyleSheet.create({
   backButtonCustom: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
     paddingVertical: 6,
   },
   backButtonCustomText: {
-    color: 'white', 
-    fontSize: 16, 
-    fontWeight: '500', 
-    marginLeft: 4,
+    color: '#007AFF',
+    fontSize: 17,
+    fontWeight: '400',
+    marginLeft: 2,
   },
   headerTitleCustom: {
     fontFamily: 'Viral-Black',
     color: 'white',
-    fontSize: 20,
+    fontSize: 17,
     flex: 1,
     textAlign: 'center',
   },
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingBottom: 10,
   },
   headerButton: {
@@ -294,47 +295,48 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
-    backgroundColor: 'rgba(28, 28, 30, 0.8)',
-    borderRadius: 20,
+    backgroundColor: 'rgba(28, 28, 30, 0.85)',
+    borderRadius: 16,
     overflow: 'hidden',
-    padding: 14,
+    padding: 16,
   },
   heroContainer: {
     height: 200,
-    borderRadius: 18,
+    borderRadius: 14,
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },
   section: {
-    gap: 8,
-    marginTop: 8,
+    gap: 10,
   },
   sectionTitle: {
-    color: 'white',
-    fontSize: 15,
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 13,
     fontWeight: '600',
     paddingLeft: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   modesContainer: {
-    gap: 10,
+    gap: 8,
   },
   modeCard: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
-    borderRadius: 18,
-    borderWidth: 1.2,
+    borderRadius: 14,
     gap: 14,
     overflow: 'hidden',
+    backgroundColor: 'rgba(28, 28, 30, 0.85)',
   },
   modeCardBg: {
     ...StyleSheet.absoluteFillObject,
   },
   modeIconContainer: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -344,49 +346,49 @@ const styles = StyleSheet.create({
   modeTextContainer: {
     flex: 1,
     justifyContent: 'center',
-    gap: 4,
+    gap: 3,
   },
   modeTitle: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   modeSubtitle: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 12,
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 13,
   },
   sectionHeaderTitle: {
     color: 'white',
     fontSize: 17,
-    fontWeight: 'bold',
-    marginBottom: 12,
+    fontWeight: '600',
+    marginBottom: 14,
   },
   instructionsContainer: {
-    gap: 10,
+    gap: 12,
   },
   instructionRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
+    gap: 12,
   },
   stepBadge: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   stepBadgeText: {
     color: 'white',
-    fontSize: 11,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontWeight: '700',
   },
   instructionText: {
     flex: 1,
     color: 'rgba(255,255,255,0.6)',
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
   },
   premiumHeader: {
     flexDirection: 'row',

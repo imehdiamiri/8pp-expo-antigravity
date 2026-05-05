@@ -66,8 +66,8 @@ export default function CreateLobbyScreen() {
             paddingVertical: 6,
           }}
         >
-          <IconSymbol name="chevron.left" size={18} color="white" />
-          <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Back</Text>
+          <IconSymbol name="chevron.left" size={18} color="#007AFF" />
+          <Text style={{ color: '#007AFF', fontSize: 17, fontWeight: '400', marginLeft: 2 }}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{game.name} — Setup</Text>
         <View style={styles.headerButton} />

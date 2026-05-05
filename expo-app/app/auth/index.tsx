@@ -11,15 +11,18 @@ import {
   Keyboard,
   ActivityIndicator,
   Linking,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Typography } from '../../src/theme/Colors';
 import { AppBackgroundView } from '../../src/components/AppBackgroundView';
 import { useAuthStore } from '../../src/store/useAuthStore';
 import { AppConstants } from '../../src/constants/AppConstants';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 
 export default function AuthScreen() {
   const router = useRouter();
@@ -38,8 +41,6 @@ export default function AuthScreen() {
     signInWithGoogle,
     signInAnonymously
   } = useAuthStore();
-
-  const showCloseButton = true; // can be passed as param if needed
 
   const handleSubmit = () => {
     const trimmedUser = username.trim();
@@ -71,134 +72,181 @@ export default function AuthScreen() {
         <View style={styles.container}>
           <AppBackgroundView />
 
-          {showCloseButton && (
-            <View style={[styles.closeRow, { marginTop: insets.top + 12 }]}>
+          <ScrollView
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 24 },
+            ]}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Close button */}
+            <View style={styles.closeRow}>
               <TouchableOpacity 
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingHorizontal: 8,
-                  paddingVertical: 6,
-                }}
+                style={styles.closeBtn}
                 onPress={() => {
                   if (router.canGoBack()) router.back();
                   else router.replace('/');
                 }}
+                activeOpacity={0.7}
               >
-                <Ionicons name="close" size={16} color="white" />
-                <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Close</Text>
+                <IconSymbol name="xmark" size={14} color="rgba(255,255,255,0.8)" />
               </TouchableOpacity>
             </View>
-          )}
 
-          <View style={styles.content}>
-            {/* Header */}
-            <View style={styles.headerBlock}>
-              <View style={styles.iconContainer}>
-                <Ionicons name="game-controller" size={38} color={Colors.blue} />
+            {/* Hero Section */}
+            <View style={styles.heroSection}>
+              <View style={styles.appIconWrapper}>
+                <LinearGradient
+                  colors={['rgba(10, 132, 255, 0.35)', 'rgba(88, 86, 214, 0.25)', 'rgba(175, 82, 222, 0.2)']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.appIconGradient}
+                />
+                <Ionicons name="game-controller" size={36} color={Colors.blue} />
               </View>
-              <Text style={styles.viralTitle}>8PartyPlay</Text>
-              <Text style={styles.subtitle}>
-                Sign in to claim 100 ★,{'\n'}friends, and AI cards.
+              <Text style={styles.appTitle}>8PartyPlay</Text>
+              <Text style={styles.appSubtitle}>
+                Sign in to unlock all games,{'\n'}earn rewards & play with friends
               </Text>
             </View>
 
-            {/* Form */}
-            <View style={styles.formBlock}>
-              <TextInput
-                style={styles.input}
-                placeholder="Username"
-                placeholderTextColor={Colors.tertiary}
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="username"
-                value={username}
-                onChangeText={setUsername}
-                returnKeyType="next"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor={Colors.tertiary}
-                secureTextEntry
-                textContentType={isLogin ? 'password' : 'newPassword'}
-                value={password}
-                onChangeText={setPassword}
-                returnKeyType="go"
-                onSubmitEditing={handleSubmit}
-              />
-            </View>
+            {/* Form Card */}
+            <View style={styles.formCard}>
+              <View style={[StyleSheet.absoluteFill, { borderRadius: 24, overflow: 'hidden' }]}>
+                <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
+              </View>
 
-            {/* Actions */}
-            <View style={styles.actionsBlock}>
+              {/* Inputs */}
+              <View style={styles.inputGroup}>
+                <View style={styles.inputRow}>
+                  <Ionicons name="person-outline" size={18} color="rgba(255,255,255,0.4)" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Username or email"
+                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    textContentType="username"
+                    value={username}
+                    onChangeText={setUsername}
+                    returnKeyType="next"
+                  />
+                </View>
+                <View style={styles.inputDivider} />
+                <View style={styles.inputRow}>
+                  <Ionicons name="lock-closed-outline" size={18} color="rgba(255,255,255,0.4)" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    placeholderTextColor="rgba(255,255,255,0.3)"
+                    secureTextEntry
+                    textContentType={isLogin ? 'password' : 'newPassword'}
+                    value={password}
+                    onChangeText={setPassword}
+                    returnKeyType="go"
+                    onSubmitEditing={handleSubmit}
+                  />
+                </View>
+              </View>
+
+              {errorMessage && (
+                <View style={styles.errorRow}>
+                  <Ionicons name="alert-circle" size={14} color={Colors.red} />
+                  <Text style={styles.errorText}>{errorMessage}</Text>
+                </View>
+              )}
+
+              {/* Primary Action */}
               <TouchableOpacity
                 style={[styles.primaryBtn, (!username || !password || isBusy) && styles.primaryBtnDisabled]}
                 disabled={!username || !password || isBusy}
                 onPress={handleSubmit}
+                activeOpacity={0.85}
               >
-                <Text style={styles.primaryBtnText}>{isLogin ? 'Login' : 'Create Account'}</Text>
+                <LinearGradient
+                  colors={['#0A84FF', '#0066CC']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={StyleSheet.absoluteFillObject}
+                />
+                <Text style={styles.primaryBtnText}>
+                  {isLogin ? 'Sign In' : 'Create Account'}
+                </Text>
               </TouchableOpacity>
 
+              {/* Toggle */}
+              <TouchableOpacity onPress={() => setIsLogin(!isLogin)} style={styles.toggleRow}>
+                <Text style={styles.toggleTextLeft}>
+                  {isLogin ? "Don't have an account?" : "Already have an account?"}
+                </Text>
+                <Text style={styles.toggleTextRight}>
+                  {isLogin ? 'Sign Up' : 'Sign In'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Divider */}
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Social Buttons */}
+            <View style={styles.socialBlock}>
               {Platform.OS === 'ios' && (
                 <TouchableOpacity
-                  style={styles.appleBtn}
+                  style={styles.socialBtn}
                   disabled={isBusy}
                   onPress={() => signInWithApple().catch(() => {})}
+                  activeOpacity={0.7}
                 >
-                  <Ionicons name="logo-apple" size={18} color={Colors.white} />
+                  <Ionicons name="logo-apple" size={20} color={Colors.white} />
                   <Text style={styles.socialBtnText}>Continue with Apple</Text>
                 </TouchableOpacity>
               )}
 
               <TouchableOpacity
-                style={styles.googleBtn}
+                style={styles.socialBtn}
                 disabled={isBusy}
                 onPress={() => signInWithGoogle().catch(() => {})}
+                activeOpacity={0.7}
               >
-                <Ionicons name="globe-outline" size={18} color={Colors.white} />
+                <Ionicons name="logo-google" size={18} color={Colors.white} />
                 <Text style={styles.socialBtnText}>Continue with Google</Text>
               </TouchableOpacity>
-
-              {errorMessage && (
-                <Text style={styles.errorText}>{errorMessage}</Text>
-              )}
             </View>
 
-            {/* Toggle */}
-            <TouchableOpacity onPress={() => setIsLogin(!isLogin)} style={styles.toggleRow}>
-              <Text style={styles.toggleTextLeft}>
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
-              </Text>
-              <Text style={styles.toggleTextRight}>
-                {isLogin ? 'Sign Up' : 'Login'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Bottom Footer */}
-          <View style={[styles.footer, { paddingBottom: insets.bottom + 24 }]}>
-            <TouchableOpacity onPress={handleGuest}>
-              <Text style={styles.guestText}>Continue as Guest</Text>
-            </TouchableOpacity>
-            <Text style={styles.hintText}>You can log in anytime later from your profile.</Text>
-            
-            <View style={styles.legalRow}>
-              <TouchableOpacity onPress={() => Linking.openURL(AppConstants.URLs.privacyPolicy)}>
-                <Text style={styles.legalLink}>Privacy Policy</Text>
+            {/* Guest + Legal */}
+            <View style={styles.footerSection}>
+              <TouchableOpacity onPress={handleGuest} style={styles.guestBtn} activeOpacity={0.7}>
+                <Text style={styles.guestText}>Skip for now</Text>
+                <Ionicons name="arrow-forward" size={14} color="rgba(255,255,255,0.5)" />
               </TouchableOpacity>
-              <Text style={styles.legalDot}>•</Text>
-              <TouchableOpacity onPress={() => Linking.openURL(AppConstants.URLs.termsOfService)}>
-                <Text style={styles.legalLink}>Terms of Service</Text>
-              </TouchableOpacity>
+              <Text style={styles.hintText}>
+                You can sign in anytime from your profile
+              </Text>
+              
+              <View style={styles.legalRow}>
+                <TouchableOpacity onPress={() => Linking.openURL(AppConstants.URLs.privacyPolicy)}>
+                  <Text style={styles.legalLink}>Privacy Policy</Text>
+                </TouchableOpacity>
+                <Text style={styles.legalDot}>•</Text>
+                <TouchableOpacity onPress={() => Linking.openURL(AppConstants.URLs.termsOfService)}>
+                  <Text style={styles.legalLink}>Terms of Service</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </ScrollView>
 
           {/* Busy Overlay */}
           {isBusy && (
             <View style={styles.busyOverlay}>
-              <BlurView intensity={30} style={StyleSheet.absoluteFill} tint="dark" />
+              <BlurView intensity={40} style={StyleSheet.absoluteFill} tint="dark" />
               <View style={styles.progressContainer}>
                 <ActivityIndicator size="large" color={Colors.white} />
+                <Text style={styles.busyText}>Signing in…</Text>
               </View>
             </View>
           )}
@@ -213,115 +261,123 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.black,
   },
+  scrollContent: {
+    paddingHorizontal: 24,
+    flexGrow: 1,
+  },
   closeRow: {
-    paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    zIndex: 10,
+    marginBottom: 8,
   },
   closeBtn: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.whiteOverlay8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: 28,
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  headerBlock: {
+
+  // ─── Hero ───
+  heroSection: {
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 32,
+    marginTop: 12,
   },
-  iconContainer: {
-    width: 72,
-    height: 72,
-    borderRadius: 22,
-    backgroundColor: Colors.blueOverlay14,
+  appIconWrapper: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(10, 132, 255, 0.15)',
   },
-  viralTitle: {
+  appIconGradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  appTitle: {
     fontFamily: Typography.viralTitle.fontFamily,
-    fontSize: 34,
+    fontSize: 32,
     color: Colors.white,
-    marginBottom: 10,
+    marginBottom: 8,
   },
-  subtitle: {
+  appSubtitle: {
     fontSize: 15,
-    color: Colors.secondary,
+    color: 'rgba(255, 255, 255, 0.5)',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 21,
   },
-  formBlock: {
-    gap: 12,
-    marginBottom: 28,
+
+  // ─── Form Card ───
+  formCard: {
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    overflow: 'hidden',
+    marginBottom: 24,
+  },
+  inputGroup: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    marginBottom: 16,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+  },
+  inputIcon: {
+    marginRight: 10,
   },
   input: {
-    backgroundColor: Colors.whiteOverlay6,
-    borderColor: Colors.whiteOverlay8,
-    borderWidth: 1,
-    borderRadius: 14,
-    paddingHorizontal: 16,
+    flex: 1,
     paddingVertical: 14,
     color: Colors.white,
     fontSize: 16,
   },
-  actionsBlock: {
-    gap: 10,
-    marginBottom: 28,
+  inputDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    marginLeft: 42,
+  },
+  errorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  errorText: {
+    color: Colors.red,
+    fontSize: 13,
+    flex: 1,
   },
   primaryBtn: {
-    backgroundColor: Colors.primaryAction,
-    paddingVertical: 14,
+    paddingVertical: 15,
     borderRadius: 14,
     alignItems: 'center',
+    overflow: 'hidden',
+    marginBottom: 16,
   },
   primaryBtnDisabled: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
   primaryBtnText: {
     color: Colors.white,
     fontSize: 17,
-    fontWeight: '600',
-  },
-  appleBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.whiteOverlay9,
-    borderColor: Colors.whiteOverlay6,
-    borderWidth: 1,
-    paddingVertical: 12,
-    borderRadius: 14,
-    gap: 8,
-  },
-  googleBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.065)',
-    borderColor: Colors.whiteOverlay5,
-    borderWidth: 1,
-    paddingVertical: 12,
-    borderRadius: 14,
-    gap: 8,
-  },
-  socialBtnText: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  errorText: {
-    color: Colors.red,
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 4,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   toggleRow: {
     flexDirection: 'row',
@@ -330,51 +386,114 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   toggleTextLeft: {
-    color: Colors.secondary,
-    fontSize: 15,
+    color: 'rgba(255, 255, 255, 0.45)',
+    fontSize: 14,
   },
   toggleTextRight: {
     color: Colors.blue,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
   },
-  footer: {
+
+  // ─── Divider ───
+  dividerRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    zIndex: 1,
+    marginBottom: 24,
+    paddingHorizontal: 12,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  dividerText: {
+    color: 'rgba(255, 255, 255, 0.3)',
+    fontSize: 13,
+    fontWeight: '500',
+    paddingHorizontal: 16,
+  },
+
+  // ─── Social ───
+  socialBlock: {
+    gap: 10,
+    marginBottom: 32,
+  },
+  socialBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    paddingVertical: 14,
+    borderRadius: 14,
+    gap: 10,
+  },
+  socialBtnText: {
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  // ─── Footer ───
+  footerSection: {
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 'auto',
+    paddingTop: 8,
+  },
+  guestBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   guestText: {
-    color: Colors.secondary,
+    color: 'rgba(255, 255, 255, 0.5)',
     fontSize: 15,
     fontWeight: '500',
   },
   hintText: {
-    color: Colors.tertiary,
-    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.25)',
+    fontSize: 12,
   },
   legalRow: {
     flexDirection: 'row',
     gap: 12,
+    marginTop: 4,
   },
   legalLink: {
-    color: Colors.secondary,
-    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.35)',
+    fontSize: 12,
     fontWeight: '500',
   },
   legalDot: {
-    color: Colors.tertiary,
-    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.2)',
+    fontSize: 12,
   },
+
+  // ─── Busy ───
   busyOverlay: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   progressContainer: {
-    padding: 24,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    padding: 28,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    alignItems: 'center',
+    gap: 12,
+  },
+  busyText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

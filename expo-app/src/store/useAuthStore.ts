@@ -185,10 +185,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   signInWithGoogle: async () => {
     set({ isBusy: true, errorMessage: null });
     try {
-      // Dynamic import to avoid crash in Expo Go where native module isn't available
-      const { GoogleSignin, statusCodes } = await import(
-        '@react-native-google-signin/google-signin'
-      );
+      // Detect Expo Go — native Google Sign-In module is NOT available in Expo Go
+      // and will crash with TurboModuleRegistry.getEnforcing error
+      const Constants = require('expo-constants').default;
+      const isExpoGo = Constants.executionEnvironment === 'storeClient';
+
+      if (isExpoGo) {
+        set({
+          errorMessage:
+            'Google Sign-In requires a production build (EAS). Use Email/Password to sign in.',
+          isBusy: false,
+        });
+        return;
+      }
+
+      // Safe to import outside Expo Go — native module is available
+      const { GoogleSignin, statusCodes } = require('@react-native-google-signin/google-signin');
 
       // Configure Google Sign-In (idempotent — safe to call multiple times)
       GoogleSignin.configure({

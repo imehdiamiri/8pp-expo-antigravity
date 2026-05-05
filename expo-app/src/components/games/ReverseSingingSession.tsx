@@ -7,11 +7,19 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 // Platform-safe imports
 let Audio: any = null;
 let FileSystem: any = null;
+let FileSystemEncoding: any = { Base64: 'base64', UTF8: 'utf8' };
 let Sharing: any = null;
 
 if (Platform.OS !== 'web') {
   try { Audio = require('expo-av').Audio; } catch {}
-  try { FileSystem = require('expo-file-system'); } catch {}
+  try {
+    const fs = require('expo-file-system');
+    FileSystem = fs;
+    // EncodingType may be on default export or as named export
+    if (fs.EncodingType) {
+      FileSystemEncoding = fs.EncodingType;
+    }
+  } catch {}
   try { Sharing = require('expo-sharing'); } catch {}
 }
 
@@ -86,7 +94,7 @@ async function reverseWavFile(inputUri: string): Promise<string | null> {
   try {
     // Read the full file as base64
     const base64 = await FileSystem.readAsStringAsync(inputUri, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: FileSystemEncoding.Base64,
     });
 
     if (!base64 || base64.length < 100) {
@@ -165,7 +173,7 @@ async function reverseWavFile(inputUri: string): Promise<string | null> {
     // Write to a new file
     const outputUri = inputUri.replace(/\.wav$/i, '_reversed.wav');
     await FileSystem.writeAsStringAsync(outputUri, reversedBase64, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: FileSystemEncoding.Base64,
     });
 
     return outputUri;

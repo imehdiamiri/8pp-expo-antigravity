@@ -6,3 +6,11 @@ node_modules
 .vscode/
 skills-lock.json
 rork.json
+
+# Firebase secrets
+expo-app/google-services.json
+google-services.json
+
+# Android native build
+expo-app/android/
+android/

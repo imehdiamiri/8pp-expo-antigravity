@@ -47,7 +47,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
           if (route.name === 'friends') iconName = 'person.2.fill';
           if (route.name === 'factory') iconName = 'wand.and.stars';
 
-          const color = isFocused ? Colors.blue : 'rgba(255, 255, 255, 0.5)';
+          const color = isFocused ? '#ffffff' : 'rgba(255, 255, 255, 0.4)';
 
           return (
             <TouchableOpacity
@@ -59,8 +59,10 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
               activeOpacity={0.7}
             >
               <View style={[styles.iconContainer, isFocused && styles.activePill]}>
-                <IconSymbol size={32} name={iconName} color={color} />
-                <Text style={[styles.label, isFocused && styles.activeLabel]}>{options.title}</Text>
+                <IconSymbol size={22} name={iconName} color={color} />
+                <Text style={[styles.label, isFocused && styles.activeLabel]}>
+                  {options.title}
+                </Text>
               </View>
             </TouchableOpacity>
           );
@@ -89,10 +91,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 20,
     right: 20,
-    height: 70,
+    height: 64,
     borderRadius: 36,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.4,
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
   },
   tabItem: {
     flex: 1,
@@ -115,21 +117,21 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 54,
-    width: 76,
-    borderRadius: 27,
-    gap: 3,
+    height: 46,
+    paddingHorizontal: 16,
+    borderRadius: 23,
+    gap: 2,
   },
   activePill: {
-    backgroundColor: 'rgba(10, 132, 255, 0.15)',
+    backgroundColor: 'rgba(10, 132, 255, 0.25)',
   },
   label: {
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontSize: 10,
     fontWeight: '600',
   },
   activeLabel: {
-    color: Colors.blue,
-    fontWeight: 'bold',
+    color: '#ffffff',
+    fontWeight: '700',
   },
 });

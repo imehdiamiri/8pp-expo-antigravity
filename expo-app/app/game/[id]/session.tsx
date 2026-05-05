@@ -59,8 +59,8 @@ export default function GameSessionScreen() {
             paddingVertical: 6,
           }}
         >
-          <IconSymbol name="xmark" size={16} color="white" />
-          <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Exit</Text>
+          <IconSymbol name="xmark" size={14} color="#007AFF" />
+          <Text style={{ color: '#007AFF', fontSize: 17, fontWeight: '400', marginLeft: 4 }}>Exit</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{activeSession.game.name}</Text>
         <View style={styles.headerButton} />
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: 'Viral-Black',
     color: 'white',
-    fontSize: 20,
+    fontSize: 17,
   },
 });
 

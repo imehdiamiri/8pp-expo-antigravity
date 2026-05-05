@@ -14,21 +14,21 @@ interface GameCardViewProps {
 const getGradientColors = (accentName: string): [string, string, string] => {
   switch (accentName) {
     case 'pink':
-      return ['rgba(255, 105, 180, 0.95)', 'rgba(255, 59, 48, 0.65)', 'rgba(175, 82, 222, 0.5)']; // pink, red, purple
+      return ['rgba(255, 105, 180, 0.95)', 'rgba(255, 59, 48, 0.65)', 'rgba(175, 82, 222, 0.5)'];
     case 'cyan':
-      return ['rgba(50, 173, 230, 0.95)', 'rgba(0, 199, 190, 0.7)', 'rgba(0, 122, 255, 0.5)']; // cyan, mint, blue
+      return ['rgba(50, 173, 230, 0.95)', 'rgba(0, 199, 190, 0.7)', 'rgba(0, 122, 255, 0.5)'];
     case 'teal':
-      return ['rgba(48, 176, 199, 0.95)', 'rgba(52, 199, 89, 0.7)', 'rgba(0, 199, 190, 0.45)']; // teal, green, mint
+      return ['rgba(48, 176, 199, 0.95)', 'rgba(52, 199, 89, 0.7)', 'rgba(0, 199, 190, 0.45)'];
     case 'orange':
-      return ['rgba(255, 149, 0, 0.96)', 'rgba(255, 59, 48, 0.72)', 'rgba(255, 204, 0, 0.4)']; // orange, red, yellow
+      return ['rgba(255, 149, 0, 0.96)', 'rgba(255, 59, 48, 0.72)', 'rgba(255, 204, 0, 0.4)'];
     case 'red':
-      return ['rgba(255, 59, 48, 0.95)', 'rgba(255, 105, 180, 0.7)', 'rgba(255, 149, 0, 0.45)']; // red, pink, orange
+      return ['rgba(255, 59, 48, 0.95)', 'rgba(255, 105, 180, 0.7)', 'rgba(255, 149, 0, 0.45)'];
     case 'yellow':
-      return ['rgba(255, 204, 0, 0.96)', 'rgba(255, 149, 0, 0.72)', 'rgba(255, 59, 48, 0.4)']; // yellow, orange, red
+      return ['rgba(255, 204, 0, 0.96)', 'rgba(255, 149, 0, 0.72)', 'rgba(255, 59, 48, 0.4)'];
     case 'purple':
-      return ['rgba(175, 82, 222, 0.95)', 'rgba(88, 86, 214, 0.8)', 'rgba(255, 105, 180, 0.45)']; // purple, indigo, pink
+      return ['rgba(175, 82, 222, 0.95)', 'rgba(88, 86, 214, 0.8)', 'rgba(255, 105, 180, 0.45)'];
     default:
-      return ['rgba(0, 122, 255, 0.95)', 'rgba(88, 86, 214, 0.75)', 'rgba(175, 82, 222, 0.45)']; // blue, indigo, purple
+      return ['rgba(0, 122, 255, 0.95)', 'rgba(88, 86, 214, 0.75)', 'rgba(175, 82, 222, 0.45)'];
   }
 };
 
@@ -65,7 +65,7 @@ export const GameCardView: React.FC<GameCardViewProps> = ({ game, isLocked = fal
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFillObject}
       />
-      <View style={[styles.borderOverlay, { borderColor: accentColor }]} />
+      
       
       <View style={styles.content}>
         <View style={styles.spacerTop} />
@@ -76,11 +76,8 @@ export const GameCardView: React.FC<GameCardViewProps> = ({ game, isLocked = fal
         
         <View style={styles.spacerMiddle1} />
         
-        <View style={styles.iconContainerWrapper}>
-          <BlurView tint="dark" intensity={20} style={styles.iconContainer}>
-            <IconSymbol name={game.id.symbolName as any} size={32} color="white" />
-          </BlurView>
-        </View>
+        {/* Icon - clean, no background container */}
+        <IconSymbol name={game.id.symbolName as any} size={36} color="rgba(255, 255, 255, 0.95)" />
         
         <View style={styles.spacerMiddle2} />
         
@@ -88,13 +85,13 @@ export const GameCardView: React.FC<GameCardViewProps> = ({ game, isLocked = fal
           {game.id.supportedModes.map((mode) => {
             const modeDetails = GameModeDetails[mode];
             return (
-              <BlurView key={mode} tint="light" intensity={20} style={styles.modeIconWrapper}>
+              <View key={mode} style={styles.modePill}>
                 <IconSymbol 
                   name={modeDetails.icon as any} 
-                  size={12} 
-                  color="rgba(255,255,255,0.9)" 
+                  size={11} 
+                  color="rgba(255,255,255,0.85)" 
                 />
-              </BlurView>
+              </View>
             );
           })}
         </View>
@@ -121,7 +118,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     aspectRatio: 1,
-    borderRadius: 18,
+    borderRadius: 20,
     overflow: 'hidden',
     ...Platform.select({
       ios: {
@@ -133,12 +130,6 @@ const styles = StyleSheet.create({
         elevation: 6,
       },
     }),
-  },
-  borderOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 18,
-    borderWidth: 1,
-    opacity: 0.25,
   },
   content: {
     flex: 1,
@@ -157,22 +148,15 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     minHeight: 24,
+    textShadowColor: 'rgba(0, 0, 0, 0.25)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   spacerMiddle1: {
-    flex: 0.8,
+    flex: 0.7,
     minHeight: 6,
   },
-  iconContainerWrapper: {
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  iconContainer: {
-    width: 56,
-    height: 56,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   spacerMiddle2: {
     flex: 0.5,
     minHeight: 4,
@@ -182,12 +166,14 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 4,
   },
-  modeIconWrapper: {
+  modePill: {
     width: 22,
     height: 22,
     borderRadius: 11,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
     justifyContent: 'center',
     alignItems: 'center',
   },

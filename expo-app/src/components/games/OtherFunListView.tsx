@@ -75,14 +75,14 @@ function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial
   const tintColor = getTintColor(game.tint);
 
   return (
-    <Animated.View layout={Layout.springify()} style={[styles.card, isExpanded && { borderColor: tintColor + '66' }, { shadowColor: tintColor }]}>
+    <Animated.View layout={Layout.springify()} style={[styles.card]}>
       {Platform.OS !== 'web' && BlurView ? (
         <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
       ) : (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,20,30,0.85)' }]} />
       )}
       <Pressable onPress={onToggle} style={styles.cardHeader}>
-        <View style={[styles.iconContainer, { backgroundColor: tintColor + '33' }]}>
+        <View style={[styles.iconContainer, { backgroundColor: tintColor + '20' }]}>
           <IconSymbol name={game.iconName as any} size={22} color={tintColor} weight="semibold" />
         </View>
 
@@ -160,35 +160,36 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   list: {
-    gap: 14,
+    gap: 10,
   },
   card: {
-    backgroundColor: 'transparent',
-    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.06)',
     overflow: 'hidden',
     ...Platform.select({
       ios: {
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 12,
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
       },
       android: {
-        elevation: 5,
+        elevation: 2,
       },
     }),
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    padding: 14,
     gap: 12,
   },
   iconContainer: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },

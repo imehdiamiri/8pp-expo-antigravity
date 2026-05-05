@@ -37,7 +37,7 @@ interface PartyToolsSectionProps {
 export function PartyToolsSection({ showsHeader = true }: PartyToolsSectionProps) {
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const columnWidth = (width - 32 - 20) / 3; // padding 16*2, 2 gaps of 10
+  const columnWidth = Math.floor((width - 32 - 20) / 3); // padding 16*2 = 32, 2 gaps of 10 = 20
 
   const handlePress = (tool: PartyToolType) => {
     router.push(`/(tools)/${tool}` as any);

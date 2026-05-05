@@ -67,22 +67,23 @@ export default function GamesScreen() {
             {/* Mode Filters */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.modeFilterContainer}>
               <TouchableOpacity 
-                style={[styles.modeFilterChip, selectedModeFilter === null ? styles.modeFilterChipActive : {}]}
+                style={[styles.modeFilterChip, selectedModeFilter === null && styles.modeFilterChipActive]}
                 onPress={() => setSelectedModeFilter(null)}
                 activeOpacity={0.7}
               >
-                <BlurView tint="dark" intensity={selectedModeFilter === null ? 0 : 30} style={StyleSheet.absoluteFill} />
-                <Text style={[styles.modeFilterText, selectedModeFilter === null ? styles.modeFilterTextActive : {}]}>All</Text>
+                <Text style={[styles.modeFilterText, selectedModeFilter === null && styles.modeFilterTextActive]}>All</Text>
               </TouchableOpacity>
               {Object.values(GameMode).map(mode => (
                 <TouchableOpacity 
                   key={mode}
-                  style={[styles.modeFilterChip, selectedModeFilter === mode ? styles.modeFilterChipActive : {}]}
+                  style={[styles.modeFilterChip, selectedModeFilter === mode && styles.modeFilterChipActive]}
                   onPress={() => setSelectedModeFilter(mode)}
                   activeOpacity={0.7}
                 >
-                  <BlurView tint="dark" intensity={selectedModeFilter === mode ? 0 : 30} style={StyleSheet.absoluteFill} />
-                  <Text style={[styles.modeFilterText, selectedModeFilter === mode ? styles.modeFilterTextActive : {}]}>
+                  {selectedModeFilter === mode && (
+                    <IconSymbol name={GameModeDetails[mode].icon as any} size={12} color="white" />
+                  )}
+                  <Text style={[styles.modeFilterText, selectedModeFilter === mode && styles.modeFilterTextActive]}>
                     {GameModeDetails[mode].title}
                   </Text>
                 </TouchableOpacity>
@@ -222,26 +223,27 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   modeFilterChip: {
-    paddingHorizontal: 11,
-    paddingVertical: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
   },
   modeFilterChipActive: {
-    backgroundColor: 'rgba(0, 122, 255, 0.15)',
-    borderColor: 'rgba(0, 122, 255, 0.4)',
+    backgroundColor: 'rgba(10, 132, 255, 0.85)',
+    borderColor: 'rgba(10, 132, 255, 0.9)',
   },
   modeFilterText: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 11,
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 12,
     fontWeight: '600',
   },
   modeFilterTextActive: {
-    color: 'rgba(0, 122, 255, 1)',
+    color: '#ffffff',
   },
   gamesGrid: {
     flexDirection: 'row',
@@ -249,7 +251,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   ideasContainer: {
-    paddingVertical: 40,
+    paddingVertical: 10,
   },
   ideasPlaceholderText: {
     color: 'rgba(255,255,255,0.5)',

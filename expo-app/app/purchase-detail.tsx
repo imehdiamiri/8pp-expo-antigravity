@@ -172,8 +172,8 @@ export default function PurchaseDetailScreen() {
             paddingVertical: 6,
           }}
         >
-          <IconSymbol name="xmark" size={16} color="white" />
-          <Text style={{ color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 4 }}>Close</Text>
+          <IconSymbol name="xmark" size={14} color="#007AFF" />
+          <Text style={{ color: '#007AFF', fontSize: 17, fontWeight: '400', marginLeft: 4 }}>Close</Text>
         </TouchableOpacity>
       </View>
 
