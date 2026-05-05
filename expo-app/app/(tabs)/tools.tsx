@@ -1,8 +1,14 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
+
+// Platform-safe BlurView
+let BlurView: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurView = require('expo-blur').BlurView; } catch {}
+}
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+
 import { useRouter } from 'expo-router';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
@@ -59,18 +65,33 @@ export default function ToolsScreen() {
           <View style={styles.cardsList}>
             {/* AI Generate Row */}
             <TouchableOpacity style={styles.rowContainer} activeOpacity={0.8}>
-              <BlurView intensity={25} tint="dark" style={styles.aiGenerateRow}>
-                <LinearGradient colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.01)']} style={styles.aiGenerateBackground}>
-                  <View style={[styles.categoryIconContainer, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
-                    <IconSymbol name="wand.and.stars" size={18} color="white" />
-                  </View>
-                  <View style={styles.categoryTextContainer}>
-                    <Text style={styles.categoryTitle}>AI Generator</Text>
-                    <Text style={styles.categorySubtitle}>Create custom prompts</Text>
-                  </View>
-                  <IconSymbol name="chevron.right" size={16} color="rgba(255,255,255,0.3)" />
-                </LinearGradient>
-              </BlurView>
+              {Platform.OS === 'ios' && BlurView ? (
+                <BlurView intensity={25} tint="dark" style={styles.aiGenerateRow}>
+                  <LinearGradient colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.01)']} style={styles.aiGenerateBackground}>
+                    <View style={[styles.categoryIconContainer, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
+                      <IconSymbol name="wand.and.stars" size={18} color="white" />
+                    </View>
+                    <View style={styles.categoryTextContainer}>
+                      <Text style={styles.categoryTitle}>AI Generator</Text>
+                      <Text style={styles.categorySubtitle}>Create custom prompts</Text>
+                    </View>
+                    <IconSymbol name="chevron.right" size={16} color="rgba(255,255,255,0.3)" />
+                  </LinearGradient>
+                </BlurView>
+              ) : (
+                <View style={[styles.aiGenerateRow, { backgroundColor: 'rgba(20,20,30,0.92)' }]}>
+                  <LinearGradient colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.01)']} style={styles.aiGenerateBackground}>
+                    <View style={[styles.categoryIconContainer, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
+                      <IconSymbol name="wand.and.stars" size={18} color="white" />
+                    </View>
+                    <View style={styles.categoryTextContainer}>
+                      <Text style={styles.categoryTitle}>AI Generator</Text>
+                      <Text style={styles.categorySubtitle}>Create custom prompts</Text>
+                    </View>
+                    <IconSymbol name="chevron.right" size={16} color="rgba(255,255,255,0.3)" />
+                  </LinearGradient>
+                </View>
+              )}
             </TouchableOpacity>
 
             {/* Categories */}
@@ -82,18 +103,33 @@ export default function ToolsScreen() {
                   activeOpacity={0.8}
                   onPress={() => router.push(`/cards/${category.id}` as any)}
                 >
-                  <BlurView intensity={25} tint="dark" style={styles.categoryRow}>
-                    <LinearGradient colors={['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.00)']} style={styles.categoryBackground}>
-                      <View style={[styles.categoryIconContainer, { backgroundColor: category.accentColor + '20' }]}>
-                        <IconSymbol name={category.icon as any} size={18} color={category.accentColor} />
-                      </View>
-                      <View style={styles.categoryTextContainer}>
-                        <Text style={[styles.categoryTitle, { color: category.accentColor }]}>{category.title}</Text>
-                        <Text style={styles.categorySubtitle}>{category.subtitle}</Text>
-                      </View>
-                      <IconSymbol name="chevron.right" size={16} color="rgba(255,255,255,0.3)" />
-                    </LinearGradient>
-                  </BlurView>
+                  {Platform.OS === 'ios' && BlurView ? (
+                    <BlurView intensity={25} tint="dark" style={styles.categoryRow}>
+                      <LinearGradient colors={['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.00)']} style={styles.categoryBackground}>
+                        <View style={[styles.categoryIconContainer, { backgroundColor: category.accentColor + '20' }]}>
+                          <IconSymbol name={category.icon as any} size={18} color={category.accentColor} />
+                        </View>
+                        <View style={styles.categoryTextContainer}>
+                          <Text style={[styles.categoryTitle, { color: category.accentColor }]}>{category.title}</Text>
+                          <Text style={styles.categorySubtitle}>{category.subtitle}</Text>
+                        </View>
+                        <IconSymbol name="chevron.right" size={16} color="rgba(255,255,255,0.3)" />
+                      </LinearGradient>
+                    </BlurView>
+                  ) : (
+                    <View style={[styles.categoryRow, { backgroundColor: 'rgba(20,20,30,0.92)' }]}>
+                      <LinearGradient colors={['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.00)']} style={styles.categoryBackground}>
+                        <View style={[styles.categoryIconContainer, { backgroundColor: category.accentColor + '20' }]}>
+                          <IconSymbol name={category.icon as any} size={18} color={category.accentColor} />
+                        </View>
+                        <View style={styles.categoryTextContainer}>
+                          <Text style={[styles.categoryTitle, { color: category.accentColor }]}>{category.title}</Text>
+                          <Text style={styles.categorySubtitle}>{category.subtitle}</Text>
+                        </View>
+                        <IconSymbol name="chevron.right" size={16} color="rgba(255,255,255,0.3)" />
+                      </LinearGradient>
+                    </View>
+                  )}
                 </TouchableOpacity>
               ))}
             </View>

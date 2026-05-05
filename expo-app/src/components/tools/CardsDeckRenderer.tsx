@@ -4,9 +4,9 @@ import { View, Text, StyleSheet, Animated, PanResponder, Dimensions, Pressable, 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { CardCategory, CardCategoryInfo, ALL_CARDS, PartyCard } from '@/src/models/CardModels';
 
-// Platform-safe BlurView
+// Platform-safe BlurView (iOS only — broken on Android)
 let BlurView: any = null;
-if (Platform.OS !== 'web') {
+if (Platform.OS === 'ios') {
   try { BlurView = require('expo-blur').BlurView; } catch {}
 }
 

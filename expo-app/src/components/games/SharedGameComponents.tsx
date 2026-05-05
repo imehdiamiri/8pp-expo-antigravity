@@ -172,6 +172,7 @@ export function BeerBottleView({ width: w }: { width: number }) {
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.55,
         shadowRadius: 14,
+        elevation: 10,
       }}
       contentFit="contain"
       transition={200}

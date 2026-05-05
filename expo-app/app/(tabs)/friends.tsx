@@ -6,10 +6,22 @@ import { useRouter } from 'expo-router';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { BlurView } from 'expo-blur';
+
 import { useFriendsStore } from '@/src/store/useFriendsStore';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { showToast } from '@/src/components/ToastOverlay';
+
+// Platform-safe BlurView
+let BlurViewComponent: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurViewComponent = require('expo-blur').BlurView; } catch {}
+}
+const SurfaceBlur = ({ style, children, intensity = 25 }: any) => {
+  if (Platform.OS === 'ios' && BlurViewComponent) {
+    return <BlurViewComponent intensity={intensity} tint="dark" style={style}>{children}</BlurViewComponent>;
+  }
+  return <View style={[style, { backgroundColor: 'rgba(20,20,30,0.92)' }]}>{children}</View>;
+};
 
 export default function FriendsScreen() {
   const insets = useSafeAreaInsets();
@@ -115,7 +127,7 @@ export default function FriendsScreen() {
         </View>
 
         {/* Quick Join Card */}
-        <BlurView intensity={30} tint="dark" style={styles.quickJoinCard}>
+        <SurfaceBlur intensity={30} style={styles.quickJoinCard}>
           <View style={styles.quickJoinIconContainer}>
             <IconSymbol name="number.square.fill" size={22} color={Colors.blue} />
           </View>
@@ -126,14 +138,14 @@ export default function FriendsScreen() {
           <TouchableOpacity style={styles.quickJoinButton} onPress={() => router.push('/lobby/join')}>
             <Text style={styles.quickJoinButtonText}>Enter Code</Text>
           </TouchableOpacity>
-        </BlurView>
+        </SurfaceBlur>
 
         {/* Offline Friends Section */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Offline Friends</Text>
           <Text style={styles.sectionSubtitle}>Local names for Single Device games.</Text>
           
-          <BlurView intensity={25} tint="dark" style={styles.surfaceCard}>
+          <SurfaceBlur style={styles.surfaceCard}>
             <View style={styles.addFriendRow}>
               <TextInput 
                 style={styles.inputField}
@@ -209,7 +221,7 @@ export default function FriendsScreen() {
                 ))}
               </View>
             )}
-          </BlurView>
+          </SurfaceBlur>
         </View>
 
         {/* Online Friends Section */}
@@ -217,7 +229,7 @@ export default function FriendsScreen() {
           <Text style={styles.sectionTitle}>Online Friends</Text>
           <Text style={styles.sectionSubtitle}>For Multi Device games and invites.</Text>
           
-          <BlurView intensity={25} tint="dark" style={styles.surfaceCard}>
+          <SurfaceBlur style={styles.surfaceCard}>
             <TextInput 
               style={[styles.inputField, { marginBottom: 8 }]}
               placeholder="Search username, email, or ID"
@@ -336,7 +348,7 @@ export default function FriendsScreen() {
                 ))}
               </View>
             )}
-          </BlurView>
+          </SurfaceBlur>
         </View>
 
         {/* Public Rooms Section */}
@@ -352,13 +364,13 @@ export default function FriendsScreen() {
             </TouchableOpacity>
           </View>
 
-          <BlurView intensity={25} tint="dark" style={styles.surfaceCard}>
+          <SurfaceBlur style={styles.surfaceCard}>
             <View style={[styles.emptyStateContainer, { paddingVertical: 16 }]}>
               <IconSymbol name="person.3.sequence.fill" size={28} color="rgba(10, 132, 255, 0.6)" />
               <Text style={[styles.emptyStateText, { color: 'rgba(255,255,255,0.6)' }]}>No public rooms yet</Text>
               <Text style={styles.emptyStateSubText}>Create a room from any multiplayer game.</Text>
             </View>
-          </BlurView>
+          </SurfaceBlur>
         </View>
       </ScrollView>
     </View>

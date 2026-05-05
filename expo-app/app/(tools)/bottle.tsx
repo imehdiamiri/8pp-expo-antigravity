@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.6,
     shadowRadius: 16,
+    elevation: 12,
   },
   emptyText: {
     color: 'rgba(255,255,255,0.45)',
@@ -336,6 +337,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
     shadowRadius: 16,
+    elevation: 8,
   },
   spinButton: {
     flexDirection: 'row',

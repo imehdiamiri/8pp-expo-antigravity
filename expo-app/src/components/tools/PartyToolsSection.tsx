@@ -6,9 +6,9 @@ import { useRouter } from 'expo-router';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
-// Platform-safe BlurView
+// Platform-safe BlurView (iOS only — broken on Android)
 let BlurView: any = null;
-if (Platform.OS !== 'web') {
+if (Platform.OS === 'ios') {
   try { BlurView = require('expo-blur').BlurView; } catch {}
 }
 

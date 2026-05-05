@@ -1,21 +1,39 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/src/theme/Colors';
+import { Colors, platformShadow } from '@/src/theme/Colors';
+
+// Platform-safe BlurView
+let BlurView: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurView = require('expo-blur').BlurView; } catch {}
+}
 
 function CustomTabBar({ state, descriptors, navigation }: any) {
   const insets = useSafeAreaInsets();
   
   return (
     <View style={[styles.tabBarContainer, { bottom: Platform.OS === 'ios' ? Math.max(insets.bottom, 20) : 20 }]}>
+      {/* Background: BlurView on iOS, solid gradient on Android */}
       <View style={[StyleSheet.absoluteFill, { borderRadius: 36, overflow: 'hidden' }]}>
-        <BlurView tint="dark" intensity={90} style={StyleSheet.absoluteFill} />
-        <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(255, 255, 255, 0.05)' }} />
+        {Platform.OS === 'ios' && BlurView ? (
+          <>
+            <BlurView tint="dark" intensity={90} style={StyleSheet.absoluteFill} />
+            <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(255, 255, 255, 0.05)' }} />
+          </>
+        ) : (
+          <LinearGradient
+            colors={['rgba(22, 22, 32, 0.97)', 'rgba(13, 13, 20, 0.98)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+        )}
       </View>
       
       <View style={styles.tabBarContent}>
@@ -28,7 +46,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
           const isFocused = state.index === index;
           
           const onPress = () => {
-            if (process.env.EXPO_OS === 'ios' || Platform.OS === 'ios') {
+            if (Platform.OS === 'ios') {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }
             const event = navigation.emit({
@@ -94,12 +112,8 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 36,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 10,
+    borderColor: Platform.OS === 'android' ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.12)',
+    ...platformShadow(12, '#000', 0.4, 20),
   },
   tabBarContent: {
     flex: 1,

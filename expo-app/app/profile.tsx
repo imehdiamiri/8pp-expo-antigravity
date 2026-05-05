@@ -12,7 +12,7 @@ import {
   Switch,
 } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
-import { BlurView } from 'expo-blur';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -24,11 +24,17 @@ import { usePaywallStore } from '@/src/store/usePaywallStore';
 import { useSettingsStore } from '@/src/store/useSettingsStore';
 import { AppConstants } from '@/src/constants/AppConstants';
 
-const SurfaceCard = ({ children, style }: { children: React.ReactNode; style?: any }) => (
-  <BlurView tint="dark" intensity={40} style={[styles.surfaceCard, style]}>
-    {children}
-  </BlurView>
-);
+// Platform-safe BlurView
+let BlurViewComponent: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurViewComponent = require('expo-blur').BlurView; } catch {}
+}
+const SurfaceCard = ({ children, style }: { children: React.ReactNode; style?: any }) => {
+  if (Platform.OS === 'ios' && BlurViewComponent) {
+    return <BlurViewComponent tint="dark" intensity={40} style={[styles.surfaceCard, style]}>{children}</BlurViewComponent>;
+  }
+  return <View style={[styles.surfaceCard, style, { backgroundColor: 'rgba(20,20,30,0.92)' }]}>{children}</View>;
+};
 
 const SectionHeaderView = ({ title, subtitle }: { title: string; subtitle?: string }) => (
   <View style={styles.sectionHeader}>

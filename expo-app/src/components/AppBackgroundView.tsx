@@ -5,7 +5,7 @@ import { Colors } from '../theme/Colors';
 
 // Platform-safe BlurView import
 let BlurView: any = null;
-if (Platform.OS !== 'web') {
+if (Platform.OS === 'ios') {
   try { BlurView = require('expo-blur').BlurView; } catch {}
 }
 
@@ -21,6 +21,44 @@ export const AppBackgroundView = () => {
     );
   }
 
+  // ─── Android: Use LinearGradient layers for a premium ambient look ───
+  if (Platform.OS === 'android') {
+    return (
+      <View style={[StyleSheet.absoluteFillObject, { zIndex: -1 }]} pointerEvents="none">
+        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#050508' }]} />
+        
+        {/* Ambient gradient blobs via LinearGradient (no BlurView needed) */}
+        <LinearGradient
+          colors={['rgba(191, 90, 242, 0.08)', 'transparent']}
+          start={{ x: 0.0, y: 0.6 }}
+          end={{ x: 0.7, y: 0.2 }}
+          style={[StyleSheet.absoluteFillObject]}
+        />
+        <LinearGradient
+          colors={['rgba(10, 132, 255, 0.06)', 'transparent']}
+          start={{ x: 0.8, y: 0.3 }}
+          end={{ x: 0.2, y: 0.9 }}
+          style={[StyleSheet.absoluteFillObject]}
+        />
+        <LinearGradient
+          colors={['rgba(102, 212, 207, 0.04)', 'transparent']}
+          start={{ x: 0.9, y: 0.7 }}
+          end={{ x: 0.1, y: 0.1 }}
+          style={[StyleSheet.absoluteFillObject]}
+        />
+
+        {/* Vignette overlay */}
+        <LinearGradient
+          colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.6)']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={StyleSheet.absoluteFillObject}
+        />
+      </View>
+    );
+  }
+
+  // ─── iOS: Full blur mesh gradient (original) ───
   return (
     <View style={[StyleSheet.absoluteFillObject, { zIndex: -1 }]} pointerEvents="none">
       <View style={[StyleSheet.absoluteFillObject, { backgroundColor: Colors.black }]} />

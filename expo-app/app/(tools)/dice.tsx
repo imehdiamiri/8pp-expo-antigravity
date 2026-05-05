@@ -43,7 +43,7 @@ const Die2DView = ({ value, size, shake, index }: { value: number; size: number;
 
   return (
     <Animated.View style={[
-      { width: size, height: size, shadowColor: 'black', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 14 },
+      { width: size, height: size, shadowColor: 'black', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 14, elevation: 12 },
       animatedStyle
     ]}>
       <LinearGradient

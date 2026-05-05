@@ -25,12 +25,18 @@ import Animated, {
   Extrapolate,
   useAnimatedScrollHandler,
 } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
+
 import { Colors, Typography } from '../src/theme/Colors';
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { useSettingsStore } from '../src/store/useSettingsStore';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { GlowView } from '@/src/components/ui/GlowView';
+
+// Platform-safe BlurView
+let BlurViewComponent: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurViewComponent = require('expo-blur').BlurView; } catch {}
+}
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -278,7 +284,11 @@ const NameEntryPage = React.memo(({ currentPage, inputRef, name, onChangeName }:
       
       <View style={styles.inputWrapper}>
         <View style={styles.inputContainer}>
-          <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
+          {Platform.OS === 'ios' && BlurViewComponent ? (
+            <BlurViewComponent intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
+          ) : (
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,20,30,0.92)' }]} />
+          )}
           <TextInput
             ref={inputRef}
             style={styles.input}
@@ -478,6 +488,9 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.4,
         shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
       },
     }),
   },

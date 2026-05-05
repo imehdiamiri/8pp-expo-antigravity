@@ -1,16 +1,22 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, useWindowDimensions, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { useRouter } from 'expo-router';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
-import { Colors } from '@/src/theme/Colors';
+import { Colors, platformShadow } from '@/src/theme/Colors';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { GamesDefinitions, GameMode, GameModeDetails } from '@/src/models/AppModels';
 import { GameCardView } from '@/components/ui/GameCardView';
 import { OtherFunListView } from '@/src/components/games/OtherFunListView';
+
+// Platform-safe BlurView
+let BlurView: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurView = require('expo-blur').BlurView; } catch {}
+}
 
 export default function GamesScreen() {
   const router = useRouter();
@@ -25,6 +31,13 @@ export default function GamesScreen() {
 
   const columnWidth = (width - 32 - 12) / 2; // paddingHorizontal 16 * 2, gap 12
 
+  const renderTabBackground = () => {
+    if (Platform.OS === 'ios' && BlurView) {
+      return <BlurView tint="dark" intensity={50} style={styles.libraryTabsWrapper} />;
+    }
+    return null;
+  };
+
   return (
     <View style={styles.container}>
       <AppBackgroundView />
@@ -37,29 +50,40 @@ export default function GamesScreen() {
             <Text style={styles.joinText}>Join</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')} activeOpacity={0.7}>
-            <BlurView tint="dark" intensity={30} style={StyleSheet.absoluteFill} />
+            {Platform.OS === 'ios' && BlurView ? (
+              <BlurView tint="dark" intensity={30} style={StyleSheet.absoluteFill} />
+            ) : (
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: Colors.surface2 }]} />
+            )}
             <IconSymbol name="person.crop.circle" size={24} color="white" />
           </TouchableOpacity>
         </View>
 
         {/* Library Tabs (Games | Ideas) */}
         <View style={styles.libraryTabsContainer}>
-          <BlurView tint="dark" intensity={50} style={styles.libraryTabsWrapper}>
-            <TouchableOpacity 
-              style={[styles.libraryTab, selectedLibraryTab === 'Games' ? styles.libraryTabActive : null]}
-              onPress={() => setSelectedLibraryTab('Games')}
-            >
-              <IconSymbol name="gamecontroller.fill" size={14} color={selectedLibraryTab === 'Games' ? "white" : "rgba(255,255,255,0.6)"} weight="bold" />
-              <Text style={selectedLibraryTab === 'Games' ? styles.libraryTabTextActive : styles.libraryTabText}>Games</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.libraryTab, selectedLibraryTab === 'Ideas' ? styles.libraryTabActive : null]}
-              onPress={() => setSelectedLibraryTab('Ideas')}
-            >
-              <IconSymbol name="shippingbox.fill" size={14} color={selectedLibraryTab === 'Ideas' ? "white" : "rgba(255,255,255,0.6)"} weight="bold" />
-              <Text style={selectedLibraryTab === 'Ideas' ? styles.libraryTabTextActive : styles.libraryTabText}>Ideas</Text>
-            </TouchableOpacity>
-          </BlurView>
+          <View style={styles.libraryTabsWrapperOuter}>
+            {Platform.OS === 'ios' && BlurView ? (
+              <BlurView tint="dark" intensity={50} style={[StyleSheet.absoluteFill, { borderRadius: 30 }]} />
+            ) : (
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: Colors.surface2, borderRadius: 30 }]} />
+            )}
+            <View style={styles.libraryTabsInner}>
+              <TouchableOpacity 
+                style={[styles.libraryTab, selectedLibraryTab === 'Games' ? styles.libraryTabActive : null]}
+                onPress={() => setSelectedLibraryTab('Games')}
+              >
+                <IconSymbol name="gamecontroller.fill" size={14} color={selectedLibraryTab === 'Games' ? "white" : "rgba(255,255,255,0.6)"} weight="bold" />
+                <Text style={selectedLibraryTab === 'Games' ? styles.libraryTabTextActive : styles.libraryTabText}>Games</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.libraryTab, selectedLibraryTab === 'Ideas' ? styles.libraryTabActive : null]}
+                onPress={() => setSelectedLibraryTab('Ideas')}
+              >
+                <IconSymbol name="shippingbox.fill" size={14} color={selectedLibraryTab === 'Ideas' ? "white" : "rgba(255,255,255,0.6)"} weight="bold" />
+                <Text style={selectedLibraryTab === 'Ideas' ? styles.libraryTabTextActive : styles.libraryTabText}>Ideas</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
 
         {selectedLibraryTab === 'Games' ? (
@@ -173,8 +197,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 20,
   },
-  libraryTabsWrapper: {
-    flexDirection: 'row',
+  libraryTabsWrapperOuter: {
     borderRadius: 30,
     padding: 4,
     borderWidth: 1,
@@ -182,17 +205,10 @@ const styles = StyleSheet.create({
     maxWidth: 250,
     width: '100%',
     overflow: 'hidden',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 6,
-      },
-    }),
+    ...platformShadow(6, '#000', 0.2, 10),
+  },
+  libraryTabsInner: {
+    flexDirection: 'row',
   },
   libraryTab: {
     flex: 1,
@@ -231,7 +247,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: Platform.OS === 'android' ? Colors.surface1 : 'rgba(255,255,255,0.04)',
   },
   modeFilterChipActive: {
     backgroundColor: 'rgba(10, 132, 255, 0.85)',

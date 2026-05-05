@@ -1,15 +1,25 @@
 import { Colors } from '@/src/theme/Colors';
 import { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppBackgroundView } from '@/src/components/AppBackgroundView';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { BlurView } from 'expo-blur';
-import { Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
+
+// Platform-safe BlurView
+let BlurViewComponent: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurViewComponent = require('expo-blur').BlurView; } catch {}
+}
+const SurfaceBlur = ({ style, children, intensity = 25 }: any) => {
+  if (Platform.OS === 'ios' && BlurViewComponent) {
+    return <BlurViewComponent intensity={intensity} tint="dark" style={style}>{children}</BlurViewComponent>;
+  }
+  return <View style={[style, { backgroundColor: 'rgba(20,20,30,0.92)' }]}>{children}</View>;
+};
 
 // Game Vibes definitions
 const GAME_VIBES = [
@@ -145,7 +155,11 @@ export default function FactoryScreen() {
                   onPress={() => setVibe(v)}
                   activeOpacity={0.7}
                 >
-                  <BlurView tint="dark" intensity={isSelected ? 40 : 20} style={StyleSheet.absoluteFill} />
+                  {Platform.OS === 'ios' && BlurViewComponent ? (
+                    <BlurViewComponent tint="dark" intensity={isSelected ? 40 : 20} style={StyleSheet.absoluteFill} />
+                  ) : (
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: isSelected ? `${v.color}40` : 'rgba(20,20,30,0.92)' }]} />
+                  )}
                   <LinearGradient
                     colors={isSelected ? [v.color, `${v.color}B3`] : ['transparent', 'transparent']}
                     start={{ x: 0, y: 0 }}
@@ -166,7 +180,7 @@ export default function FactoryScreen() {
         {/* Players and Details */}
         <View style={styles.detailsContainer}>
           {/* Players Card */}
-          <BlurView tint="dark" intensity={30} style={[styles.surfaceCard, { overflow: 'hidden' }]}>
+          <SurfaceBlur intensity={30} style={[styles.surfaceCard, { overflow: 'hidden' }]}>
             <View style={styles.playersRow}>
               <IconSymbol name="person.2.fill" size={18} color={Colors.green} />
               <Text style={styles.playersLabel}>Players</Text>
@@ -190,10 +204,10 @@ export default function FactoryScreen() {
                 <IconSymbol name="plus" size={14} color={Colors.green} />
               </TouchableOpacity>
             </View>
-          </BlurView>
+          </SurfaceBlur>
 
           {/* Context Card */}
-          <BlurView tint="dark" intensity={30} style={[styles.surfaceCard, { overflow: 'hidden' }]}>
+          <SurfaceBlur intensity={30} style={[styles.surfaceCard, { overflow: 'hidden' }]}>
             <View style={styles.contextHeader}>
               <IconSymbol name="text.alignleft" size={12} color="rgba(255,255,255,0.9)" />
               <Text style={styles.contextLabel}>Context</Text>
@@ -209,7 +223,7 @@ export default function FactoryScreen() {
                 onChangeText={setPrompt}
               />
             </View>
-          </BlurView>
+          </SurfaceBlur>
         </View>
 
         {/* Generate Button */}
@@ -260,7 +274,11 @@ export default function FactoryScreen() {
                 const isExpanded = expandedIdeaId === idea.id;
                 return (
                   <Animated.View key={idea.id} style={[styles.surfaceCard, { padding: 0, overflow: 'hidden', shadowColor: '#AF52DE', borderColor: isExpanded ? 'rgba(175, 82, 222, 0.4)' : 'rgba(255,255,255,0.05)' }]}>
-                    <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
+                    {Platform.OS === 'ios' && BlurViewComponent ? (
+                      <BlurViewComponent tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
+                    ) : (
+                      <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,20,30,0.92)' }]} />
+                    )}
                     <View style={{ padding: 14 }}>
                       <View style={styles.ideaHeaderRow}>
                         <View style={styles.ideaIcon}>

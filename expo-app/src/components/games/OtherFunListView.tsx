@@ -19,7 +19,9 @@ if (Platform.OS !== 'web') {
   FadeIn = Reanimated.FadeIn;
   FadeOut = Reanimated.FadeOut;
   Layout = Reanimated.Layout;
-  BlurView = require('expo-blur').BlurView;
+  if (Platform.OS === 'ios') {
+    try { BlurView = require('expo-blur').BlurView; } catch {}
+  }
 } else {
   Animated = { View };
   FadeInUp = undefined;
@@ -76,10 +78,10 @@ function PartyGameCard({ game, isExpanded, onToggle }: { game: PartyGameTutorial
 
   return (
     <Animated.View layout={Layout.springify()} style={[styles.card]}>
-      {Platform.OS !== 'web' && BlurView ? (
+      {Platform.OS === 'ios' && BlurView ? (
         <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
       ) : (
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,20,30,0.85)' }]} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(20,20,30,0.92)' }]} />
       )}
       <Pressable onPress={onToggle} style={styles.cardHeader}>
         <View style={[styles.iconContainer, { backgroundColor: tintColor + '20' }]}>

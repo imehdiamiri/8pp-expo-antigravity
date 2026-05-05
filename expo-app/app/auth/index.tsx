@@ -16,7 +16,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
+import { Colors as ThemeColors, platformShadow } from '../../src/theme/Colors';
+
+// Platform-safe BlurView
+let BlurView: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurView = require('expo-blur').BlurView; } catch {}
+}
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Typography } from '../../src/theme/Colors';
 import { AppBackgroundView } from '../../src/components/AppBackgroundView';
@@ -114,7 +120,11 @@ export default function AuthScreen() {
             {/* Form Card */}
             <View style={styles.formCard}>
               <View style={[StyleSheet.absoluteFill, { borderRadius: 24, overflow: 'hidden' }]}>
-                <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
+                {Platform.OS === 'ios' && BlurView ? (
+                  <BlurView tint="dark" intensity={40} style={StyleSheet.absoluteFill} />
+                ) : (
+                  <View style={[StyleSheet.absoluteFill, { backgroundColor: ThemeColors.surface2 }]} />
+                )}
               </View>
 
               {/* Inputs */}
@@ -243,7 +253,11 @@ export default function AuthScreen() {
           {/* Busy Overlay */}
           {isBusy && (
             <View style={styles.busyOverlay}>
-              <BlurView intensity={40} style={StyleSheet.absoluteFill} tint="dark" />
+              {Platform.OS === 'ios' && BlurView ? (
+                <BlurView intensity={40} style={StyleSheet.absoluteFill} tint="dark" />
+              ) : (
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 0, 0.7)' }]} />
+              )}
               <View style={styles.progressContainer}>
                 <ActivityIndicator size="large" color={Colors.white} />
                 <Text style={styles.busyText}>Signing in…</Text>

@@ -15,7 +15,7 @@ import Animated, {
   Extrapolation,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { BlurView } from 'expo-blur';
+
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
 import { AudioManager } from '@/src/services/AudioManager';

@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GameDefinition, GameMode, GameModeDetails, getPlayerCountText } from '@/src/models/AppModels';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { BlurView } from 'expo-blur';
-import { Platform } from 'react-native';
+import { platformShadow } from '@/src/theme/Colors';
+
+// Platform-safe BlurView
+let BlurView: any = null;
+if (Platform.OS === 'ios') {
+  try { BlurView = require('expo-blur').BlurView; } catch {}
+}
 
 interface GameCardViewProps {
   game: GameDefinition;
@@ -66,7 +71,6 @@ export const GameCardView: React.FC<GameCardViewProps> = ({ game, isLocked = fal
         style={StyleSheet.absoluteFillObject}
       />
       
-      
       <View style={styles.content}>
         <View style={styles.spacerTop} />
         
@@ -105,9 +109,15 @@ export const GameCardView: React.FC<GameCardViewProps> = ({ game, isLocked = fal
 
       {isLocked && (
         <View style={styles.lockedOverlay}>
-          <BlurView tint="dark" intensity={60} style={styles.lockedIconContainer}>
-            <IconSymbol name="lock.fill" size={13} color="white" />
-          </BlurView>
+          {Platform.OS === 'ios' && BlurView ? (
+            <BlurView tint="dark" intensity={60} style={styles.lockedIconContainer}>
+              <IconSymbol name="lock.fill" size={13} color="white" />
+            </BlurView>
+          ) : (
+            <View style={[styles.lockedIconContainer, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}>
+              <IconSymbol name="lock.fill" size={13} color="white" />
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -120,16 +130,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 20,
     overflow: 'hidden',
-    ...Platform.select({
-      ios: {
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.35,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 6,
-      },
-    }),
+    ...platformShadow(8, '#000', 0.35, 10),
   },
   content: {
     flex: 1,
@@ -156,7 +157,6 @@ const styles = StyleSheet.create({
     flex: 0.7,
     minHeight: 6,
   },
-
   spacerMiddle2: {
     flex: 0.5,
     minHeight: 4,
