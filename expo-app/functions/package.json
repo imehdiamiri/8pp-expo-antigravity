@@ -1,6 +1,6 @@
 {
   "name": "functions",
-  "description": "Cloud Functions for 8PartyPlay",
+  "description": "Cloud Functions for PlayVirals",
   "scripts": {
     "lint": "eslint --ext .js,.ts src/",
     "build": "tsc",

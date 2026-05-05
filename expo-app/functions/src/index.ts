@@ -1,5 +1,5 @@
 /**
- * Cloud Functions for 8PartyPlay
+ * Cloud Functions for PlayVirals
  *
  * 1. searchUsers      — Indexed user search (replaces client-side full-table scan)
  * 2. onUserCreate     — Auto-creates wallet + default profile data

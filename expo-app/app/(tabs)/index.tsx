@@ -30,7 +30,7 @@ export default function GamesScreen() {
       <AppBackgroundView />
       <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 6, paddingBottom: 120 }]}>
         <View style={styles.header}>
-          <Text style={styles.title}>8PartyPlay</Text>
+          <Text style={styles.title}>PlayVirals</Text>
           <View style={{ flex: 1 }} />
           <TouchableOpacity style={styles.joinButton} onPress={() => router.push('/lobby/join')} activeOpacity={0.7}>
             <IconSymbol name="number" size={13} color="black" weight="bold" />

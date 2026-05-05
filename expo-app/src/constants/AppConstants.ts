@@ -5,12 +5,12 @@ export const AppConstants = {
     databaseURL: process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL || 'https://partyplay-8-default-rtdb.firebaseio.com',
   },
   URLs: {
-    privacyPolicy: 'https://www.8partyplay.com/privacy.html',
-    termsOfService: 'https://www.8partyplay.com/terms.html',
-    marketingSite: 'https://www.8partyplay.com',
+    privacyPolicy: 'https://www.playvirals.com/privacy.html',
+    termsOfService: 'https://www.playvirals.com/terms.html',
+    marketingSite: 'https://www.playvirals.com',
   },
   Invite: {
-    allowedHosts: ['8partyplay.com', 'www.8partyplay.com', 'app.8partyplay.com'],
+    allowedHosts: ['playvirals.com', 'www.playvirals.com', 'app.playvirals.com'],
     inviteScheme: 'invite',
   },
   RevenueCat: {

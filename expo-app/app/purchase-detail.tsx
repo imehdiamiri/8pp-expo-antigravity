@@ -248,11 +248,11 @@ export default function PurchaseDetailScreen() {
         <Text style={styles.legalText}>{legalText}</Text>
 
         <View style={styles.legalLinks}>
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.8partyplay.com/privacy')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.playvirals.com/privacy')}>
             <Text style={styles.linkText}>Privacy Policy</Text>
           </TouchableOpacity>
           <Text style={styles.legalDot}>•</Text>
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.8partyplay.com/terms')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.playvirals.com/terms')}>
             <Text style={styles.linkText}>Terms of Service</Text>
           </TouchableOpacity>
         </View>

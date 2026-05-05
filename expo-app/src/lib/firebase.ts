@@ -1,5 +1,5 @@
 /**
- * Firebase — Complete configuration for 8PartyPlay
+ * Firebase — Complete configuration for PlayVirals
  *
  * Services initialized:
  *  - Auth (with AsyncStorage persistence for RN)

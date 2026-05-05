@@ -71,7 +71,7 @@ export default function FriendsScreen() {
   const handleShareInvite = async () => {
     try {
       await Share.share({
-        message: "Let's play 8PartyPlay together! Download: https://www.8partyplay.com",
+        message: "Let's play PlayVirals together! Download: https://www.playvirals.com",
       });
     } catch (error) {
       console.log(error);

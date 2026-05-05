@@ -212,7 +212,7 @@ const WelcomePage = React.memo(({ currentPage }: { currentPage: number }) => (
     </View>
     <View style={styles.textSection}>
       <Text style={styles.title2}>Welcome to</Text>
-      <Text style={styles.viralTitle}>8PartyPlay</Text>
+      <Text style={styles.viralTitle}>PlayVirals</Text>
       <Text style={styles.bodyText}>
         The ultimate party game collection.{'\n'}Play with friends, compete, and have fun!
       </Text>
